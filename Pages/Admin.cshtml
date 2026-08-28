@@ -335,7 +335,7 @@
 
 <!-- Add Order Modal -->
 <div class="modal fade" id="addOrderModal" tabindex="-1">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <form method="post" asp-page-handler="AddOrder" asp-antiforgery="true">
                 <div class="modal-header">
@@ -353,8 +353,27 @@
                         </select>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">@Model.LangService.Transilate("Table Number")</label>
-                        <input type="number" class="form-control" name="order.TableNumber" value="1" />
+                        <label class="form-label">@Model.LangService.Transilate("Meals")</label>
+                        <div id="mealsContainer">
+                            <div class="row mb-2 meal-row">
+                                <div class="col-md-6">
+                                    <select class="form-select" name="orderItems[0].MealGuid" required>
+                                        <option value="">@Model.LangService.Transilate("Select Meal")</option>
+                                        @foreach (var meal in Model.Meals)
+                                        {
+                                            <option value="@meal.Guid">@meal.Name - @meal.Price.ToString("C")</option>
+                                        }
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <input type="number" class="form-control" name="orderItems[0].Count" value="1" min="1" placeholder="@Model.LangService.Transilate("Count")" required />
+                                </div>
+                                <div class="col-md-2">
+                                    <button type="button" class="btn btn-danger btn-sm" onclick="removeMealRow(this)">@Model.LangService.Transilate("Remove")</button>
+                                </div>
+                            </div>
+                        </div>
+                        <button type="button" class="btn btn-sm btn-secondary mt-2" onclick="addMealRow()">@Model.LangService.Transilate("Add Meal")</button>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -399,6 +418,43 @@
         }
         function editOrder(guid) {
             // Implement edit logic
+        }
+        
+        let mealRowCount = 1;
+        
+        function addMealRow() {
+            const container = document.getElementById('mealsContainer');
+            const newRow = document.createElement('div');
+            newRow.className = 'row mb-2 meal-row';
+            newRow.innerHTML = `
+                <div class="col-md-6">
+                    <select class="form-select" name="orderItems[${mealRowCount}].MealGuid" required>
+                        <option value="">@Model.LangService.Transilate("Select Meal")</option>
+                        @foreach (var meal in Model.Meals)
+                        {
+                            <option value="@meal.Guid">@meal.Name - @meal.Price.ToString("C")</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <input type="number" class="form-control" name="orderItems[${mealRowCount}].Count" value="1" min="1" placeholder="@Model.LangService.Transilate("Count")" required />
+                </div>
+                <div class="col-md-2">
+                    <button type="button" class="btn btn-danger btn-sm" onclick="removeMealRow(this)">@Model.LangService.Transilate("Remove")</button>
+                </div>
+            `;
+            container.appendChild(newRow);
+            mealRowCount++;
+        }
+        
+        function removeMealRow(button) {
+            const row = button.closest('.meal-row');
+            const container = document.getElementById('mealsContainer');
+            if (container.querySelectorAll('.meal-row').length > 1) {
+                row.remove();
+            } else {
+                alert('@Model.LangService.Transilate("At least one meal is required")');
+            }
         }
     </script>
 }

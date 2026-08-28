@@ -25,6 +25,9 @@ namespace RestoJett.Pages
         [BindProperty]
         public JUser LoggedUser { get; set; }
 
+        [BindProperty]
+        public List<JOrderItem> OrderItems { get; set; } = new List<JOrderItem>();
+
         public AdminModel(IRestaurantService restaurantService, LanguageService langService)
         {
             _restaurantService = restaurantService;
@@ -121,7 +124,7 @@ namespace RestoJett.Pages
             return Page();
         }
 
-        public IActionResult OnPostAddOrder([Bind(Prefix = "order")] JOrder order)
+        public IActionResult OnPostAddOrder([Bind(Prefix = "order")] JOrder order, [Bind(Prefix = "orderItems")] List<JOrderItem> orderItems)
         {
             LangService.For("en");
 
@@ -132,6 +135,21 @@ namespace RestoJett.Pages
                 Guid = "admin-guid",
                 UserType = JUserType.Admin
             };
+
+            // Populate order items with meal details and add to order dictionary
+            if (orderItems != null && orderItems.Count > 0)
+            {
+                foreach (var item in orderItems)
+                {
+                    var meal = Meals.FirstOrDefault(m => m.Guid == item.MealGuid);
+                    if (meal != null)
+                    {
+                        item.MealName = meal.Name;
+                        item.Price = meal.Price;
+                        order.Items[item.MealGuid] = item;
+                    }
+                }
+            }
 
             var result = _restaurantService.AddOrder(testAdmin, order);
             if (result.Item1 != null)
