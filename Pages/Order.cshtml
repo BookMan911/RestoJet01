@@ -1,0 +1,184 @@
+@page "{customerName?}"
+@model RestoJett.Pages.OrderModel
+@{
+    ViewData["Title"] = "Place Order - " + Model.CustomerName;
+}
+
+<div class="container mt-4">
+    <h1>Welcome, @Model.CustomerName!</h1>
+    <p class="lead">Browse our menu and place your order.</p>
+
+    @if (Model.OrderSubmitted)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <h4 class="alert-heading">Order Submitted Successfully!</h4>
+            <p>Your order has been placed. Order ID: <strong>@Model.OrderConfirmationGuid</strong></p>
+            <p>Thank you for your order, @Model.CustomerName!</p>
+            <hr>
+            <a asp-page="Order" asp-route-customerName="@Model.CustomerName" class="btn btn-outline-success">Place Another Order</a>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    @if (Model.OrderError != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <h4 class="alert-heading">Error!</h4>
+            <p>@Model.OrderError.Message</p>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <div class="row">
+        <!-- Menu Section -->
+        <div class="col-md-8">
+            <h2>Our Menu</h2>
+            
+            @if (Model.Meals == null || Model.Meals.Count == 0)
+            {
+                <div class="alert alert-info">
+                    No meals available at the moment. Please check back later.
+                </div>
+            }
+            else
+            {
+                <div class="row">
+                    @foreach (var meal in Model.Meals)
+                    {
+                        <div class="col-md-6 mb-4">
+                            <div class="card h-100">
+                                @if (!string.IsNullOrEmpty(meal.ImageHash))
+                                {
+                                    <img src="@meal.ImageHash" class="card-img-top" alt="@meal.Name" style="height: 200px; object-fit: cover;">
+                                }
+                                <div class="card-body">
+                                    <h5 class="card-title">@meal.Name</h5>
+                                    <p class="card-text">@meal.Description</p>
+                                    <p class="card-text">
+                                        <strong>Price: </strong>
+                                        @if (meal.Discount > 0)
+                                        {
+                                            <span class="text-decoration-line-through text-muted">@meal.Price.ToString("C")</span>
+                                            <span class="text-danger fw-bold">@(meal.Price * (1 - meal.Discount / 100)).ToString("C")</span>
+                                            <small class="text-success">(@meal.Discount% off)</small>
+                                        }
+                                        else
+                                        {
+                                            <span class="fw-bold">@meal.Price.ToString("C")</span>
+                                        }
+                                    </p>
+                                    
+                                    <form method="post" asp-page-handler="AddToCart" class="d-flex align-items-center">
+                                        <input type="hidden" name="CustomerName" value="@Model.CustomerName" />
+                                        <input type="hidden" name="MealGuid" value="@meal.Guid" />
+                                        <input type="hidden" name="MealName" value="@meal.Name" />
+                                        <input type="hidden" name="Price" value="@meal.Price" />
+                                        
+                                        <div class="input-group input-group-sm" style="width: 120px;">
+                                            <input type="number" name="Count" class="form-control" value="1" min="1" max="99" />
+                                        </div>
+                                        <button type="submit" class="btn btn-primary btn-sm ms-2">
+                                            <i class="bi bi-cart-plus"></i> Add to Cart
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+
+        <!-- Cart Section -->
+        <div class="col-md-4">
+            <div class="card sticky-top" style="top: 20px; z-index: 1000;">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Your Cart</h4>
+                </div>
+                <div class="card-body">
+                    <div id="cartItems">
+                        <p class="text-muted">Loading cart...</p>
+                    </div>
+                    
+                    <hr />
+                    
+                    <div class="d-flex justify-content-between mb-3">
+                        <strong>Total:</strong>
+                        <strong id="cartTotal">$0.00</strong>
+                    </div>
+
+                    @if (Model.CurrentCustomer != null)
+                    {
+                        <form method="post" asp-page-handler="SubmitOrder">
+                            <input type="hidden" name="CustomerName" value="@Model.CustomerName" />
+                            <input type="hidden" name="CustomerGuid" value="@Model.CurrentCustomer.Guid" />
+                            
+                            <button type="submit" class="btn btn-success w-100 btn-lg">
+                                <i class="bi bi-check-circle"></i> Submit Order
+                            </button>
+                        </form>
+                    }
+                    else
+                    {
+                        <button class="btn btn-secondary w-100 btn-lg" disabled>
+                            Loading...
+                        </button>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        const customerName = '@Model.CustomerName';
+        
+        function loadCart() {
+            fetch(`/Order?handler=CartItems&customerName=${encodeURIComponent(customerName)}`)
+                .then(response => response.json())
+                .then(items => {
+                    const cartDiv = document.getElementById('cartItems');
+                    const totalSpan = document.getElementById('cartTotal');
+                    
+                    if (items.length === 0) {
+                        cartDiv.innerHTML = '<p class="text-muted">Your cart is empty.</p>';
+                        totalSpan.textContent = '$0.00';
+                        return;
+                    }
+                    
+                    let html = '<ul class="list-group list-group-flush">';
+                    let total = 0;
+                    
+                    items.forEach(item => {
+                        const itemTotal = item.price * item.count;
+                        total += itemTotal;
+                        
+                        html += `
+                            <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                <div>
+                                    <small class="fw-bold">${item.mealName}</small><br/>
+                                    <small class="text-muted">$${item.price.toFixed(2)} x ${item.count}</small>
+                                </div>
+                                <span class="badge bg-primary rounded-pill">$${itemTotal.toFixed(2)}</span>
+                            </li>
+                        `;
+                    });
+                    
+                    html += '</ul>';
+                    cartDiv.innerHTML = html;
+                    totalSpan.textContent = `$${total.toFixed(2)}`;
+                })
+                .catch(error => {
+                    console.error('Error loading cart:', error);
+                    document.getElementById('cartItems').innerHTML = '<p class="text-danger">Error loading cart.</p>';
+                });
+        }
+        
+        // Load cart on page load
+        loadCart();
+        
+        // Refresh cart every 2 seconds
+        setInterval(loadCart, 2000);
+    </script>
+}
