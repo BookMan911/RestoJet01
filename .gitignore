@@ -1,58 +1,47 @@
 ```
-# Build results
-bin/
+# Compiled and build artifacts
+*.pdb
 obj/
+bin/
+*.o
+*.obj
+*.exe
+*.dll
+*.so
+*.a
+*.out
 
-# User-specific files
-.vs/
-.vscode/
-*.user
-*.userosscache
-*.suo
+# Dependencies
+node_modules/
+venv/
+.venv/
+__pycache__/
+.mypy_cache/
+.pytest_cache/
+target/
+.gradle/
 
-# Build results
-[Dd]ebug/
-[Dd]ebugPublic/
-[Rr]elease/
-[Rr]eleases/
-x64/
-x86/
-build/
-bld/
-[Bb]in/
-[Oo]bj/
-
-# Visual Studio 2015/2017/2019 cache/options directory
-.vs/
-
-# NuGet Packages
-*.nupkg
-*.snupkg
-packages/
-!packages.config
-
-# Microsoft Azure Web App publish settings
-*.publishsettings
-
-# Runtime files
-*.deps.json
-*.runtimeconfig.json
-*.staticwebassets.runtime.json
-*.AssemblyInfo.cs
-*.GlobalUsings.g.cs
-*.RazorAssemblyInfo.cs
-*.AssemblyAttributes.cs
-*.g.cs
-*.g.i.cs
-
-# Temporary files
-*.tmp
-*.temp
-*.cache
+# Logs and temp files
 *.log
+*.tmp
+*.swp
+*.swo
 
-# Environment specific settings
-appsettings.Development.json
+# Environment
 .env
 .env.local
+*.env.*
+
+# Editors
+.vscode/
+.idea/
+
+# Coverage
+coverage/
+htmlcov/
+.coverage
+
+# System files
+.DS_Store
+Thumbs.db
 ```
