@@ -242,7 +242,7 @@
 <div class="modal fade" id="addMealModal" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
-            <form method="post" asp-page-handler="AddMeal">
+            <form method="post" asp-page-handler="AddMeal" asp-antiforgery="true">
                 <div class="modal-header">
                     <h5 class="modal-title">@Model.LangService.Transilate("Add Meal")</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
@@ -268,6 +268,98 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@Model.LangService.Transilate("Close")</button>
                     <button type="submit" class="btn btn-primary">@Model.LangService.Transilate("Save")</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Add User Modal -->
+<div class="modal fade" id="addUserModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="post" asp-page-handler="AddUser" asp-antiforgery="true">
+                <div class="modal-header">
+                    <h5 class="modal-title">@Model.LangService.Transilate("Add User")</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">@Model.LangService.Transilate("Name")</label>
+                        <input type="text" class="form-control" name="user.Name" required />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">@Model.LangService.Transilate("Password")</label>
+                        <input type="password" class="form-control" name="user.Password" required />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">@Model.LangService.Transilate("User Type")</label>
+                        <select class="form-select" name="user.UserType">
+                            <option value="Admin">Admin</option>
+                            <option value="Staff">Staff</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@Model.LangService.Transilate("Close")</button>
+                    <button type="submit" class="btn btn-success">@Model.LangService.Transilate("Save")</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Add Customer Modal -->
+<div class="modal fade" id="addCustomerModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="post" asp-page-handler="AddCustomer" asp-antiforgery="true">
+                <div class="modal-header">
+                    <h5 class="modal-title">@Model.LangService.Transilate("Add Customer")</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">@Model.LangService.Transilate("Name")</label>
+                        <input type="text" class="form-control" name="customer.Name" required />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@Model.LangService.Transilate("Close")</button>
+                    <button type="submit" class="btn btn-info">@Model.LangService.Transilate("Save")</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Add Order Modal -->
+<div class="modal fade" id="addOrderModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="post" asp-page-handler="AddOrder" asp-antiforgery="true">
+                <div class="modal-header">
+                    <h5 class="modal-title">@Model.LangService.Transilate("Add Order")</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">@Model.LangService.Transilate("Customer")</label>
+                        <select class="form-select" name="order.CustomerGuid" required>
+                            @foreach (var customer in Model.Customers)
+                            {
+                                <option value="@customer.Guid">@customer.Name</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">@Model.LangService.Transilate("Table Number")</label>
+                        <input type="number" class="form-control" name="order.TableNumber" value="1" />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@Model.LangService.Transilate("Close")</button>
+                    <button type="submit" class="btn btn-warning">@Model.LangService.Transilate("Save")</button>
                 </div>
             </form>
         </div>

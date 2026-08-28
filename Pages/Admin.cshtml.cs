@@ -75,6 +75,75 @@ namespace RestoJett.Pages
             return Page();
         }
 
+        public IActionResult OnPostAddUser([Bind(Prefix = "user")] JUser user)
+        {
+            LangService.For("en");
+
+            var testAdmin = new JUser
+            {
+                Name = "admin",
+                Password = "admin123",
+                Guid = "admin-guid",
+                UserType = JUserType.Admin
+            };
+
+            var result = _restaurantService.AddUser(testAdmin, user);
+            if (result.Item1 != null)
+            {
+                UserError = result.Item1;
+            }
+
+            LoadData(testAdmin);
+            LoggedUser = testAdmin;
+            return Page();
+        }
+
+        public IActionResult OnPostAddCustomer([Bind(Prefix = "customer")] JCustomer customer)
+        {
+            LangService.For("en");
+
+            var testAdmin = new JUser
+            {
+                Name = "admin",
+                Password = "admin123",
+                Guid = "admin-guid",
+                UserType = JUserType.Admin
+            };
+
+            var result = _restaurantService.AddCustomer(testAdmin, customer);
+            if (result.Item1 != null)
+            {
+                CustomerError = result.Item1;
+            }
+
+            LoadData(testAdmin);
+            LoggedUser = testAdmin;
+            return Page();
+        }
+
+        public IActionResult OnPostAddOrder([Bind(Prefix = "order")] JOrder order)
+        {
+            LangService.For("en");
+
+            var testAdmin = new JUser
+            {
+                Name = "admin",
+                Password = "admin123",
+                Guid = "admin-guid",
+                UserType = JUserType.Admin
+            };
+
+            var result = _restaurantService.AddOrder(testAdmin, order);
+            if (result.Item1 != null)
+            {
+                OrderError = result.Item1;
+            }
+
+            LoadData(testAdmin);
+            LoggedUser = testAdmin;
+            return Page();
+        }
+
         private void LoadData(JUser user)
         {
             // Load meals
