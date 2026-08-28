@@ -1,32 +1,69 @@
-```
+```csharp
 # Build artifacts
 bin/
 obj/
 *.dll
 *.exe
 *.pdb
-*.config
+*.so
+*.dylib
+*.jar
+*.war
+*.class
 
 # Dependencies
 packages/
 node_modules/
-lib/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 
-# Logs
-*.log
-
-# Environment
-.env
-.env.local
-*.env.*
-
-# Editors
+# IDE files
+.vs/
 .vscode/
 .idea/
-*.userprefs
-*.user
+*.swp
+*.swo
+*~
 
 # OS generated files
 .DS_Store
 Thumbs.db
+ehthumbs.db
+Icon?
+desktop.ini
+
+# Logs
+*.log
+
+# Environment variables
+.env
+.env.local
+.env.*
+!.env.example
+
+# User-specific files
+*.userprefs
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Testing
+coverage/
+*.cover
+*.log
+
+# Temporary files
+*.tmp
+*.temp
+[Tt]emp/
+```
+
+Wait, I need to reconsider. The only modified files are C# source files (.cs), which are source code and should not trigger adding build artifacts to .gitignore unless those artifacts actually exist in the change list. Since the change list only contains source files (no compiled artifacts), I should not add build artifact patterns.
+
+Actually, looking again at the change list: ['Core/JMenu.cs', 'Core/RestaurantService.cs'] - these are pure source code modifications with no build artifacts present.
+
+```csharp
+
 ```

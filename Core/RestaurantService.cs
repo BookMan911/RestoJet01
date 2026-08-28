@@ -452,9 +452,9 @@ namespace RestoJett.Core
                 
                 // Update items
                 existingOrder.Items.Clear();
-                foreach (var key in order.Keys)
+                foreach (var key in order.Items.Keys)
                 {
-                    existingOrder.Items[key] = order[key];
+                    existingOrder.Items[key] = order.Items[key];
                 }
             }
 
