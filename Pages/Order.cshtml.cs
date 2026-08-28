@@ -203,8 +203,8 @@ namespace RestoJett.Pages
                 CustomerGuid = customerGuid,
                 Name = $"Order for {CustomerName}",
                 Items = new Dictionary<string, JOrderItem>(),
-                OrderStatus = JOrderStatus.Pending,
-                DeliveryStatus = JDeliveryStatus.NotStarted
+                OrderStatus = JOrderStatus.Unpaid,
+                DeliveryStatus = JDeliveryStatus.Pending
             };
 
             // Add items to order
