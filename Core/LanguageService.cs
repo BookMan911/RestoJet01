@@ -2,6 +2,8 @@
 
 public class LanguageService
 {
+    // this is language service shluld be init and created at program , in every page we will select language from For method from the url of the page , and every word is taken from translate function if no word the word itself will returned
+    
     
    private  Dictionary<string, Hashtable> _languages =  new Dictionary<string, Hashtable>();
 
