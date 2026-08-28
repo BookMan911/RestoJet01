@@ -1,6 +1,4 @@
 using System.Collections.Generic;
-using System.Collections;
-using System.Collections.Specialized;
 
 namespace RestoJett.Core
 {
@@ -8,7 +6,7 @@ namespace RestoJett.Core
     {
         public string Name { get; set; }
         public string Guid { get; set; }
-        public OrderedDictionary Items = new OrderedDictionary();
+        public Dictionary<string, JOrderItem> Items { get; set; } = new Dictionary<string, JOrderItem>();
         public string CustomerGuid { get; set; }
         public string Date { get; set; }
         public JDeliveryStatus DeliveryStatus { get; set; }
