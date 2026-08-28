@@ -6,6 +6,6 @@ namespace RestoJett.Core
     {
         public string Guid { get; set; }
         public string Name { get; set; }
-        public OrderedDictionary Items = new OrderedDictionary(); // MealGuid-> JMeal
+        public OrderedDictionary Meals = new OrderedDictionary(); // MealGuid-> JMeal
     }
 }
