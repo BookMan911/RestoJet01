@@ -1,0 +1,312 @@
+@page
+@model RestoJett.Pages.AdminModel
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "Admin Dashboard";
+}
+
+<div class="container-fluid mt-4">
+    <div class="row">
+        <div class="col-12">
+            <h1 class="mb-4">@Model.LangService.Transilate("Admin Dashboard")</h1>
+        </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <ul class="nav nav-tabs mb-4" id="adminTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="meals-tab" data-bs-toggle="tab" data-bs-target="#meals" type="button" role="tab">@Model.LangService.Transilate("Meals")</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="users-tab" data-bs-toggle="tab" data-bs-target="#users" type="button" role="tab">@Model.LangService.Transilate("Users")</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="customers-tab" data-bs-toggle="tab" data-bs-target="#customers" type="button" role="tab">@Model.LangService.Transilate("Customers")</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="orders-tab" data-bs-toggle="tab" data-bs-target="#orders" type="button" role="tab">@Model.LangService.Transilate("Orders")</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="audit-tab" data-bs-toggle="tab" data-bs-target="#audit" type="button" role="tab">@Model.LangService.Transilate("Audit Logs")</button>
+        </li>
+    </ul>
+
+    <div class="tab-content" id="adminTabsContent">
+        <!-- Meals Tab -->
+        <div class="tab-pane fade show active" id="meals" role="tabpanel">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">@Model.LangService.Transilate("Manage Meals")</h5>
+                    <button class="btn btn-light btn-sm" data-bs-toggle="modal" data-bs-target="#addMealModal">
+                        <i class="bi bi-plus-circle"></i> @Model.LangService.Transilate("Add Meal")
+                    </button>
+                </div>
+                <div class="card-body">
+                    @if (Model.MealError != null)
+                    {
+                        <div class="alert alert-danger">@Model.MealError.Message</div>
+                    }
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>@Model.LangService.Transilate("Name")</th>
+                                <th>@Model.LangService.Transilate("Price")</th>
+                                <th>@Model.LangService.Transilate("Discount")</th>
+                                <th>@Model.LangService.Transilate("Version")</th>
+                                <th>@Model.LangService.Transilate("Description")</th>
+                                <th>@Model.LangService.Transilate("Actions")</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var meal in Model.Meals)
+                            {
+                                <tr>
+                                    <td>@meal.Name</td>
+                                    <td>@meal.Price.ToString("C")</td>
+                                    <td>@meal.Discount.ToString("P")</td>
+                                    <td>@meal.Version</td>
+                                    <td>@meal.Description</td>
+                                    <td>
+                                        <button class="btn btn-sm btn-warning" onclick="editMeal('@meal.Guid')">@Model.LangService.Transilate("Edit")</button>
+                                        <button class="btn btn-sm btn-danger" onclick="deleteMeal('@meal.Guid')">@Model.LangService.Transilate("Delete")</button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Users Tab -->
+        <div class="tab-pane fade" id="users" role="tabpanel">
+            <div class="card shadow-sm">
+                <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">@Model.LangService.Transilate("Manage Users")</h5>
+                    <button class="btn btn-light btn-sm" data-bs-toggle="modal" data-bs-target="#addUserModal">
+                        <i class="bi bi-plus-circle"></i> @Model.LangService.Transilate("Add User")
+                    </button>
+                </div>
+                <div class="card-body">
+                    @if (Model.UserError != null)
+                    {
+                        <div class="alert alert-danger">@Model.UserError.Message</div>
+                    }
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>@Model.LangService.Transilate("Name")</th>
+                                <th>@Model.LangService.Transilate("Type")</th>
+                                <th>@Model.LangService.Transilate("Actions")</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var user in Model.Users)
+                            {
+                                <tr>
+                                    <td>@user.Name</td>
+                                    <td>@user.UserType</td>
+                                    <td>
+                                        <button class="btn btn-sm btn-warning" onclick="editUser('@user.Guid')">@Model.LangService.Transilate("Edit")</button>
+                                        <button class="btn btn-sm btn-danger" onclick="deleteUser('@user.Guid')">@Model.LangService.Transilate("Delete")</button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Customers Tab -->
+        <div class="tab-pane fade" id="customers" role="tabpanel">
+            <div class="card shadow-sm">
+                <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">@Model.LangService.Transilate("Manage Customers")</h5>
+                    <button class="btn btn-light btn-sm" data-bs-toggle="modal" data-bs-target="#addCustomerModal">
+                        <i class="bi bi-plus-circle"></i> @Model.LangService.Transilate("Add Customer")
+                    </button>
+                </div>
+                <div class="card-body">
+                    @if (Model.CustomerError != null)
+                    {
+                        <div class="alert alert-danger">@Model.CustomerError.Message</div>
+                    }
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>@Model.LangService.Transilate("Name")</th>
+                                <th>@Model.LangService.Transilate("Actions")</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var customer in Model.Customers)
+                            {
+                                <tr>
+                                    <td>@customer.Name</td>
+                                    <td>
+                                        <button class="btn btn-sm btn-warning" onclick="editCustomer('@customer.Guid')">@Model.LangService.Transilate("Edit")</button>
+                                        <button class="btn btn-sm btn-danger" onclick="deleteCustomer('@customer.Guid')">@Model.LangService.Transilate("Delete")</button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Orders Tab -->
+        <div class="tab-pane fade" id="orders" role="tabpanel">
+            <div class="card shadow-sm">
+                <div class="card-header bg-warning text-dark d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">@Model.LangService.Transilate("Manage Orders")</h5>
+                    <button class="btn btn-dark btn-sm" data-bs-toggle="modal" data-bs-target="#addOrderModal">
+                        <i class="bi bi-plus-circle"></i> @Model.LangService.Transilate("Add Order")
+                    </button>
+                </div>
+                <div class="card-body">
+                    @if (Model.OrderError != null)
+                    {
+                        <div class="alert alert-danger">@Model.OrderError.Message</div>
+                    }
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>@Model.LangService.Transilate("Name")</th>
+                                <th>@Model.LangService.Transilate("Customer")</th>
+                                <th>@Model.LangService.Transilate("Date")</th>
+                                <th>@Model.LangService.Transilate("Order Status")</th>
+                                <th>@Model.LangService.Transilate("Delivery Status")</th>
+                                <th>@Model.LangService.Transilate("Actions")</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var order in Model.Orders)
+                            {
+                                <tr>
+                                    <td>@order.Name</td>
+                                    <td>@order.CustomerGuid</td>
+                                    <td>@order.Date</td>
+                                    <td>@order.OrderStatus</td>
+                                    <td>@order.DeliveryStatus</td>
+                                    <td>
+                                        <button class="btn btn-sm btn-warning" onclick="editOrder('@order.Guid')">@Model.LangService.Transilate("Edit")</button>
+                                        <button class="btn btn-sm btn-danger" onclick="deleteOrder('@order.Guid')">@Model.LangService.Transilate("Delete")</button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Audit Logs Tab -->
+        <div class="tab-pane fade" id="audit" role="tabpanel">
+            <div class="card shadow-sm">
+                <div class="card-header bg-secondary text-white">
+                    <h5 class="mb-0">@Model.LangService.Transilate("Audit Logs")</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>@Model.LangService.Transilate("Timestamp")</th>
+                                <th>@Model.LangService.Transilate("User")</th>
+                                <th>@Model.LangService.Transilate("Action")</th>
+                                <th>@Model.LangService.Transilate("Entity")</th>
+                                <th>@Model.LangService.Transilate("Details")</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var log in Model.AuditLogs)
+                            {
+                                <tr>
+                                    <td>@log.Timestamp.ToString("yyyy-MM-dd HH:mm:ss")</td>
+                                    <td>@log.UserName</td>
+                                    <td>@log.ActionType</td>
+                                    <td>@log.EntityType</td>
+                                    <td>@log.Details</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Meal Modal -->
+<div class="modal fade" id="addMealModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="post" asp-page-handler="AddMeal">
+                <div class="modal-header">
+                    <h5 class="modal-title">@Model.LangService.Transilate("Add Meal")</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">@Model.LangService.Transilate("Name")</label>
+                        <input type="text" class="form-control" name="meal.Name" required />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">@Model.LangService.Transilate("Price")</label>
+                        <input type="number" step="0.01" class="form-control" name="meal.Price" required />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">@Model.LangService.Transilate("Discount")</label>
+                        <input type="number" step="0.01" class="form-control" name="meal.Discount" value="0" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">@Model.LangService.Transilate("Description")</label>
+                        <textarea class="form-control" name="meal.Description"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@Model.LangService.Transilate("Close")</button>
+                    <button type="submit" class="btn btn-primary">@Model.LangService.Transilate("Save")</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function deleteMeal(guid) {
+            if(confirm('@Model.LangService.Transilate("Are you sure?")')) {
+                // Implement delete logic
+            }
+        }
+        function editMeal(guid) {
+            // Implement edit logic
+        }
+        function deleteUser(guid) {
+            if(confirm('@Model.LangService.Transilate("Are you sure?")')) {
+                // Implement delete logic
+            }
+        }
+        function editUser(guid) {
+            // Implement edit logic
+        }
+        function deleteCustomer(guid) {
+            if(confirm('@Model.LangService.Transilate("Are you sure?")')) {
+                // Implement delete logic
+            }
+        }
+        function editCustomer(guid) {
+            // Implement edit logic
+        }
+        function deleteOrder(guid) {
+            if(confirm('@Model.LangService.Transilate("Are you sure?")')) {
+                // Implement delete logic
+            }
+        }
+        function editOrder(guid) {
+            // Implement edit logic
+        }
+    </script>
+}

@@ -5,8 +5,11 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddRazorPages();
 
-// Register the RestaurantService as a singleton
-builder.Services.AddSingleton<RestaurantService>();
+// Register the RestaurantService as a singleton (implements IRestaurantService)
+builder.Services.AddSingleton<IRestaurantService, RestaurantService>();
+
+// Register LanguageService as a singleton
+builder.Services.AddSingleton<LanguageService>();
 
 var app = builder.Build();
 
