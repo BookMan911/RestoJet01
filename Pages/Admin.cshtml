@@ -150,7 +150,7 @@
                             {
                                 var customerOrders = Model.Orders.Where(o => o.CustomerGuid == customer.Guid).ToList();
                                 <tr>
-                                    <td>@customer.Name</td>
+                                    <td><a href="/Order?customer=@customer.Guid" class="text-decoration-none">@customer.Name</a></td>
                                     <td>
                                         @if (customerOrders.Any())
                                         {
