@@ -14,12 +14,14 @@ namespace RestoJett.Pages
         public List<JMeal> Meals { get; set; } = new List<JMeal>();
         public List<JUser> Users { get; set; } = new List<JUser>();
         public List<JCustomer> Customers { get; set; } = new List<JCustomer>();
+        public List<JPilot> Pilots { get; set; } = new List<JPilot>();
         public List<JOrder> Orders { get; set; } = new List<JOrder>();
         public List<AuditLog> AuditLogs { get; set; } = new List<AuditLog>();
 
         public Exception MealError { get; set; }
         public Exception UserError { get; set; }
         public Exception CustomerError { get; set; }
+        public Exception PilotError { get; set; }
         public Exception OrderError { get; set; }
 
         [BindProperty]
@@ -162,6 +164,29 @@ namespace RestoJett.Pages
             return Page();
         }
 
+        public IActionResult OnPostAddPilot([Bind(Prefix = "pilot")] JPilot pilot)
+        {
+            LangService.For("en");
+
+            var testAdmin = new JUser
+            {
+                Name = "admin",
+                Password = "admin123",
+                Guid = "admin-guid",
+                UserType = JUserType.Admin
+            };
+
+            var result = _restaurantService.AddPilot(testAdmin, pilot);
+            if (result.Item1 != null)
+            {
+                PilotError = result.Item1;
+            }
+
+            LoadData(testAdmin);
+            LoggedUser = testAdmin;
+            return Page();
+        }
+
         private void LoadData(JUser user)
         {
             // Load meals
@@ -195,6 +220,17 @@ namespace RestoJett.Pages
             else
             {
                 CustomerError = customersResult.Item1;
+            }
+
+            // Load pilots
+            var pilotsResult = _restaurantService.GetPilots(user);
+            if (pilotsResult.Item1 == null)
+            {
+                Pilots = pilotsResult.Item2;
+            }
+            else
+            {
+                PilotError = pilotsResult.Item1;
             }
 
             // Load orders

@@ -1,0 +1,122 @@
+@page "/Pilot"
+@model RestoJett.Web.Pages.PilotModel
+@{
+    ViewData["Title"] = Model.LangService.Transilate("Pilot Orders");
+    Layout = "_Layout";
+}
+
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <h3 class="mb-0">
+                <i class="bi bi-airplane"></i> @Model.LangService.Transilate("My Assigned Orders")
+                @if (!string.IsNullOrEmpty(Model.PilotName))
+                {
+                    <small class="text-light"> - @Model.PilotName</small>
+                }
+            </h3>
+        </div>
+        <div class="card-body">
+            @if (Model.Error != null)
+            {
+                <div class="alert alert-danger">@Model.Error.Message</div>
+            }
+            else if (string.IsNullOrEmpty(Model.PilotGuid))
+            {
+                <div class="alert alert-warning">
+                    <i class="bi bi-exclamation-triangle"></i> @Model.LangService.Transilate("No pilot specified. Please provide a valid pilot identifier.")
+                </div>
+            }
+            else if (Model.Orders == null || Model.Orders.Count == 0)
+            {
+                <div class="alert alert-info">
+                    <i class="bi bi-info-circle"></i> @Model.LangService.Transilate("No orders assigned to this pilot yet.")
+                </div>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>@Model.LangService.Transilate("Order #")</th>
+                                <th>@Model.LangService.Transilate("Customer")</th>
+                                <th>@Model.LangService.Transilate("Date")</th>
+                                <th>@Model.LangService.Transilate("Status")</th>
+                                <th>@Model.LangService.Transilate("Delivery Status")</th>
+                                <th>@Model.LangService.Transilate("Items")</th>
+                                <th>@Model.LangService.Transilate("Total")</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var order in Model.Orders)
+                            {
+                                <tr>
+                                    <td>@order.Name</td>
+                                    <td>@order.CustomerGuid</td>
+                                    <td>@order.Date</td>
+                                    <td>
+                                        <span class="badge 
+                                            @(order.OrderStatus == RestoJett.Core.JOrderStatus.None ? "bg-secondary" : 
+                                              order.OrderStatus == RestoJett.Core.JOrderStatus.Unpaid ? "bg-warning" : 
+                                              order.OrderStatus == RestoJett.Core.JOrderStatus.Cancelled ? "bg-danger" : 
+                                              order.OrderStatus == RestoJett.Core.JOrderStatus.Paid ? "bg-success" : 
+                                              "bg-secondary")">
+                                            @order.OrderStatus
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="badge 
+                                            @(order.DeliveryStatus == RestoJett.Core.JDeliveryStatus.Pending ? "bg-warning" : 
+                                              order.DeliveryStatus == RestoJett.Core.JDeliveryStatus.InDelivery ? "bg-info" : 
+                                              order.DeliveryStatus == RestoJett.Core.JDeliveryStatus.Delivered ? "bg-success" : 
+                                              "bg-secondary")">
+                                            @order.DeliveryStatus
+                                        </span>
+                                    </td>
+                                    <td>
+                                        @if (order.Items != null && order.Items.Count > 0)
+                                        {
+                                            <ul class="list-unstyled mb-0">
+                                                @foreach (var item in order.Items.Values)
+                                                {
+                                                    <li>@item.Count x @item.MealName</li>
+                                                }
+                                            </ul>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">@Model.LangService.Transilate("No items")</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (order.Items != null && order.Items.Count > 0)
+                                        {
+                                            var total = 0.0m;
+                                            foreach (var item in order.Items.Values)
+                                            {
+                                                total += item.Price * item.Count;
+                                            }
+                                            <strong>$@total.ToString("F2")</strong>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">$0.00</span>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<style>
+    .badge {
+        font-size: 0.85em;
+        padding: 0.5em 0.75em;
+    }
+</style>
