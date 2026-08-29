@@ -57,10 +57,10 @@
                                     <td>@order.Date</td>
                                     <td>
                                         <span class="badge 
-                                            @(order.OrderStatus == RestoJett.Core.JOrderStatus.Pending ? "bg-warning" : 
-                                              order.OrderStatus == RestoJett.Core.JOrderStatus.Confirmed ? "bg-info" : 
-                                              order.OrderStatus == RestoJett.Core.JOrderStatus.Preparing ? "bg-primary" : 
-                                              order.OrderStatus == RestoJett.Core.JOrderStatus.Ready ? "bg-success" : 
+                                            @(order.OrderStatus == RestoJett.Core.JOrderStatus.None ? "bg-secondary" : 
+                                              order.OrderStatus == RestoJett.Core.JOrderStatus.Unpaid ? "bg-warning" : 
+                                              order.OrderStatus == RestoJett.Core.JOrderStatus.Cancelled ? "bg-danger" : 
+                                              order.OrderStatus == RestoJett.Core.JOrderStatus.Paid ? "bg-success" : 
                                               "bg-secondary")">
                                             @order.OrderStatus
                                         </span>
@@ -68,7 +68,7 @@
                                     <td>
                                         <span class="badge 
                                             @(order.DeliveryStatus == RestoJett.Core.JDeliveryStatus.Pending ? "bg-warning" : 
-                                              order.DeliveryStatus == RestoJett.Core.JDeliveryStatus.InProgress ? "bg-info" : 
+                                              order.DeliveryStatus == RestoJett.Core.JDeliveryStatus.InDelivery ? "bg-info" : 
                                               order.DeliveryStatus == RestoJett.Core.JDeliveryStatus.Delivered ? "bg-success" : 
                                               "bg-secondary")">
                                             @order.DeliveryStatus
@@ -80,7 +80,7 @@
                                             <ul class="list-unstyled mb-0">
                                                 @foreach (var item in order.Items.Values)
                                                 {
-                                                    <li>@item.Quantity x @item.MealName</li>
+                                                    <li>@item.Count x @item.MealName</li>
                                                 }
                                             </ul>
                                         }
@@ -92,10 +92,10 @@
                                     <td>
                                         @if (order.Items != null && order.Items.Count > 0)
                                         {
-                                            var total = 0.0;
+                                            var total = 0.0m;
                                             foreach (var item in order.Items.Values)
                                             {
-                                                total += item.Price * item.Quantity * (1 - item.Discount / 100.0);
+                                                total += item.Price * item.Count;
                                             }
                                             <strong>$@total.ToString("F2")</strong>
                                         }
