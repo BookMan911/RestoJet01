@@ -1,4 +1,3 @@
-```
 # Build artifacts
 bin/
 obj/
@@ -6,25 +5,26 @@ obj/
 *.exe
 *.pdb
 *.nupkg
-*.log
 
 # Dependencies
 packages/
 node_modules/
 
-# IDE
-.vs/
-.vscode/
-.idea/
-*.user
-*.userosscache
-*.suo
-*.csproj.user
+# Logs
+*.log
 
 # Environment
 .env
 .env.local
 *.env.*
+
+# Editors
+.vscode/
+.idea/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
 
 # OS generated files
 .DS_Store
@@ -33,5 +33,8 @@ desktop.ini
 
 # Testing
 TestResults/
-coverage/
-```
+
+# User-specific files
+.vs/
+*.VC.db
+*.VC.VC.opendb

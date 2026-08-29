@@ -8,6 +8,7 @@ namespace RestoJett.Core
         public string Guid { get; set; }
         public Dictionary<string, JOrderItem> Items { get; set; } = new Dictionary<string, JOrderItem>();
         public string CustomerGuid { get; set; }
+        public string PilotGuid { get; set; }
         public string Date { get; set; }
         public JDeliveryStatus DeliveryStatus { get; set; }
         public JOrderStatus OrderStatus { get; set; }

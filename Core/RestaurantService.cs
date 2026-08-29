@@ -545,6 +545,7 @@ namespace RestoJett.Core
 
                 existingOrder.Name = order.Name;
                 existingOrder.CustomerGuid = order.CustomerGuid;
+                existingOrder.PilotGuid = order.PilotGuid;
                 existingOrder.DeliveryStatus = order.DeliveryStatus;
                 existingOrder.OrderStatus = order.OrderStatus;
                 

@@ -218,6 +218,7 @@
                             <tr>
                                 <th>@Model.LangService.Transilate("Name")</th>
                                 <th>@Model.LangService.Transilate("Customer")</th>
+                                <th>@Model.LangService.Transilate("Pilot")</th>
                                 <th>@Model.LangService.Transilate("Date")</th>
                                 <th>@Model.LangService.Transilate("Order Status")</th>
                                 <th>@Model.LangService.Transilate("Delivery Status")</th>
@@ -230,6 +231,7 @@
                                 <tr>
                                     <td>@order.Name</td>
                                     <td>@order.CustomerGuid</td>
+                                    <td>@(string.IsNullOrEmpty(order.PilotGuid) ? "-" : order.PilotGuid)</td>
                                     <td>@order.Date</td>
                                     <td>@order.OrderStatus</td>
                                     <td>@order.DeliveryStatus</td>
@@ -420,6 +422,16 @@
                             @foreach (var customer in Model.Customers)
                             {
                                 <option value="@customer.Guid">@customer.Name</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">@Model.LangService.Transilate("Pilot")</label>
+                        <select class="form-select" name="order.PilotGuid">
+                            <option value="">@Model.LangService.Transilate("Select Pilot")</option>
+                            @foreach (var pilot in Model.Pilots)
+                            {
+                                <option value="@pilot.Guid">@pilot.Name - @pilot.PhoneNumber</option>
                             }
                         </select>
                     </div>
