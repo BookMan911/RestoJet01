@@ -141,14 +141,31 @@
                         <thead>
                             <tr>
                                 <th>@Model.LangService.Transilate("Name")</th>
+                                <th>@Model.LangService.Transilate("Orders")</th>
                                 <th>@Model.LangService.Transilate("Actions")</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach (var customer in Model.Customers)
                             {
+                                var customerOrders = Model.Orders.Where(o => o.CustomerGuid == customer.Guid).ToList();
                                 <tr>
-                                    <td>@customer.Name</td>
+                                    <td><a href="/Order?customer=@customer.Guid" class="text-decoration-none">@customer.Name</a></td>
+                                    <td>
+                                        @if (customerOrders.Any())
+                                        {
+                                            <ul class="list-unstyled mb-0">
+                                                @foreach (var order in customerOrders)
+                                                {
+                                                    <li><a href="/Order?order=@order.Guid" class="text-decoration-none">@order.Name</a></li>
+                                                }
+                                            </ul>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">@Model.LangService.Transilate("No orders")</span>
+                                        }
+                                    </td>
                                     <td>
                                         <button class="btn btn-sm btn-warning" onclick="editCustomer('@customer.Guid')">@Model.LangService.Transilate("Edit")</button>
                                         <button class="btn btn-sm btn-danger" onclick="deleteCustomer('@customer.Guid')">@Model.LangService.Transilate("Delete")</button>
@@ -476,6 +493,17 @@
                             </div>
                         </div>
                         <button type="button" class="btn btn-sm btn-secondary mt-2" onclick="addMealRow()">@Model.LangService.Transilate("Add Meal")</button>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">@Model.LangService.Transilate("Payment Type")</label>
+                        <select class="form-select" name="order.PaymentType" required>
+                            <option value="">@Model.LangService.Transilate("Select Payment Type")</option>
+                            <option value="None">@Model.LangService.Transilate("None")</option>
+                            <option value="ByPilot">@Model.LangService.Transilate("By Pilot")</option>
+                            <option value="Online">@Model.LangService.Transilate("Online")</option>
+                            <option value="Cash">@Model.LangService.Transilate("Cash")</option>
+                            <option value="Dept">@Model.LangService.Transilate("Dept")</option>
+                        </select>
                     </div>
                 </div>
                 <div class="modal-footer">

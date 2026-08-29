@@ -5,6 +5,7 @@ namespace RestoJett.Core
         None,
         ByPilot,
         Online,
-        Cash
+        Cash,
+        Dept
     }
 }

@@ -8,11 +8,6 @@ namespace RestoJett.Web.Pages
     {
         private readonly IRestaurantService _restaurantService;
 
-        public PilotModel(IRestaurantService restaurantService)
-        {
-            _restaurantService = restaurantService;
-        }
-
         public readonly LanguageService LangService;
 
         public PilotModel(IRestaurantService restaurantService, LanguageService langService)
