@@ -1,5 +1,6 @@
 @page
 @model RestoJett.Pages.AdminModel
+@using System.Linq
 @{
     Layout = "_Layout";
     ViewData["Title"] = "Admin Dashboard";
@@ -228,10 +229,23 @@
                         <tbody>
                             @foreach (var order in Model.Orders)
                             {
+                                var pilot = Model.Pilots.FirstOrDefault(p => p.Guid == order.PilotGuid);
+                                var pilotDisplayName = string.IsNullOrEmpty(order.PilotGuid) ? "-" : (pilot?.Name ?? order.PilotGuid);
                                 <tr>
                                     <td>@order.Name</td>
                                     <td>@order.CustomerGuid</td>
-                                    <td>@(string.IsNullOrEmpty(order.PilotGuid) ? "-" : order.PilotGuid)</td>
+                                    <td>
+                                        @if (!string.IsNullOrEmpty(order.PilotGuid))
+                                        {
+                                            <a href="/Pilot?pilot=@order.PilotGuid&name=@Uri.EscapeDataString(pilotDisplayName)" class="text-decoration-none">
+                                                @pilotDisplayName
+                                            </a>
+                                        }
+                                        else
+                                        {
+                                            @:-
+                                        }
+                                    </td>
                                     <td>@order.Date</td>
                                     <td>@order.OrderStatus</td>
                                     <td>@order.DeliveryStatus</td>
@@ -509,6 +523,10 @@
         }
         function editOrder(guid) {
             // Implement edit logic
+        }
+        
+        function viewPilotOrders(pilotGuid, pilotName) {
+            window.location.href = `/Pilot?pilot=${encodeURIComponent(pilotGuid)}&name=${encodeURIComponent(pilotName)}`;
         }
         
         let mealRowCount = 1;

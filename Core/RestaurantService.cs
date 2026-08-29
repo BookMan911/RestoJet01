@@ -35,6 +35,7 @@ namespace RestoJett.Core
         Tuple<Exception, JOrder> AddOrder(JUser loggedUser, JOrder order);
         Tuple<Exception, JOrder> UpdateOrder(JUser loggedUser, string orderGuid, JOrder order);
         Tuple<Exception, bool> RemoveOrder(JUser loggedUser, string orderGuid);
+        Tuple<Exception, List<JOrder>> GetOrdersByPilot(string pilotGuid);
 
         // Authentication
         Tuple<Exception, JUser> Authenticate(string name, string password);
@@ -583,6 +584,21 @@ namespace RestoJett.Core
 
             LogAction(loggedUser, "Delete", "Order", orderGuid, $"Removed order: {orderGuid}");
             return new Tuple<Exception, bool>(null, true);
+        }
+
+        public Tuple<Exception, List<JOrder>> GetOrdersByPilot(string pilotGuid)
+        {
+            if (string.IsNullOrEmpty(pilotGuid))
+            {
+                var ex = new ArgumentException("Pilot GUID is required.");
+                return new Tuple<Exception, List<JOrder>>(ex, new List<JOrder>());
+            }
+
+            lock (_lock)
+            {
+                var orders = _orders.Where(o => o.PilotGuid == pilotGuid).ToList();
+                return new Tuple<Exception, List<JOrder>>(null, orders);
+            }
         }
 
         #endregion
