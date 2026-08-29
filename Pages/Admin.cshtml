@@ -187,7 +187,11 @@
                             @foreach (var pilot in Model.Pilots)
                             {
                                 <tr>
-                                    <td>@pilot.Name</td>
+                                    <td>
+                                        <a href="/Pilot?pilot=@pilot.Guid&name=@Uri.EscapeDataString(pilot.Name)" class="text-decoration-none">
+                                            @pilot.Name
+                                        </a>
+                                    </td>
                                     <td>@pilot.PhoneNumber</td>
                                     <td>
                                         <button class="btn btn-sm btn-warning" onclick="editPilot('@pilot.Guid')">@Model.LangService.Transilate("Edit")</button>

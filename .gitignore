@@ -3,54 +3,25 @@
 bin/
 obj/
 *.pdb
-*.exe
-*.dll
-*.so
-*.dylib
-*.class
 
 # Dependencies
 node_modules/
-vendor/
+packages/
 
-# Logs
+# Logs and temp files
 *.log
+*.tmp
 
 # Environment
 .env
 .env.local
 *.env.*
 
-# Editor/IDE
+# Editors
 .vscode/
 .idea/
-*.swp
-*.swo
-*.tmp
 
-# OS
+# OS generated files
 .DS_Store
 Thumbs.db
-
-# Coverage
-coverage/
-htmlcov/
-.coverage
-
-# Python specific (if applicable)
-__pycache__/
-*.pyc
-*.pyo
-.Python
-*.egg-info/
-.eggs/
-
-# Compiled CSS/JS
-*.min.css
-*.min.js
-
-# Distribution / packaging
-*.tar.gz
-*.whl
-dist/
 ```
