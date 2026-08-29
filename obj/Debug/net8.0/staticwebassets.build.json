@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "w7KE7/ndZ+lcP0G6Kgm5sV5jnVmHbH7EDm2TYkGdDbA=",
+  "Hash": "ZFh6dPZQgucYgwcYgkl66sud0U9RlxPtPfHu1yLTxhU=",
   "Source": "RestoJett",
   "BasePath": "_content/RestoJett",
   "Mode": "Default",
@@ -110,6 +110,44 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot/js/site.js"
+    },
+    {
+      "Identity": "/workspace/wwwroot/lang/de.json",
+      "SourceId": "RestoJett",
+      "SourceType": "Discovered",
+      "ContentRoot": "/workspace/wwwroot/",
+      "BasePath": "_content/RestoJett",
+      "RelativePath": "lang/de.json",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot/lang/de.json"
+    },
+    {
+      "Identity": "/workspace/wwwroot/lang/fr.json",
+      "SourceId": "RestoJett",
+      "SourceType": "Discovered",
+      "ContentRoot": "/workspace/wwwroot/",
+      "BasePath": "_content/RestoJett",
+      "RelativePath": "lang/fr.json",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot/lang/fr.json"
     }
   ]
 }

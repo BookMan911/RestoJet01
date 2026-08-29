@@ -5,6 +5,21 @@
 }
 
 <div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+    <h1 class="display-4">Welcome to RestoJett</h1>
+    <p class="lead">Place your order online!</p>
+    
+    <div class="mt-4">
+        <form asp-page="/Order" method="get" class="d-inline-block">
+            <div class="input-group">
+                <input type="text" name="customerName" class="form-control" placeholder="Enter your name" required />
+                <button type="submit" class="btn btn-primary">Start Ordering</button>
+            </div>
+        </form>
+    </div>
+    
+    <hr class="my-5" />
+    
+    <p>
+        <a asp-page="/Admin" class="btn btn-outline-secondary">Admin Panel</a>
+    </p>
 </div>

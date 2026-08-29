@@ -17,6 +17,14 @@
       "PackagePath": "staticwebassets/js/site.js"
     },
     {
+      "Id": "/workspace/wwwroot/lang/de.json",
+      "PackagePath": "staticwebassets/lang/de.json"
+    },
+    {
+      "Id": "/workspace/wwwroot/lang/fr.json",
+      "PackagePath": "staticwebassets/lang/fr.json"
+    },
+    {
       "Id": "obj/Debug/net8.0/staticwebassets/msbuild.RestoJett.Microsoft.AspNetCore.StaticWebAssets.props",
       "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssets.props"
     },
