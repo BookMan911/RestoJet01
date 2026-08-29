@@ -1,22 +1,48 @@
 ```
-# Compiled and build artifacts
-*.pdb
+# Build artifacts
 bin/
 obj/
+*.dll
+*.exe
+*.pdb
+*.nupkg
+*.snupkg
+**/Debug/
+**/Release/
+**/bin/
+**/obj/
 
 # Dependencies
+packages/
 node_modules/
+bower_components/
 
-# Logs and temp files
+# Logs
 *.log
-*.tmp
 
-# Environment
-.env
-.env.local
-.env.*
-
-# Editors
+# Environment specific settings
+.vs/
 .vscode/
-.idea/
+*.user
+*.userosscache
+*.suo
+*.csproj.user
+
+# OS generated files
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Icon?
+._*
+
+# User-specific files
+*.userprefs
+.vsconfig
+appsettings.Development.json
+appsettings.Production.json
+
+# Temporary files
+*.tmp
+*.temp
+[Tt]emporary[Uu]ser*
 ```
