@@ -24,6 +24,12 @@ namespace RestoJett.Core
         Tuple<Exception, JCustomer> UpdateCustomer(JUser loggedUser, string customerGuid, JCustomer customer);
         Tuple<Exception, bool> RemoveCustomer(JUser loggedUser, string customerGuid);
 
+        // Pilot operations
+        Tuple<Exception, List<JPilot>> GetPilots(JUser loggedUser);
+        Tuple<Exception, JPilot> AddPilot(JUser loggedUser, JPilot pilot);
+        Tuple<Exception, JPilot> UpdatePilot(JUser loggedUser, string pilotGuid, JPilot pilot);
+        Tuple<Exception, bool> RemovePilot(JUser loggedUser, string pilotGuid);
+
         // Order operations
         Tuple<Exception, List<JOrder>> GetOrders(JUser loggedUser);
         Tuple<Exception, JOrder> AddOrder(JUser loggedUser, JOrder order);
@@ -44,6 +50,7 @@ namespace RestoJett.Core
         private readonly List<JCustomer> _customers;
         private readonly List<JOrder> _orders;
         private readonly List<AuditLog> _auditLogs;
+        private readonly List<JPilot> _pilots;
         private readonly object _lock = new object();
 
         public JMenu MainMenu { get; set; }
@@ -55,6 +62,7 @@ namespace RestoJett.Core
             _customers = new List<JCustomer>();
             _orders = new List<JOrder>();
             _auditLogs = new List<AuditLog>();
+            _pilots = new List<JPilot>();
             MainMenu = new JMenu();
         }
 
@@ -383,6 +391,96 @@ namespace RestoJett.Core
             }
 
             LogAction(loggedUser, "Delete", "Customer", customerGuid, $"Removed customer: {customerGuid}");
+            return new Tuple<Exception, bool>(null, true);
+        }
+
+        #endregion
+
+        #region Pilot Operations
+
+        public Tuple<Exception, List<JPilot>> GetPilots(JUser loggedUser)
+        {
+            var validation = ValidateUser(loggedUser, requireAdmin: true);
+            if (validation.Item1 != null)
+            {
+                return new Tuple<Exception, List<JPilot>>(validation.Item1, new List<JPilot>());
+            }
+
+            LogAction(loggedUser, "Read", "Pilot", "*", "Retrieved all pilots");
+            return new Tuple<Exception, List<JPilot>>(null, _pilots.ToList());
+        }
+
+        public Tuple<Exception, JPilot> AddPilot(JUser loggedUser, JPilot pilot)
+        {
+            var validation = ValidateUser(loggedUser, requireAdmin: true);
+            if (validation.Item1 != null)
+            {
+                return new Tuple<Exception, JPilot>(validation.Item1, null);
+            }
+
+            if (pilot == null)
+            {
+                var ex = new ArgumentNullException(nameof(pilot), "Pilot cannot be null.");
+                return new Tuple<Exception, JPilot>(ex, null);
+            }
+
+            pilot.Guid = GenerateGuid();
+
+            lock (_lock)
+            {
+                _pilots.Add(pilot);
+            }
+
+            LogAction(loggedUser, "Create", "Pilot", pilot.Guid, $"Added pilot: {pilot.Name}");
+            return new Tuple<Exception, JPilot>(null, pilot);
+        }
+
+        public Tuple<Exception, JPilot> UpdatePilot(JUser loggedUser, string pilotGuid, JPilot pilot)
+        {
+            var validation = ValidateUser(loggedUser, requireAdmin: true);
+            if (validation.Item1 != null)
+            {
+                return new Tuple<Exception, JPilot>(validation.Item1, null);
+            }
+
+            lock (_lock)
+            {
+                var existingPilot = _pilots.FirstOrDefault(p => p.Guid == pilotGuid);
+                if (existingPilot == null)
+                {
+                    var ex = new KeyNotFoundException($"Pilot with GUID {pilotGuid} not found.");
+                    return new Tuple<Exception, JPilot>(ex, null);
+                }
+
+                existingPilot.Name = pilot.Name;
+                existingPilot.PhoneNumber = pilot.PhoneNumber;
+            }
+
+            LogAction(loggedUser, "Update", "Pilot", pilotGuid, $"Updated pilot: {pilot.Name}");
+            return new Tuple<Exception, JPilot>(null, pilot);
+        }
+
+        public Tuple<Exception, bool> RemovePilot(JUser loggedUser, string pilotGuid)
+        {
+            var validation = ValidateUser(loggedUser, requireAdmin: true);
+            if (validation.Item1 != null)
+            {
+                return new Tuple<Exception, bool>(validation.Item1, false);
+            }
+
+            lock (_lock)
+            {
+                var pilot = _pilots.FirstOrDefault(p => p.Guid == pilotGuid);
+                if (pilot == null)
+                {
+                    var ex = new KeyNotFoundException($"Pilot with GUID {pilotGuid} not found.");
+                    return new Tuple<Exception, bool>(ex, false);
+                }
+
+                _pilots.Remove(pilot);
+            }
+
+            LogAction(loggedUser, "Delete", "Pilot", pilotGuid, $"Removed pilot: {pilotGuid}");
             return new Tuple<Exception, bool>(null, true);
         }
 
