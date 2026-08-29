@@ -13,6 +13,14 @@ namespace RestoJett.Web.Pages
             _restaurantService = restaurantService;
         }
 
+        public readonly LanguageService LangService;
+
+        public PilotModel(IRestaurantService restaurantService, LanguageService langService)
+        {
+            _restaurantService = restaurantService;
+            LangService = langService;
+        }
+
         [BindProperty(SupportsGet = true)]
         public string PilotGuid { get; set; }
 
@@ -24,6 +32,8 @@ namespace RestoJett.Web.Pages
 
         public void OnGet()
         {
+            LangService.For("en");
+
             if (string.IsNullOrEmpty(PilotGuid))
             {
                 // Try to get from query parameter 'pilot' as fallback

@@ -1,16 +1,31 @@
 ```
-# Build artifacts
-bin/
-obj/
+# Compiled and build artifacts
 *.pdb
+obj/
+bin/
+*.o
+*.obj
+*.exe
+*.dll
+*.so
+*.a
+*.out
 
 # Dependencies
 node_modules/
-packages/
+venv/
+.venv/
+__pycache__/
+.mypy_cache/
+.pytest_cache/
+target/
+.gradle/
 
 # Logs and temp files
 *.log
 *.tmp
+*.swp
+*.swo
 
 # Environment
 .env
@@ -21,7 +36,16 @@ packages/
 .vscode/
 .idea/
 
-# OS generated files
+# OS specific
 .DS_Store
 Thumbs.db
+
+# Coverage
+coverage/
+htmlcov/
+.coverage
+
+# Build outputs
+dist/
+build/
 ```
