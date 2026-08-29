@@ -10,7 +10,7 @@ namespace RestoJett.Pages
     public class OrderModel : PageModel
     {
         private readonly IRestaurantService _restaurantService;
-        private readonly LanguageService _langService;
+        public readonly LanguageService LangService;
 
         public List<JMeal> Meals { get; set; } = new List<JMeal>();
         public string CustomerName { get; set; }
@@ -19,6 +19,7 @@ namespace RestoJett.Pages
         public Exception OrderError { get; set; }
         public bool OrderSubmitted { get; set; }
         public string OrderConfirmationGuid { get; set; }
+        public string CurrentLanguage { get; set; } = "en";
 
         [BindProperty]
         public JUser LoggedUser { get; set; }
@@ -26,12 +27,21 @@ namespace RestoJett.Pages
         public OrderModel(IRestaurantService restaurantService, LanguageService langService)
         {
             _restaurantService = restaurantService;
-            _langService = langService;
+            LangService = langService;
         }
 
-        public IActionResult OnGet(string customerName)
+        public IActionResult OnGet(string customerName, string lang = "en")
         {
-            _langService.For("en");
+            CurrentLanguage = lang;
+            
+            // Load language files if not already loaded
+            var langPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "lang", $"{lang}.json");
+            if (System.IO.File.Exists(langPath))
+            {
+                LangService.loadFromJson(langPath);
+            }
+            
+            LangService.For(lang);
 
             // Create or retrieve customer based on name from URL
             if (string.IsNullOrEmpty(customerName))
@@ -82,9 +92,18 @@ namespace RestoJett.Pages
             return Page();
         }
 
-        public IActionResult OnPostAddToCart(string mealGuid, string mealName, decimal price, int count)
+        public IActionResult OnPostAddToCart(string mealGuid, string mealName, decimal price, int count, string lang = "en")
         {
-            _langService.For("en");
+            CurrentLanguage = lang;
+            
+            // Load language files if not already loaded
+            var langPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "lang", $"{lang}.json");
+            if (System.IO.File.Exists(langPath))
+            {
+                LangService.loadFromJson(langPath);
+            }
+            
+            LangService.For(lang);
 
             var testAdmin = new JUser
             {
@@ -154,9 +173,18 @@ namespace RestoJett.Pages
             return RedirectToPage(new { customerName = CustomerName });
         }
 
-        public IActionResult OnPostSubmitOrder()
+        public IActionResult OnPostSubmitOrder(string lang = "en")
         {
-            _langService.For("en");
+            CurrentLanguage = lang;
+            
+            // Load language files if not already loaded
+            var langPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "lang", $"{lang}.json");
+            if (System.IO.File.Exists(langPath))
+            {
+                LangService.loadFromJson(langPath);
+            }
+            
+            LangService.For(lang);
 
             var testAdmin = new JUser
             {
@@ -253,8 +281,19 @@ namespace RestoJett.Pages
             return Page();
         }
 
-        public IActionResult OnGetCartItems(string customerName)
+        public IActionResult OnGetCartItems(string customerName, string lang = "en")
         {
+            CurrentLanguage = lang;
+            
+            // Load language files if not already loaded
+            var langPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "lang", $"{lang}.json");
+            if (System.IO.File.Exists(langPath))
+            {
+                LangService.loadFromJson(langPath);
+            }
+            
+            LangService.For(lang);
+            
             var cartKey = $"cart_{customerName}";
             var existingCart = TempData[cartKey] as string;
             TempData.Keep(cartKey);

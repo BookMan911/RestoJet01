@@ -5,17 +5,31 @@
 }
 
 <div class="container mt-4">
-    <h1>Welcome, @Model.CustomerName!</h1>
-    <p class="lead">Browse our menu and place your order.</p>
+    <!-- Language Selector -->
+    <div class="row mb-3">
+        <div class="col-md-12 text-end">
+            <div class="btn-group" role="group">
+                <a asp-page="Order" asp-route-customerName="@Model.CustomerName" asp-route-lang="en" 
+                   class="btn btn-sm @(Model.CurrentLanguage == "en" ? "btn-primary" : "btn-outline-primary")">English</a>
+                <a asp-page="Order" asp-route-customerName="@Model.CustomerName" asp-route-lang="de" 
+                   class="btn btn-sm @(Model.CurrentLanguage == "de" ? "btn-primary" : "btn-outline-primary")">Deutsch</a>
+                <a asp-page="Order" asp-route-customerName="@Model.CustomerName" asp-route-lang="fr" 
+                   class="btn btn-sm @(Model.CurrentLanguage == "fr" ? "btn-primary" : "btn-outline-primary")">Français</a>
+            </div>
+        </div>
+    </div>
+
+    <h1>@Model.LangService.Transilate("Welcome"), @Model.CustomerName!</h1>
+    <p class="lead">@Model.LangService.Transilate("Browse our menu and place your order.")</p>
 
     @if (Model.OrderSubmitted)
     {
         <div class="alert alert-success alert-dismissible fade show" role="alert">
-            <h4 class="alert-heading">Order Submitted Successfully!</h4>
-            <p>Your order has been placed. Order ID: <strong>@Model.OrderConfirmationGuid</strong></p>
-            <p>Thank you for your order, @Model.CustomerName!</p>
+            <h4 class="alert-heading">@Model.LangService.Transilate("Order Submitted Successfully!")</h4>
+            <p>@Model.LangService.Transilate("Your order has been placed. Order ID:") <strong>@Model.OrderConfirmationGuid</strong></p>
+            <p>@Model.LangService.Transilate("Thank you for your order,"), @Model.CustomerName!</p>
             <hr>
-            <a asp-page="Order" asp-route-customerName="@Model.CustomerName" class="btn btn-outline-success">Place Another Order</a>
+            <a asp-page="Order" asp-route-customerName="@Model.CustomerName" asp-route-lang="@Model.CurrentLanguage" class="btn btn-outline-success">@Model.LangService.Transilate("Place Another Order")</a>
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     }
@@ -23,7 +37,7 @@
     @if (Model.OrderError != null)
     {
         <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            <h4 class="alert-heading">Error!</h4>
+            <h4 class="alert-heading">@Model.LangService.Transilate("Error!")</h4>
             <p>@Model.OrderError.Message</p>
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
@@ -32,12 +46,12 @@
     <div class="row">
         <!-- Menu Section -->
         <div class="col-md-8">
-            <h2>Our Menu</h2>
+            <h2>@Model.LangService.Transilate("Our Menu")</h2>
             
             @if (Model.Meals == null || Model.Meals.Count == 0)
             {
                 <div class="alert alert-info">
-                    No meals available at the moment. Please check back later.
+                    @Model.LangService.Transilate("No meals available at the moment. Please check back later.")
                 </div>
             }
             else
@@ -55,12 +69,12 @@
                                     <h5 class="card-title">@meal.Name</h5>
                                     <p class="card-text">@meal.Description</p>
                                     <p class="card-text">
-                                        <strong>Price: </strong>
+                                        <strong>@Model.LangService.Transilate("Price:") </strong>
                                         @if (meal.Discount > 0)
                                         {
                                             <span class="text-decoration-line-through text-muted">@meal.Price.ToString("C")</span>
                                             <span class="text-danger fw-bold">@(meal.Price * (1 - meal.Discount / 100)).ToString("C")</span>
-                                            <small class="text-success">(@meal.Discount% off)</small>
+                                            <small class="text-success">(@meal.Discount% @Model.LangService.Transilate("off"))</small>
                                         }
                                         else
                                         {
@@ -70,6 +84,7 @@
                                     
                                     <form method="post" asp-page-handler="AddToCart" class="d-flex align-items-center">
                                         <input type="hidden" name="CustomerName" value="@Model.CustomerName" />
+                                        <input type="hidden" name="lang" value="@Model.CurrentLanguage" />
                                         <input type="hidden" name="MealGuid" value="@meal.Guid" />
                                         <input type="hidden" name="MealName" value="@meal.Name" />
                                         <input type="hidden" name="Price" value="@meal.Price" />
@@ -78,7 +93,7 @@
                                             <input type="number" name="Count" class="form-control" value="1" min="1" max="99" />
                                         </div>
                                         <button type="submit" class="btn btn-primary btn-sm ms-2">
-                                            <i class="bi bi-cart-plus"></i> Add to Cart
+                                            <i class="bi bi-cart-plus"></i> @Model.LangService.Transilate("Add to Cart")
                                         </button>
                                     </form>
                                 </div>
@@ -93,17 +108,17 @@
         <div class="col-md-4">
             <div class="card sticky-top" style="top: 20px; z-index: 1000;">
                 <div class="card-header bg-primary text-white">
-                    <h4 class="mb-0">Your Cart</h4>
+                    <h4 class="mb-0">@Model.LangService.Transilate("Your Cart")</h4>
                 </div>
                 <div class="card-body">
                     <div id="cartItems">
-                        <p class="text-muted">Loading cart...</p>
+                        <p class="text-muted">@Model.LangService.Transilate("Loading cart...")</p>
                     </div>
                     
                     <hr />
                     
                     <div class="d-flex justify-content-between mb-3">
-                        <strong>Total:</strong>
+                        <strong>@Model.LangService.Transilate("Total:")</strong>
                         <strong id="cartTotal">$0.00</strong>
                     </div>
 
@@ -112,16 +127,17 @@
                         <form method="post" asp-page-handler="SubmitOrder">
                             <input type="hidden" name="CustomerName" value="@Model.CustomerName" />
                             <input type="hidden" name="CustomerGuid" value="@Model.CurrentCustomer.Guid" />
+                            <input type="hidden" name="lang" value="@Model.CurrentLanguage" />
                             
                             <button type="submit" class="btn btn-success w-100 btn-lg">
-                                <i class="bi bi-check-circle"></i> Submit Order
+                                <i class="bi bi-check-circle"></i> @Model.LangService.Transilate("Submit Order")
                             </button>
                         </form>
                     }
                     else
                     {
                         <button class="btn btn-secondary w-100 btn-lg" disabled>
-                            Loading...
+                            @Model.LangService.Transilate("Loading...")
                         </button>
                     }
                 </div>
@@ -133,9 +149,10 @@
 @section Scripts {
     <script>
         const customerName = '@Model.CustomerName';
+        const currentLang = '@Model.CurrentLanguage';
         
         function loadCart() {
-            fetch(`/Order?handler=CartItems&customerName=${encodeURIComponent(customerName)}`)
+            fetch(`/Order?handler=CartItems&customerName=${encodeURIComponent(customerName)}&lang=${encodeURIComponent(currentLang)}`)
                 .then(response => response.json())
                 .then(items => {
                     const cartDiv = document.getElementById('cartItems');

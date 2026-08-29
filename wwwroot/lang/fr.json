@@ -1,0 +1,21 @@
+{
+  "Welcome": "Bienvenue",
+  "Browse our menu and place your order.": "Parcourez notre menu et passez votre commande.",
+  "Order Submitted Successfully!": "Commande soumise avec succès!",
+  "Your order has been placed. Order ID:": "Votre commande a été passée. ID de commande:",
+  "Thank you for your order,": "Merci pour votre commande,",
+  "Place Another Order": "Passer une autre commande",
+  "Error!": "Erreur!",
+  "Our Menu": "Notre Menu",
+  "No meals available at the moment. Please check back later.": "Aucun repas disponible pour le moment. Veuillez revenir plus tard.",
+  "Price:": "Prix:",
+  "off": "réduction",
+  "Add to Cart": "Ajouter au panier",
+  "Your Cart": "Votre Panier",
+  "Loading cart...": "Chargement du panier...",
+  "Total:": "Total:",
+  "Your cart is empty.": "Votre panier est vide.",
+  "Submit Order": "Soumettre la commande",
+  "Loading...": "Chargement...",
+  "Error loading cart.": "Erreur lors du chargement du panier."
+}
