@@ -1,48 +1,77 @@
 ```
-# Build artifacts
-bin/
-obj/
-*.dll
+# Compiled and build artifacts
+*.o
+*.obj
 *.exe
-*.pdb
-*.nupkg
-*.snupkg
-**/Debug/
-**/Release/
-**/bin/
-**/obj/
+*.dll
+*.so
+*.a
+*.out
+*.pyc
+*.class
+*.swp
+*.swo
+*.tmp
 
 # Dependencies
-packages/
 node_modules/
-bower_components/
+venv/
+.venv/
+__pycache__/
+.mypy_cache/
+.pytest_cache/
+target/
+.gradle/
 
-# Logs
+# Build directories
+dist/
+build/
+bin/
+obj/
+
+# Logs and temp files
 *.log
+*.tmp
 
-# Environment specific settings
-.vs/
+# Environment files
+.env
+.env.local
+*.env.*
+
+# Editors
 .vscode/
-*.user
-*.userosscache
-*.suo
-*.csproj.user
+.idea/
 
-# OS generated files
+# System files
 .DS_Store
 Thumbs.db
-ehthumbs.db
-Icon?
-._*
 
-# User-specific files
-*.userprefs
-.vsconfig
-appsettings.Development.json
-appsettings.Production.json
+# Coverage reports
+coverage/
+htmlcov/
+.coverage
 
-# Temporary files
-*.tmp
-*.temp
-[Tt]emporary[Uu]ser*
+# Compressed files
+*.zip
+*.gz
+*.tar
+*.tgz
+*.bz2
+*.xz
+*.7z
+*.rar
+*.zst
+*.lz4
+*.lzh
+*.cab
+*.arj
+*.rpm
+*.deb
+*.Z
+*.lz
+*.lzo
+*.tar.gz
+*.tar.bz2
+*.tar.xz
+*.tar.zst
 ```
