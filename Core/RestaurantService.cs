@@ -182,7 +182,7 @@ namespace RestoJett.Core
                 existingMeal.Version += 1.0f;
 
                 // Update in menu if name changed
-                if (MainMenu.Meals.Contains(existingMeal.Name))
+                if (MainMenu.Meals.ContainsKey(existingMeal.Name))
                 {
                     MainMenu.Meals.Remove(existingMeal.Name);
                 }
@@ -190,7 +190,7 @@ namespace RestoJett.Core
             }
 
             LogAction(loggedUser, "Update", "Meal", mealGuid, $"Updated meal: {meal.Name}");
-            return new Tuple<Exception, JMeal>(null, meal);
+            return new Tuple<Exception, JMeal>(null, existingMeal);
         }
 
         public Tuple<Exception, bool> RemoveMeal(JUser loggedUser, string mealGuid)
