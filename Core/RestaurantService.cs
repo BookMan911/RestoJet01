@@ -182,11 +182,20 @@ namespace RestoJett.Core
                 existingMeal.ImageHash = meal.ImageHash;
                 existingMeal.Version += 1.0f;
 
-                // Update in menu if name changed
+                // Update in menu: Remove old entry if name changed, then add/update with new name
+                string oldName = _meals.FirstOrDefault(m => m.Guid == mealGuid)?.Name;
+                
+                if (!string.IsNullOrEmpty(oldName) && oldName != existingMeal.Name && MainMenu.Meals.Contains(oldName))
+                {
+                    MainMenu.Meals.Remove(oldName);
+                }
+                
+                // Ensure we don't have duplicate keys - remove if key exists before adding
                 if (MainMenu.Meals.Contains(existingMeal.Name))
                 {
                     MainMenu.Meals.Remove(existingMeal.Name);
                 }
+                
                 MainMenu.Meals[existingMeal.Name] = existingMeal;
             }
 
