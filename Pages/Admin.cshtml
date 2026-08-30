@@ -736,10 +736,6 @@
         });
 
         function assignImageToMeal(mealGuid, imageHash) {
-            const formData = new FormData();
-            formData.append('mealGuid', mealGuid);
-            formData.append('imageHash', imageHash);
-
             fetch('/Admin?handler=AssignMealImage', {
                 method: 'POST',
                 headers: {
@@ -763,7 +759,7 @@
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert('Failed to assign image');
+                alert('Failed to assign image to meal');
             });
         }
     </script>

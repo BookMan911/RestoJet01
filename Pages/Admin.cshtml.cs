@@ -453,32 +453,20 @@ namespace RestoJett.Pages
 
             if (string.IsNullOrEmpty(mealGuid) || string.IsNullOrEmpty(imageHash))
             {
-                MealError = new Exception("Invalid parameters");
-                LoadData(testAdmin);
-                LoadMealImages();
-                LoggedUser = testAdmin;
-                return Page();
+                return new JsonResult(new { success = false, error = "Invalid parameters" });
             }
 
             // Find the meal and update its ImageHash
             var mealsResult = _restaurantService.GetMeals(testAdmin);
             if (mealsResult.Item1 != null)
             {
-                MealError = new Exception(mealsResult.Item1.Message);
-                LoadData(testAdmin);
-                LoadMealImages();
-                LoggedUser = testAdmin;
-                return Page();
+                return new JsonResult(new { success = false, error = mealsResult.Item1.Message });
             }
 
             var meal = mealsResult.Item2.FirstOrDefault(m => m.Guid == mealGuid);
             if (meal == null)
             {
-                MealError = new Exception("Meal not found");
-                LoadData(testAdmin);
-                LoadMealImages();
-                LoggedUser = testAdmin;
-                return Page();
+                return new JsonResult(new { success = false, error = "Meal not found" });
             }
 
             // Extract just the MD5 hash (without extension) for storage
@@ -500,18 +488,10 @@ namespace RestoJett.Pages
             var result = _restaurantService.UpdateMeal(testAdmin, mealGuid, updatedMeal);
             if (result.Item1 != null)
             {
-                MealError = new Exception(result.Item1.Message);
-                LoadData(testAdmin);
-                LoadMealImages();
-                LoggedUser = testAdmin;
-                return Page();
+                return new JsonResult(new { success = false, error = result.Item1.Message });
             }
 
-            LoadData(testAdmin);
-            LoadMealImages();
-            LoggedUser = testAdmin;
-
-            return Page();
+            return new JsonResult(new { success = true });
         }
     }
 }
