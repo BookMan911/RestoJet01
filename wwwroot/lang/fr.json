@@ -17,5 +17,8 @@
   "Your cart is empty.": "Votre panier est vide.",
   "Submit Order": "Soumettre la commande",
   "Loading...": "Chargement...",
-  "Error loading cart.": "Erreur lors du chargement du panier."
+  "Error loading cart.": "Erreur lors du chargement du panier.",
+  "invalid_url_title": "URL Invalide",
+  "invalid_url_message": "Cette URL est invalide ou a expiré.",
+  "contact_admin": "Veuillez contacter l'administrateur pour obtenir de l'aide."
 }

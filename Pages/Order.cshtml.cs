@@ -69,20 +69,36 @@ namespace RestoJett.Pages
                 Meals = mealsResult.Item2;
             }
 
+            // If urlRes is provided, validate it exists
+            if (!string.IsNullOrEmpty(urlRes))
+            {
+                var customersResult = _restaurantService.GetCustomers(testAdmin);
+                if (customersResult.Item1 == null)
+                {
+                    CurrentCustomer = customersResult.Item2.FirstOrDefault(c => c.CurrentUrlRes == urlRes);
+                    
+                    if (CurrentCustomer == null)
+                    {
+                        // Invalid urlRes - redirect to error page
+                        return RedirectToPage("/InvalidUrl", new { lang = lang });
+                    }
+                }
+            }
+
             // Try to find existing customer by CurrentUrlRes first, then by name
-            var customersResult = _restaurantService.GetCustomers(testAdmin);
-            if (customersResult.Item1 == null)
+            var customersResult2 = _restaurantService.GetCustomers(testAdmin);
+            if (customersResult2.Item1 == null)
             {
                 // First try to find by CurrentUrlRes if provided
                 if (!string.IsNullOrEmpty(urlRes))
                 {
-                    CurrentCustomer = customersResult.Item2.FirstOrDefault(c => c.CurrentUrlRes == urlRes);
+                    CurrentCustomer = customersResult2.Item2.FirstOrDefault(c => c.CurrentUrlRes == urlRes);
                 }
                 
                 // If not found by urlRes, try by name
                 if (CurrentCustomer == null)
                 {
-                    CurrentCustomer = customersResult.Item2.FirstOrDefault(c => c.Name == customerName);
+                    CurrentCustomer = customersResult2.Item2.FirstOrDefault(c => c.Name == customerName);
                 }
                 
                 if (CurrentCustomer == null)

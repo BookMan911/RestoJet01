@@ -1,0 +1,14 @@
+@page
+@model RestoJett.Pages.InvalidUrlModel
+@{
+    ViewData["Title"] = "Invalid URL";
+}
+
+<div class="container mt-5">
+    <div class="alert alert-danger" role="alert">
+        <h4 class="alert-heading">@LangService.Get(CurrentLanguage, "invalid_url_title")</h4>
+        <p>@LangService.Get(CurrentLanguage, "invalid_url_message")</p>
+        <hr>
+        <p class="mb-0">@LangService.Get(CurrentLanguage, "contact_admin")</p>
+    </div>
+</div>
