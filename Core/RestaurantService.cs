@@ -165,9 +165,10 @@ namespace RestoJett.Core
                 return new Tuple<Exception, JMeal>(validation.Item1, null);
             }
 
+            JMeal existingMeal = null;
             lock (_lock)
             {
-                var existingMeal = _meals.FirstOrDefault(m => m.Guid == mealGuid);
+                existingMeal = _meals.FirstOrDefault(m => m.Guid == mealGuid);
                 if (existingMeal == null)
                 {
                     var ex = new KeyNotFoundException($"Meal with GUID {mealGuid} not found.");
@@ -181,16 +182,50 @@ namespace RestoJett.Core
                 existingMeal.ImageHash = meal.ImageHash;
                 existingMeal.Version += 1.0f;
 
-                // Update in menu if name changed
-                if (MainMenu.Meals.Contains(existingMeal.Name))
+                // Update in menu: Remove ALL entries to prevent any duplication, then add fresh
+                // Clear the entire dictionary entry for this meal name to ensure no duplicates
+                var keysToRemove = new List<string>();
+                foreach(var key in MainMenu.Meals.Keys)
                 {
-                    MainMenu.Meals.Remove(existingMeal.Name);
+                    if (string.Equals(key.ToString(), existingMeal.Name, StringComparison.OrdinalIgnoreCase))
+                    {
+                        keysToRemove.Add(key.ToString());
+                    }
                 }
+                
+                foreach(var keyToRemove in keysToRemove)
+                {
+                    MainMenu.Meals.Remove(keyToRemove);
+                }
+                
+                // Also remove by old name if it was different
+                string oldName = _meals.FirstOrDefault(m => m.Guid == mealGuid)?.Name;
+                if (!string.IsNullOrEmpty(oldName) && !string.Equals(oldName, existingMeal.Name, StringComparison.OrdinalIgnoreCase))
+                {
+                    if (MainMenu.Meals.Contains(oldName))
+                    {
+                        MainMenu.Meals.Remove(oldName);
+                    }
+                }
+
+                // Add the updated meal to MainMenu.Meals
                 MainMenu.Meals[existingMeal.Name] = existingMeal;
+                
+                // ALSO update the _meals list to keep it in sync
+                var mealInList = _meals.FirstOrDefault(m => m.Guid == mealGuid);
+                if (mealInList != null)
+                {
+                    mealInList.Name = existingMeal.Name;
+                    mealInList.Price = existingMeal.Price;
+                    mealInList.Discount = existingMeal.Discount;
+                    mealInList.Description = existingMeal.Description;
+                    mealInList.ImageHash = existingMeal.ImageHash;
+                    mealInList.Version = existingMeal.Version;
+                }
             }
 
             LogAction(loggedUser, "Update", "Meal", mealGuid, $"Updated meal: {meal.Name}");
-            return new Tuple<Exception, JMeal>(null, meal);
+            return new Tuple<Exception, JMeal>(null, existingMeal);
         }
 
         public Tuple<Exception, bool> RemoveMeal(JUser loggedUser, string mealGuid)

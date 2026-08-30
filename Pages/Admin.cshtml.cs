@@ -1,5 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Security.Cryptography;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using RestoJett.Core;
@@ -30,6 +33,8 @@ namespace RestoJett.Pages
         [BindProperty]
         public List<JOrderItem> OrderItems { get; set; } = new List<JOrderItem>();
 
+        public List<string> MealImages { get; set; } = new List<string>();
+
         public AdminModel(IRestaurantService restaurantService, LanguageService langService)
         {
             _restaurantService = restaurantService;
@@ -52,6 +57,7 @@ namespace RestoJett.Pages
 
             // Load all data
             LoadData(testAdmin);
+            LoadMealImages();
 
             LoggedUser = testAdmin;
             return Page();
@@ -76,6 +82,7 @@ namespace RestoJett.Pages
             }
 
             LoadData(testAdmin);
+            LoadMealImages();
             LoggedUser = testAdmin;
             return Page();
         }
@@ -308,6 +315,183 @@ namespace RestoJett.Pages
             {
                 AuditLogs = auditResult.Item2;
             }
+        }
+
+        private void LoadMealImages()
+        {
+            var imagesPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "meal-images");
+            if (Directory.Exists(imagesPath))
+            {
+                MealImages = Directory.GetFiles(imagesPath)
+                    .Select(Path.GetFileName)
+                    .ToList();
+            }
+        }
+
+        public IActionResult OnPostUploadMealImage()
+        {
+            LangService.For("en");
+
+            var testAdmin = new JUser
+            {
+                Name = "admin",
+                Password = "admin123",
+                Guid = "admin-guid",
+                UserType = JUserType.Admin
+            };
+
+            var file = Request.Form.Files.FirstOrDefault();
+            if (file == null || file.Length == 0)
+            {
+                MealError = new Exception("No file uploaded");
+                LoadData(testAdmin);
+                LoadMealImages();
+                LoggedUser = testAdmin;
+                return Page();
+            }
+
+            // Validate file is an image
+            var contentType = file.ContentType;
+            if (!contentType.StartsWith("image/"))
+            {
+                MealError = new Exception("Invalid file type. Please upload an image.");
+                LoadData(testAdmin);
+                LoadMealImages();
+                LoggedUser = testAdmin;
+                return Page();
+            }
+
+            // Calculate MD5 hash of the file
+            string md5Hash;
+            using (var md5 = MD5.Create())
+            {
+                using (var stream = file.OpenReadStream())
+                {
+                    var hashBytes = md5.ComputeHash(stream);
+                    md5Hash = BitConverter.ToString(hashBytes).Replace("-", "").ToLowerInvariant();
+                }
+            }
+
+            // Get file extension
+            var extension = Path.GetExtension(file.FileName);
+            var fileName = $"{md5Hash}{extension}";
+
+            // Save file to wwwroot/meal-images
+            var imagesPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "meal-images");
+            if (!Directory.Exists(imagesPath))
+            {
+                Directory.CreateDirectory(imagesPath);
+            }
+
+            var filePath = Path.Combine(imagesPath, fileName);
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                file.CopyTo(stream);
+            }
+
+            LoadData(testAdmin);
+            LoadMealImages();
+            LoggedUser = testAdmin;
+
+            return Page();
+        }
+
+        public IActionResult OnPostDeleteMealImage(string imageName)
+        {
+            LangService.For("en");
+
+            var testAdmin = new JUser
+            {
+                Name = "admin",
+                Password = "admin123",
+                Guid = "admin-guid",
+                UserType = JUserType.Admin
+            };
+
+            // Validate filename to prevent directory traversal attacks
+            if (string.IsNullOrEmpty(imageName) || imageName.Contains("..") || imageName.Contains("/"))
+            {
+                MealError = new Exception("Invalid image name");
+                LoadData(testAdmin);
+                LoadMealImages();
+                LoggedUser = testAdmin;
+                return Page();
+            }
+
+            var imagesPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "meal-images");
+            var filePath = Path.Combine(imagesPath, imageName);
+
+            if (!System.IO.File.Exists(filePath))
+            {
+                MealError = new Exception("Image not found");
+                LoadData(testAdmin);
+                LoadMealImages();
+                LoggedUser = testAdmin;
+                return Page();
+            }
+
+            System.IO.File.Delete(filePath);
+
+            LoadData(testAdmin);
+            LoadMealImages();
+            LoggedUser = testAdmin;
+
+            return Page();
+        }
+
+        public IActionResult OnPostAssignMealImage(string mealGuid, string imageHash)
+        {
+            LangService.For("en");
+
+            var testAdmin = new JUser
+            {
+                Name = "admin",
+                Password = "admin123",
+                Guid = "admin-guid",
+                UserType = JUserType.Admin
+            };
+
+            if (string.IsNullOrEmpty(mealGuid) || string.IsNullOrEmpty(imageHash))
+            {
+                return new JsonResult(new { success = false, error = "Invalid parameters" });
+            }
+
+            // Find the meal and update its ImageHash
+            var mealsResult = _restaurantService.GetMeals(testAdmin);
+            if (mealsResult.Item1 != null)
+            {
+                return new JsonResult(new { success = false, error = mealsResult.Item1.Message });
+            }
+
+            var meal = mealsResult.Item2.FirstOrDefault(m => m.Guid == mealGuid);
+            if (meal == null)
+            {
+                return new JsonResult(new { success = false, error = "Meal not found" });
+            }
+
+            // Extract just the MD5 hash (without extension) for storage
+            var md5Hash = Path.GetFileNameWithoutExtension(imageHash);
+            
+            // Create a copy of the meal with updated ImageHash
+            var updatedMeal = new JMeal
+            {
+                Guid = meal.Guid,
+                Name = meal.Name,
+                Price = meal.Price,
+                Discount = meal.Discount,
+                Version = meal.Version,
+                Description = meal.Description,
+                ImageHash = md5Hash
+            };
+
+            // Update the meal through the service
+            var result = _restaurantService.UpdateMeal(testAdmin, mealGuid, updatedMeal);
+            if (result.Item1 != null)
+            {
+                return new JsonResult(new { success = false, error = result.Item1.Message });
+            }
+
+            return new JsonResult(new { success = true });
         }
     }
 }

@@ -34,6 +34,9 @@
         <li class="nav-item" role="presentation">
             <button class="nav-link" id="audit-tab" data-bs-toggle="tab" data-bs-target="#audit" type="button" role="tab">@Model.LangService.Transilate("Audit Logs")</button>
         </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="meal-images-tab" data-bs-toggle="tab" data-bs-target="#meal-images" type="button" role="tab">@Model.LangService.Transilate("Meal Images")</button>
+        </li>
     </ul>
 
     <div class="tab-content" id="adminTabsContent">
@@ -54,6 +57,7 @@
                     <table class="table table-hover">
                         <thead>
                             <tr>
+                                <th>@Model.LangService.Transilate("Image")</th>
                                 <th>@Model.LangService.Transilate("Name")</th>
                                 <th>@Model.LangService.Transilate("Price")</th>
                                 <th>@Model.LangService.Transilate("Discount")</th>
@@ -66,13 +70,36 @@
                             @foreach (var meal in Model.Meals)
                             {
                                 <tr>
+                                    <td>
+                                        @if (!string.IsNullOrEmpty(meal.ImageHash))
+                                        {
+                                            var imagePath = Model.MealImages?.FirstOrDefault(img => img.StartsWith(meal.ImageHash));
+                                            if (!string.IsNullOrEmpty(imagePath))
+                                            {
+                                                <img src="/meal-images/@imagePath" alt="@meal.Name" style="width: 60px; height: 60px; object-fit: cover; border-radius: 4px;" />
+                                            }
+                                            else
+                                            {
+                                                <div style="width: 60px; height: 60px; background-color: #e9ecef; border-radius: 4px; display: flex; align-items: center; justify-content: center;">
+                                                    <i class="bi bi-image text-muted"></i>
+                                                </div>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <div style="width: 60px; height: 60px; background-color: #e9ecef; border-radius: 4px; display: flex; align-items: center; justify-content: center;">
+                                                <i class="bi bi-image text-muted"></i>
+                                            </div>
+                                        }
+                                    </td>
                                     <td>@meal.Name</td>
                                     <td>@meal.Price.ToString("C")</td>
                                     <td>@meal.Discount.ToString("P")</td>
                                     <td>@meal.Version</td>
                                     <td>@meal.Description</td>
                                     <td>
-                                        <button class="btn btn-sm btn-warning" onclick="editMeal('@meal.Guid')">@Model.LangService.Transilate("Edit")</button>
+                                        <button class="btn btn-sm btn-info me-1" onclick="selectMealImage('@meal.Guid')">@Model.LangService.Transilate("Select Image")</button>
+                                        <button class="btn btn-sm btn-warning me-1" onclick="editMeal('@meal.Guid')">@Model.LangService.Transilate("Edit")</button>
                                         <button class="btn btn-sm btn-danger" onclick="deleteMeal('@meal.Guid')">@Model.LangService.Transilate("Delete")</button>
                                     </td>
                                 </tr>
@@ -325,6 +352,45 @@
                             }
                         </tbody>
                     </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Meal Images Tab -->
+        <div class="tab-pane fade" id="meal-images" role="tabpanel">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">@Model.LangService.Transilate("Meal Images")</h5>
+                    <form method="post" asp-page-handler="UploadMealImage" asp-antiforgery="true" enctype="multipart/form-data" style="display: inline;">
+                        <button type="button" class="btn btn-light btn-sm" onclick="document.getElementById('imageUpload').click()">
+                            <i class="bi bi-upload"></i> @Model.LangService.Transilate("Upload Image")
+                        </button>
+                        <input type="file" id="imageUpload" name="image" accept="image/*" style="display: none;" onchange="uploadImage(this)" />
+                    </form>
+                </div>
+                <div class="card-body">
+                    <div id="imageGrid" class="row row-cols-6 g-3" style="max-height: 70vh; overflow-y: auto;">
+                        @if (Model.MealImages != null && Model.MealImages.Any())
+                        {
+                            @foreach (var image in Model.MealImages)
+                            {
+                                <div class="col position-relative">
+                                    <div class="card h-100">
+                                        <img src="/meal-images/@image" class="card-img-top" alt="Meal Image" style="height: 120px; object-fit: cover;" />
+                                        <button class="btn btn-sm btn-danger position-absolute top-0 end-0 m-1" onclick="deleteImage('@image')">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <div class="col-12 text-center text-muted">
+                                <p>@Model.LangService.Transilate("No images uploaded yet")</p>
+                            </div>
+                        }
+                    </div>
                 </div>
             </div>
         </div>
@@ -609,6 +675,122 @@
             } else {
                 alert('@Model.LangService.Transilate("At least one meal is required")');
             }
+        }
+
+        function uploadImage(input) {
+            const file = input.files[0];
+            if (!file) return;
+
+            const formData = new FormData();
+            formData.append('image', file);
+            formData.append('__RequestVerificationToken', document.querySelector('input[name="__RequestVerificationToken"]').value);
+
+            fetch('/Admin?handler=UploadMealImage', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                if (response.ok) {
+                    location.reload();
+                } else {
+                    alert('Failed to upload image');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Failed to upload image');
+            });
+        }
+
+        function deleteImage(imageName) {
+            if(!confirm('@Model.LangService.Transilate("Are you sure you want to delete this image?")')) {
+                return;
+            }
+
+            // Create a form and submit it
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '/Admin?handler=DeleteMealImage';
+            
+            // Add antiforgery token
+            const tokenInput = document.querySelector('input[name="__RequestVerificationToken"]');
+            if (tokenInput) {
+                const hiddenToken = document.createElement('input');
+                hiddenToken.type = 'hidden';
+                hiddenToken.name = '__RequestVerificationToken';
+                hiddenToken.value = tokenInput.value;
+                form.appendChild(hiddenToken);
+            }
+            
+            // Add image name parameter
+            const hiddenInput = document.createElement('input');
+            hiddenInput.type = 'hidden';
+            hiddenInput.name = 'imageName';
+            hiddenInput.value = imageName;
+            form.appendChild(hiddenInput);
+            
+            document.body.appendChild(form);
+            form.submit();
+        }
+
+        let selectedMealGuid = null;
+
+        function selectMealImage(mealGuid) {
+            selectedMealGuid = mealGuid;
+            // Switch to the meal images tab
+            const tabTrigger = new bootstrap.Tab(document.querySelector('#meal-images-tab'));
+            tabTrigger.show();
+        }
+
+        // Add click event listener to image cards in the meal images grid
+        document.addEventListener('DOMContentLoaded', function() {
+            const imageGrid = document.getElementById('imageGrid');
+            if (imageGrid) {
+                imageGrid.addEventListener('click', function(e) {
+                    // Check if clicked on an image card (not the delete button)
+                    const card = e.target.closest('.card');
+                    const deleteBtn = e.target.closest('button[onclick^="deleteImage"]');
+                    
+                    if (card && !deleteBtn && selectedMealGuid) {
+                        const img = card.querySelector('img');
+                        if (img) {
+                            // Extract just the filename from the src (e.g., "abc123.jpg" from "/meal-images/abc123.jpg")
+                            const fullPath = img.src.split('/').pop();
+                            // Get just the MD5 hash without extension
+                            const imageHash = fullPath.split('.')[0];
+                            assignImageToMeal(selectedMealGuid, imageHash);
+                        }
+                    }
+                });
+            }
+        });
+
+        function assignImageToMeal(mealGuid, imageHash) {
+            fetch('/Admin?handler=AssignMealImage', {
+                method: 'POST',
+                headers: {
+                    'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value,
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: new URLSearchParams({
+                    mealGuid: mealGuid,
+                    imageHash: imageHash
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('@Model.LangService.Transilate("Image assigned successfully!")');
+                    selectedMealGuid = null;
+                    location.reload();
+                } else {
+                    alert('Error: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Failed to assign image to meal');
+            });
         }
     </script>
 }
