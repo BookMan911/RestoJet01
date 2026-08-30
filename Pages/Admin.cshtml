@@ -681,8 +681,25 @@
             const file = input.files[0];
             if (!file) return;
 
-            // Submit the parent form directly
-            input.closest('form').submit();
+            const formData = new FormData();
+            formData.append('image', file);
+            formData.append('__RequestVerificationToken', document.querySelector('input[name="__RequestVerificationToken"]').value);
+
+            fetch('/Admin?handler=UploadMealImage', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                if (response.ok) {
+                    location.reload();
+                } else {
+                    alert('Failed to upload image');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Failed to upload image');
+            });
         }
 
         function deleteImage(imageName) {
