@@ -450,9 +450,10 @@ namespace RestoJett.Core
                 return new Tuple<Exception, JCustomer>(validation.Item1, null);
             }
 
+            JCustomer? customer = null;
             lock (_lock)
             {
-                var customer = _customers.FirstOrDefault(c => c.Guid == customerGuid);
+                customer = _customers.FirstOrDefault(c => c.Guid == customerGuid);
                 if (customer == null)
                 {
                     var ex = new KeyNotFoundException($"Customer with GUID {customerGuid} not found.");
