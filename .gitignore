@@ -1,25 +1,78 @@
-```csharp
-# Build results
-bin/
-obj/
-out/
+# Compiled and build artifacts
+*.pyc
+__pycache__/
 
-# User-specific files
-.vs/
-*.user
-*.userosscache
-*.suo
-*.csproj.user
+# Dependencies
+node_modules/
+venv/
+.venv/
 
-# Environment specific settings
+# Logs and temp files
+*.log
+*.tmp
+*.swp
+
+# Environment
 .env
 .env.local
-*.env.*
+.env.*
 
-# Log files
-*.log
+# Editors
+.vscode/
+.idea/
 
 # OS generated files
 .DS_Store
 Thumbs.db
-```
+
+# Build outputs
+dist/
+build/
+target/
+bin/
+obj/
+
+# Python specific
+*.py[cod]
+*$py.class
+*.so
+.Python
+pip-log.txt
+pip-delete-this-directory.txt
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.db
+*.db-journal
+
+# Django/ASP.NET specific
+*.sqlite3
+*.sqlite3-journal
+
+# Compressed files
+*.zip
+*.gz
+*.tar
+*.tgz
+*.bz2
+*.xz
+*.7z
+*.rar
+*.zst
+*.lz4
+*.lzh
+*.cab
+*.arj
+*.rpm
+*.deb
+*.Z
+*.lz
+*.lzo
+*.tar.gz
+*.tar.bz2
+*.tar.xz
+*.tar.zst

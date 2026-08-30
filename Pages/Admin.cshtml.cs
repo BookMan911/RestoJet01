@@ -37,6 +37,12 @@ namespace RestoJett.Pages
         [BindProperty]
         public List<JOrderItem> OrderItems { get; set; } = new List<JOrderItem>();
 
+        public class UpdateMealImageRequest
+        {
+            public string MealGuid { get; set; }
+            public string ImageHash { get; set; }
+        }
+
         public AdminModel(IRestaurantService restaurantService, LanguageService langService)
         {
             _restaurantService = restaurantService;
@@ -311,6 +317,41 @@ namespace RestoJett.Pages
             if (result.Item1 != null)
             {
                 CustomerError = result.Item1;
+            }
+
+            LoadData(testAdmin);
+            LoggedUser = testAdmin;
+            return Page();
+        }
+
+        public IActionResult OnPostUpdateMealImage([FromBody] UpdateMealImageRequest request)
+        {
+            LangService.For("en");
+
+            var testAdmin = new JUser
+            {
+                Name = "admin",
+                Password = "admin123",
+                Guid = "admin-guid",
+                UserType = JUserType.Admin
+            };
+
+            try
+            {
+                var meal = Meals.FirstOrDefault(m => m.Guid == request.MealGuid);
+                if (meal != null)
+                {
+                    meal.ImageHash = request.ImageHash;
+                    var result = _restaurantService.UpdateMeal(testAdmin, request.MealGuid, meal);
+                    if (result.Item1 != null)
+                    {
+                        MealError = result.Item1;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MealError = ex;
             }
 
             LoadData(testAdmin);

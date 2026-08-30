@@ -57,6 +57,7 @@
                     <table class="table table-hover">
                         <thead>
                             <tr>
+                                <th>@Model.LangService.Transilate("Thumb")</th>
                                 <th>@Model.LangService.Transilate("Name")</th>
                                 <th>@Model.LangService.Transilate("Price")</th>
                                 <th>@Model.LangService.Transilate("Discount")</th>
@@ -68,13 +69,18 @@
                         <tbody>
                             @foreach (var meal in Model.Meals)
                             {
+                                var thumbSrc = !string.IsNullOrEmpty(meal.ImageHash) ? $"/mealimages/{meal.ImageHash}" : "/mealimages/placeholder.png";
                                 <tr>
+                                    <td>
+                                        <img src="@thumbSrc" alt="@(meal.Name)" style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px;" />
+                                    </td>
                                     <td>@meal.Name</td>
                                     <td>@meal.Price.ToString("C")</td>
                                     <td>@meal.Discount.ToString("P")</td>
                                     <td>@meal.Version</td>
                                     <td>@meal.Description</td>
                                     <td>
+                                        <button class="btn btn-sm btn-info me-1" onclick="selectImageForMeal('@meal.Guid')">@Model.LangService.Transilate("Select Image")</button>
                                         <button class="btn btn-sm btn-warning" onclick="editMeal('@meal.Guid')">@Model.LangService.Transilate("Edit")</button>
                                         <button class="btn btn-sm btn-danger" onclick="deleteMeal('@meal.Guid')">@Model.LangService.Transilate("Delete")</button>
                                     </td>
@@ -396,12 +402,50 @@
                         <label class="form-label">@Model.LangService.Transilate("Description")</label>
                         <textarea class="form-control" name="meal.Description"></textarea>
                     </div>
+                    <input type="hidden" name="meal.Guid" value="" />
+                    <input type="hidden" name="meal.ImageHash" value="" />
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@Model.LangService.Transilate("Close")</button>
                     <button type="submit" class="btn btn-primary">@Model.LangService.Transilate("Save")</button>
                 </div>
             </form>
+        </div>
+    </div>
+</div>
+
+<!-- Select Image Modal -->
+<div class="modal fade" id="selectImageModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">@Model.LangService.Transilate("Select Image")</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="selectedMealGuid" />
+                @if (Model.MealImages.Any())
+                {
+                    <div class="row row-cols-2 row-cols-md-3 row-cols-xl-6 g-3" id="imageGrid">
+                        @foreach (var image in Model.MealImages)
+                        {
+                            var imageHash = System.IO.Path.GetFileNameWithoutExtension(image);
+                            <div class="col">
+                                <div class="card h-100" style="cursor: pointer;" onclick="chooseImage('@imageHash')">
+                                    <img src="@image" class="card-img-top" alt="Meal Image" style="height: 100px; object-fit: cover;" />
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <p class="text-center text-muted">@Model.LangService.Transilate("No images uploaded yet. Please upload images in the Meal Images tab.")</p>
+                }
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@Model.LangService.Transilate("Cancel")</button>
+            </div>
         </div>
     </div>
 </div>
@@ -647,6 +691,42 @@
                 row.remove();
             } else {
                 alert('@Model.LangService.Transilate("At least one meal is required")');
+            }
+        }
+
+        let currentSelectedMealGuid = null;
+
+        function selectImageForMeal(mealGuid) {
+            currentSelectedMealGuid = mealGuid;
+            document.getElementById('selectedMealGuid').value = mealGuid;
+            var selectImageModal = new bootstrap.Modal(document.getElementById('selectImageModal'));
+            selectImageModal.show();
+        }
+
+        function chooseImage(imageHash) {
+            if (currentSelectedMealGuid) {
+                // Find the row for this meal and update the image
+                fetch('/Admin?handler=UpdateMealImage', {
+                    method: 'POST',
+                    headers: {
+                        'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ mealGuid: currentSelectedMealGuid, imageHash: imageHash })
+                })
+                .then(response => response.text())
+                .then(result => {
+                    // Reload the page to show updated image
+                    window.location.reload();
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('@Model.LangService.Transilate("Failed to update meal image")');
+                });
+
+                // Close modal
+                var selectImageModal = bootstrap.Modal.getInstance(document.getElementById('selectImageModal'));
+                selectImageModal.hide();
             }
         }
     </script>
