@@ -169,7 +169,11 @@
                                         }
                                     </td>
                                     <td>
-                                        <button class="btn btn-sm btn-warning" onclick="editCustomer('@customer.Guid')">@Model.LangService.Transilate("Edit")</button>
+                                        <form method="post" asp-page-handler="RenewCustomerUrlRes" class="d-inline" onsubmit="return confirm('@Model.LangService.Transilate("Are you sure you want to renew the URL for this customer?")');">
+                                            <input type="hidden" name="customerGuid" value="@customer.Guid" />
+                                            <button type="submit" class="btn btn-sm btn-info me-1">@Model.LangService.Transilate("New URL")</button>
+                                        </form>
+                                        <button class="btn btn-sm btn-warning me-1" onclick="editCustomer('@customer.Guid')">@Model.LangService.Transilate("Edit")</button>
                                         <button class="btn btn-sm btn-danger" onclick="deleteCustomer('@customer.Guid')">@Model.LangService.Transilate("Delete")</button>
                                     </td>
                                 </tr>

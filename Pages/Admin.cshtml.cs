@@ -193,6 +193,29 @@ namespace RestoJett.Pages
             return Page();
         }
 
+        public IActionResult OnPostRenewCustomerUrlRes(string customerGuid)
+        {
+            LangService.For("en");
+
+            var testAdmin = new JUser
+            {
+                Name = "admin",
+                Password = "admin123",
+                Guid = "admin-guid",
+                UserType = JUserType.Admin
+            };
+
+            var result = _restaurantService.RenewCustomerUrlRes(testAdmin, customerGuid);
+            if (result.Item1 != null)
+            {
+                CustomerError = result.Item1;
+            }
+
+            LoadData(testAdmin);
+            LoggedUser = testAdmin;
+            return Page();
+        }
+
         private void LoadData(JUser user)
         {
             // Load meals

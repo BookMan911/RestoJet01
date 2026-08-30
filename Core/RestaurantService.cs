@@ -24,6 +24,7 @@ namespace RestoJett.Core
         Tuple<Exception, JCustomer> UpdateCustomer(JUser loggedUser, string customerGuid, JCustomer customer);
         Tuple<Exception, bool> RemoveCustomer(JUser loggedUser, string customerGuid);
         Tuple<Exception, JCustomer> GetCustomerByUrlRes(string urlRes);
+        Tuple<Exception, JCustomer> RenewCustomerUrlRes(JUser loggedUser, string customerGuid);
 
         // Pilot operations
         Tuple<Exception, List<JPilot>> GetPilots(JUser loggedUser);
@@ -439,6 +440,38 @@ namespace RestoJett.Core
             }
 
             return new Tuple<Exception, JCustomer>(new KeyNotFoundException($"Customer with UrlRes {urlRes} not found."), null);
+        }
+
+        public Tuple<Exception, JCustomer> RenewCustomerUrlRes(JUser loggedUser, string customerGuid)
+        {
+            var validation = ValidateUser(loggedUser, requireAdmin: true);
+            if (validation.Item1 != null)
+            {
+                return new Tuple<Exception, JCustomer>(validation.Item1, null);
+            }
+
+            lock (_lock)
+            {
+                var customer = _customers.FirstOrDefault(c => c.Guid == customerGuid);
+                if (customer == null)
+                {
+                    var ex = new KeyNotFoundException($"Customer with GUID {customerGuid} not found.");
+                    return new Tuple<Exception, JCustomer>(ex, null);
+                }
+
+                // Remove old UrlRes mapping if it exists
+                if (!string.IsNullOrEmpty(customer.CurrentUrlRes) && _customerByUrlRes.ContainsKey(customer.CurrentUrlRes))
+                {
+                    _customerByUrlRes.Remove(customer.CurrentUrlRes);
+                }
+
+                // Generate new UrlRes
+                customer.CurrentUrlRes = Guid.NewGuid().ToString();
+                _customerByUrlRes[customer.CurrentUrlRes] = customer;
+            }
+
+            LogAction(loggedUser, "Update", "Customer", customerGuid, $"Renewed CurrentUrlRes for customer: {customer.Name}");
+            return new Tuple<Exception, JCustomer>(null, customer);
         }
 
         #endregion
