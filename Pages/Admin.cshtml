@@ -73,7 +73,17 @@
                                     <td>
                                         @if (!string.IsNullOrEmpty(meal.ImageHash))
                                         {
-                                            <img src="/meal-images/@meal.ImageHash" alt="@meal.Name" style="width: 60px; height: 60px; object-fit: cover; border-radius: 4px;" />
+                                            var imagePath = Model.MealImages?.FirstOrDefault(img => img.StartsWith(meal.ImageHash));
+                                            if (!string.IsNullOrEmpty(imagePath))
+                                            {
+                                                <img src="/meal-images/@imagePath" alt="@meal.Name" style="width: 60px; height: 60px; object-fit: cover; border-radius: 4px;" />
+                                            }
+                                            else
+                                            {
+                                                <div style="width: 60px; height: 60px; background-color: #e9ecef; border-radius: 4px; display: flex; align-items: center; justify-content: center;">
+                                                    <i class="bi bi-image text-muted"></i>
+                                                </div>
+                                            }
                                         }
                                         else
                                         {
@@ -727,7 +737,10 @@
                     if (card && !deleteBtn && selectedMealGuid) {
                         const img = card.querySelector('img');
                         if (img) {
-                            const imageHash = img.src.split('/').pop();
+                            // Extract just the filename from the src (e.g., "abc123.jpg" from "/meal-images/abc123.jpg")
+                            const fullPath = img.src.split('/').pop();
+                            // Get just the MD5 hash without extension
+                            const imageHash = fullPath.split('.')[0];
                             assignImageToMeal(selectedMealGuid, imageHash);
                         }
                     }

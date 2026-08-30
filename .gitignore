@@ -1,1 +1,1 @@
-Nothing should be ignored since the changes only include source files (.cshtml and .cshtml.cs) without any build artifacts, dependencies, or temporary files.
+Nothing needs to be added to .gitignore since only a source file (.cshtml) was modified and no build artifacts, dependencies, or temporary files were detected in the changes.
