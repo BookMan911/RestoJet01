@@ -182,7 +182,7 @@ namespace RestoJett.Core
                 existingMeal.Version += 1.0f;
 
                 // Update in menu if name changed
-                if (MainMenu.Meals.ContainsKey(existingMeal.Name))
+                if (MainMenu.Meals.Contains(existingMeal.Name))
                 {
                     MainMenu.Meals.Remove(existingMeal.Name);
                 }
