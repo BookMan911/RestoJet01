@@ -1,32 +1,45 @@
 ```
-# Build artifacts
-bin/
-obj/
+# Compiled and build artifacts
 *.pdb
-*.dll
 *.exe
+*.dll
 *.so
 *.dylib
-*.nupkg
+*.class
+*.o
+*.obj
+*.out
+*.a
+
+# .NET specific
+bin/
+obj/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
 
 # Dependencies
-packages/
 node_modules/
-*.userprefs
-*.userosscache
-*.suo
-*.user
-*.aps
-*.ncb
-*.ilk
-*.iobj
-*.ipdb
-*.metaproj
-*.opendb
-*.opensdf
+packages/
 
-# Logs
+# Logs and temp files
 *.log
+*.tmp
+*.temp
+*.swp
+*.swo
+
+# Environment
+.env
+.env.local
+.env.*
+
+# Editors
+.vscode/
+.idea/
+*.swp
+*~
 
 # OS generated files
 .DS_Store
@@ -36,7 +49,4 @@ node_modules/
 .Trashes
 ehthumbs.db
 Thumbs.db
-desktop.ini
-$RECYCLE.BIN/
-*.backup*
 ```

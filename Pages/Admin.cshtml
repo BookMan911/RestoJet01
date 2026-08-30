@@ -210,7 +210,7 @@
                             @foreach (var pilot in Model.Pilots)
                             {
                                 var resUrl = !string.IsNullOrEmpty(pilot.CurrentResUrl) ? pilot.CurrentResUrl : "";
-                                var pilotLink = $"/Pilot?pilot=@pilot.Guid&name=@Uri.EscapeDataString(pilot.Name)&resUrl=@Uri.EscapeDataString(resUrl)";
+                                var pilotLink = $"/Pilot?pilot={pilot.Guid}&name={Uri.EscapeDataString(pilot.Name)}&resUrl={Uri.EscapeDataString(resUrl)}";
                                 <tr>
                                     <td>
                                         <a href="@pilotLink" class="text-decoration-none">
