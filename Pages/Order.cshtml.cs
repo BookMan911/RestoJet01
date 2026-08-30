@@ -69,50 +69,43 @@ namespace RestoJett.Pages
                 Meals = mealsResult.Item2;
             }
 
-            // If urlRes is provided, validate it exists
+            // If urlRes is provided, validate it exists using the hashtable lookup
             if (!string.IsNullOrEmpty(urlRes))
             {
-                var customersResult = _restaurantService.GetCustomers(testAdmin);
-                if (customersResult.Item1 == null)
+                var customerResult = _restaurantService.GetCustomerByUrlRes(urlRes);
+                
+                if (customerResult.Item1 != null)
                 {
-                    CurrentCustomer = customersResult.Item2.FirstOrDefault(c => c.CurrentUrlRes == urlRes);
+                    // Invalid urlRes - redirect to error page
+                    return RedirectToPage("/InvalidUrl", new { lang = lang });
+                }
+                
+                CurrentCustomer = customerResult.Item2;
+            }
+
+            // If urlRes was provided and validated, CurrentCustomer is already set
+            // Otherwise, try to find existing customer by name
+            if (CurrentCustomer == null)
+            {
+                var customersResult2 = _restaurantService.GetCustomers(testAdmin);
+                if (customersResult2.Item1 == null)
+                {
+                    // Try to find by name
+                    CurrentCustomer = customersResult2.Item2.FirstOrDefault(c => c.Name == customerName);
                     
                     if (CurrentCustomer == null)
                     {
-                        // Invalid urlRes - redirect to error page
-                        return RedirectToPage("/InvalidUrl", new { lang = lang });
-                    }
-                }
-            }
-
-            // Try to find existing customer by CurrentUrlRes first, then by name
-            var customersResult2 = _restaurantService.GetCustomers(testAdmin);
-            if (customersResult2.Item1 == null)
-            {
-                // First try to find by CurrentUrlRes if provided
-                if (!string.IsNullOrEmpty(urlRes))
-                {
-                    CurrentCustomer = customersResult2.Item2.FirstOrDefault(c => c.CurrentUrlRes == urlRes);
-                }
-                
-                // If not found by urlRes, try by name
-                if (CurrentCustomer == null)
-                {
-                    CurrentCustomer = customersResult2.Item2.FirstOrDefault(c => c.Name == customerName);
-                }
-                
-                if (CurrentCustomer == null)
-                {
-                    // Create new customer
-                    var newCustomer = new JCustomer
-                    {
-                        Name = customerName,
-                        CurrentUrlRes = !string.IsNullOrEmpty(urlRes) ? urlRes : Guid.NewGuid().ToString()
-                    };
-                    var addResult = _restaurantService.AddCustomer(testAdmin, newCustomer);
-                    if (addResult.Item1 == null)
-                    {
-                        CurrentCustomer = addResult.Item2;
+                        // Create new customer
+                        var newCustomer = new JCustomer
+                        {
+                            Name = customerName,
+                            CurrentUrlRes = !string.IsNullOrEmpty(urlRes) ? urlRes : Guid.NewGuid().ToString()
+                        };
+                        var addResult = _restaurantService.AddCustomer(testAdmin, newCustomer);
+                        if (addResult.Item1 == null)
+                        {
+                            CurrentCustomer = addResult.Item2;
+                        }
                     }
                 }
             }
@@ -154,34 +147,38 @@ namespace RestoJett.Pages
             CustomerName = Request.Form["CustomerName"].ToString();
             var urlRes = Request.Form["CurrentUrlRes"].ToString();
 
-            // Find or create customer
-            var customersResult = _restaurantService.GetCustomers(testAdmin);
-            if (customersResult.Item1 == null)
+            // Find or create customer - use hashtable lookup if urlRes is provided
+            if (!string.IsNullOrEmpty(urlRes))
             {
-                // Try to find by CurrentUrlRes first if provided
-                if (!string.IsNullOrEmpty(urlRes))
+                var customerResult = _restaurantService.GetCustomerByUrlRes(urlRes);
+                if (customerResult.Item1 == null)
                 {
-                    CurrentCustomer = customersResult.Item2.FirstOrDefault(c => c.CurrentUrlRes == urlRes);
+                    CurrentCustomer = customerResult.Item2;
                 }
-                
-                // If not found, try by name
-                if (CurrentCustomer == null)
+            }
+            
+            // If not found by urlRes, try by name
+            if (CurrentCustomer == null)
+            {
+                var customersResult = _restaurantService.GetCustomers(testAdmin);
+                if (customersResult.Item1 == null)
                 {
                     CurrentCustomer = customersResult.Item2.FirstOrDefault(c => c.Name == CustomerName);
                 }
-                
-                if (CurrentCustomer == null)
+            }
+            
+            // Create new customer if still not found
+            if (CurrentCustomer == null)
+            {
+                var newCustomer = new JCustomer 
+                { 
+                    Name = CustomerName, 
+                    CurrentUrlRes = !string.IsNullOrEmpty(urlRes) ? urlRes : Guid.NewGuid().ToString() 
+                };
+                var addResult = _restaurantService.AddCustomer(testAdmin, newCustomer);
+                if (addResult.Item1 == null)
                 {
-                    var newCustomer = new JCustomer 
-                    { 
-                        Name = CustomerName, 
-                        CurrentUrlRes = !string.IsNullOrEmpty(urlRes) ? urlRes : Guid.NewGuid().ToString() 
-                    };
-                    var addResult = _restaurantService.AddCustomer(testAdmin, newCustomer);
-                    if (addResult.Item1 == null)
-                    {
-                        CurrentCustomer = addResult.Item2;
-                    }
+                    CurrentCustomer = addResult.Item2;
                 }
             }
 
