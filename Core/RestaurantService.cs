@@ -165,9 +165,10 @@ namespace RestoJett.Core
                 return new Tuple<Exception, JMeal>(validation.Item1, null);
             }
 
+            JMeal existingMeal = null;
             lock (_lock)
             {
-                var existingMeal = _meals.FirstOrDefault(m => m.Guid == mealGuid);
+                existingMeal = _meals.FirstOrDefault(m => m.Guid == mealGuid);
                 if (existingMeal == null)
                 {
                     var ex = new KeyNotFoundException($"Meal with GUID {mealGuid} not found.");
