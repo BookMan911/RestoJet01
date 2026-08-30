@@ -346,17 +346,27 @@ namespace RestoJett.Pages
                     if (result.Item1 != null)
                     {
                         MealError = result.Item1;
+                        return new JsonResult(new { success = false, error = result.Item1.Message });
+                    }
+                    
+                    // Reload data to ensure we have the updated meal
+                    LoadData(testAdmin);
+                    
+                    // Check if the update was successful
+                    var updatedMeal = Meals.FirstOrDefault(m => m.Guid == request.MealGuid);
+                    if (updatedMeal != null && updatedMeal.ImageHash == request.ImageHash)
+                    {
+                        return new JsonResult(new { success = true, imageHash = request.ImageHash });
                     }
                 }
+                
+                return new JsonResult(new { success = false, error = "Meal not found or update failed" });
             }
             catch (Exception ex)
             {
                 MealError = ex;
+                return new JsonResult(new { success = false, error = ex.Message });
             }
-
-            LoadData(testAdmin);
-            LoggedUser = testAdmin;
-            return Page();
         }
 
         private void LoadData(JUser user)

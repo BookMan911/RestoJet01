@@ -70,9 +70,9 @@
                             @foreach (var meal in Model.Meals)
                             {
                                 var thumbSrc = !string.IsNullOrEmpty(meal.ImageHash) ? $"/mealimages/{meal.ImageHash}" : "/mealimages/placeholder.png";
-                                <tr>
+                                <tr data-meal-guid="@meal.Guid">
                                     <td>
-                                        <img src="@thumbSrc" alt="@(meal.Name)" style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px;" />
+                                        <img src="@thumbSrc" alt="@(meal.Name)" id="thumb-@meal.Guid" style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px;" />
                                     </td>
                                     <td>@meal.Name</td>
                                     <td>@meal.Price.ToString("C")</td>
@@ -343,7 +343,7 @@
             <div class="card shadow-sm">
                 <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
                     <h5 class="mb-0">@Model.LangService.Transilate("Meal Images")</h5>
-                    <form method="post" asp-page-handler="UploadMealImage" enctype="multipart/form-data" class="d-inline">
+                    <form method="post" asp-page-handler="UploadMealImage" enctype="multipart/form-data" class="d-inline" asp-antiforgery="true">
                         <input type="file" name="imageFile" accept="image/*" class="form-control form-control-sm d-inline-block" style="width: auto;" required />
                         <button type="submit" class="btn btn-light btn-sm ms-2">@Model.LangService.Transilate("Upload Image")</button>
                     </form>
@@ -360,11 +360,12 @@
                     <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-6 g-3">
                         @foreach (var image in Model.MealImages)
                         {
-                            <div class="col">
+                            var imageHash = System.IO.Path.GetFileNameWithoutExtension(image);
+                            <div class="col" data-image-hash="@imageHash">
                                 <div class="card h-100">
                                     <img src="@image" class="card-img-top" alt="Meal Image" style="height: 150px; object-fit: cover;" />
                                     <div class="card-body p-2 text-center">
-                                        <small class="text-muted">@System.IO.Path.GetFileName(image)</small>
+                                        <small class="text-muted">@imageHash</small>
                                     </div>
                                 </div>
                             </div>
@@ -430,7 +431,7 @@
                         @foreach (var image in Model.MealImages)
                         {
                             var imageHash = System.IO.Path.GetFileNameWithoutExtension(image);
-                            <div class="col">
+                            <div class="col" data-image-hash="@imageHash">
                                 <div class="card h-100" style="cursor: pointer;" onclick="chooseImage('@imageHash')">
                                     <img src="@image" class="card-img-top" alt="Meal Image" style="height: 100px; object-fit: cover;" />
                                 </div>
@@ -705,28 +706,63 @@
 
         function chooseImage(imageHash) {
             if (currentSelectedMealGuid) {
-                // Find the row for this meal and update the image
+                console.log('Updating meal:', currentSelectedMealGuid, 'with image:', imageHash);
+                
+                // Get the antiforgery token from the main form on the page
+                var token = document.querySelector('form[asp-antiforgery="true"] input[name="__RequestVerificationToken"], form[method="post"] input[name="__RequestVerificationToken"]');
+                if (!token) {
+                    // Try to find any hidden input with the token name
+                    token = document.querySelector('input[name="__RequestVerificationToken"][type="hidden"]');
+                }
+                
+                if (!token || !token.value) {
+                    console.error('Antiforgery token not found');
+                    alert('@Model.LangService.Transilate("Error: Could not find security token")');
+                    return;
+                }
+                
+                console.log('Found token, sending request...');
+                
                 fetch('/Admin?handler=UpdateMealImage', {
                     method: 'POST',
                     headers: {
-                        'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value,
+                        'RequestVerificationToken': token.value,
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({ mealGuid: currentSelectedMealGuid, imageHash: imageHash })
                 })
-                .then(response => response.text())
+                .then(response => {
+                    console.log('Response status:', response.status);
+                    if (!response.ok) {
+                        throw new Error('Server returned ' + response.status);
+                    }
+                    return response.json();
+                })
                 .then(result => {
-                    // Reload the page to show updated image
-                    window.location.reload();
+                    console.log('Server response:', result);
+                    if (result.success) {
+                        // Update the thumbnail immediately without reload
+                        var img = document.getElementById('thumb-' + currentSelectedMealGuid);
+                        if (img) {
+                            img.src = '/mealimages/' + result.imageHash + '?t=' + new Date().getTime();
+                            img.alt = 'Updated image';
+                            console.log('Image updated successfully:', img.src);
+                        } else {
+                            console.error('Could not find image element with id: thumb-' + currentSelectedMealGuid);
+                        }
+                        
+                        // Close modal
+                        var selectImageModal = bootstrap.Modal.getInstance(document.getElementById('selectImageModal'));
+                        selectImageModal.hide();
+                    } else {
+                        console.error('Update failed:', result.error);
+                        alert('@Model.LangService.Transilate("Failed to update meal image: ")' + (result.error || 'Unknown error'));
+                    }
                 })
                 .catch(error => {
-                    console.error('Error:', error);
-                    alert('@Model.LangService.Transilate("Failed to update meal image")');
+                    console.error('Fetch error:', error);
+                    alert('@Model.LangService.Transilate("Failed to update meal image. Check console for details.")');
                 });
-
-                // Close modal
-                var selectImageModal = bootstrap.Modal.getInstance(document.getElementById('selectImageModal'));
-                selectImageModal.hide();
             }
         }
     </script>
