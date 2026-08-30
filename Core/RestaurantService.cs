@@ -182,21 +182,46 @@ namespace RestoJett.Core
                 existingMeal.ImageHash = meal.ImageHash;
                 existingMeal.Version += 1.0f;
 
-                // Update in menu: Remove old entry if name changed, then add/update with new name
+                // Update in menu: Remove ALL entries to prevent any duplication, then add fresh
+                // Clear the entire dictionary entry for this meal name to ensure no duplicates
+                var keysToRemove = new List<string>();
+                foreach(var key in MainMenu.Meals.Keys)
+                {
+                    if (string.Equals(key.ToString(), existingMeal.Name, StringComparison.OrdinalIgnoreCase))
+                    {
+                        keysToRemove.Add(key.ToString());
+                    }
+                }
+                
+                foreach(var keyToRemove in keysToRemove)
+                {
+                    MainMenu.Meals.Remove(keyToRemove);
+                }
+                
+                // Also remove by old name if it was different
                 string oldName = _meals.FirstOrDefault(m => m.Guid == mealGuid)?.Name;
-                
-                if (!string.IsNullOrEmpty(oldName) && oldName != existingMeal.Name && MainMenu.Meals.Contains(oldName))
+                if (!string.IsNullOrEmpty(oldName) && !string.Equals(oldName, existingMeal.Name, StringComparison.OrdinalIgnoreCase))
                 {
-                    MainMenu.Meals.Remove(oldName);
+                    if (MainMenu.Meals.Contains(oldName))
+                    {
+                        MainMenu.Meals.Remove(oldName);
+                    }
                 }
-                
-                // Ensure we don't have duplicate keys - remove if key exists before adding
-                if (MainMenu.Meals.Contains(existingMeal.Name))
-                {
-                    MainMenu.Meals.Remove(existingMeal.Name);
-                }
-                
+
+                // Add the updated meal to MainMenu.Meals
                 MainMenu.Meals[existingMeal.Name] = existingMeal;
+                
+                // ALSO update the _meals list to keep it in sync
+                var mealInList = _meals.FirstOrDefault(m => m.Guid == mealGuid);
+                if (mealInList != null)
+                {
+                    mealInList.Name = existingMeal.Name;
+                    mealInList.Price = existingMeal.Price;
+                    mealInList.Discount = existingMeal.Discount;
+                    mealInList.Description = existingMeal.Description;
+                    mealInList.ImageHash = existingMeal.ImageHash;
+                    mealInList.Version = existingMeal.Version;
+                }
             }
 
             LogAction(loggedUser, "Update", "Meal", mealGuid, $"Updated meal: {meal.Name}");
