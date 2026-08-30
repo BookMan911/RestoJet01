@@ -23,6 +23,7 @@ namespace RestoJett.Core
         Tuple<Exception, JCustomer> AddCustomer(JUser loggedUser, JCustomer customer);
         Tuple<Exception, JCustomer> UpdateCustomer(JUser loggedUser, string customerGuid, JCustomer customer);
         Tuple<Exception, bool> RemoveCustomer(JUser loggedUser, string customerGuid);
+        Tuple<Exception, JCustomer> GetCustomerByUrlRes(string urlRes);
 
         // Pilot operations
         Tuple<Exception, List<JPilot>> GetPilots(JUser loggedUser);
@@ -49,6 +50,7 @@ namespace RestoJett.Core
         private readonly List<JMeal> _meals;
         private readonly List<JUser> _users;
         private readonly List<JCustomer> _customers;
+        private readonly Dictionary<string, JCustomer> _customerByUrlRes;
         private readonly List<JOrder> _orders;
         private readonly List<AuditLog> _auditLogs;
         private readonly List<JPilot> _pilots;
@@ -61,6 +63,7 @@ namespace RestoJett.Core
             _meals = new List<JMeal>();
             _users = new List<JUser>();
             _customers = new List<JCustomer>();
+            _customerByUrlRes = new Dictionary<string, JCustomer>();
             _orders = new List<JOrder>();
             _auditLogs = new List<AuditLog>();
             _pilots = new List<JPilot>();
@@ -341,6 +344,10 @@ namespace RestoJett.Core
             lock (_lock)
             {
                 _customers.Add(customer);
+                if (!string.IsNullOrEmpty(customer.CurrentUrlRes))
+                {
+                    _customerByUrlRes[customer.CurrentUrlRes] = customer;
+                }
             }
 
             LogAction(loggedUser, "Create", "Customer", customer.Guid, $"Added customer: {customer.Name}");
@@ -364,7 +371,23 @@ namespace RestoJett.Core
                     return new Tuple<Exception, JCustomer>(ex, null);
                 }
 
+                // Remove old UrlRes mapping if it exists and is different
+                if (!string.IsNullOrEmpty(existingCustomer.CurrentUrlRes) && 
+                    !string.IsNullOrEmpty(customer.CurrentUrlRes) && 
+                    existingCustomer.CurrentUrlRes != customer.CurrentUrlRes &&
+                    _customerByUrlRes.ContainsKey(existingCustomer.CurrentUrlRes))
+                {
+                    _customerByUrlRes.Remove(existingCustomer.CurrentUrlRes);
+                }
+
                 existingCustomer.Name = customer.Name;
+                
+                // Update UrlRes if provided
+                if (!string.IsNullOrEmpty(customer.CurrentUrlRes))
+                {
+                    existingCustomer.CurrentUrlRes = customer.CurrentUrlRes;
+                    _customerByUrlRes[existingCustomer.CurrentUrlRes] = existingCustomer;
+                }
             }
 
             LogAction(loggedUser, "Update", "Customer", customerGuid, $"Updated customer: {customer.Name}");
@@ -388,11 +411,34 @@ namespace RestoJett.Core
                     return new Tuple<Exception, bool>(ex, false);
                 }
 
+                if (!string.IsNullOrEmpty(customer.CurrentUrlRes) && _customerByUrlRes.ContainsKey(customer.CurrentUrlRes))
+                {
+                    _customerByUrlRes.Remove(customer.CurrentUrlRes);
+                }
+
                 _customers.Remove(customer);
             }
 
             LogAction(loggedUser, "Delete", "Customer", customerGuid, $"Removed customer: {customerGuid}");
             return new Tuple<Exception, bool>(null, true);
+        }
+
+        public Tuple<Exception, JCustomer> GetCustomerByUrlRes(string urlRes)
+        {
+            if (string.IsNullOrEmpty(urlRes))
+            {
+                return new Tuple<Exception, JCustomer>(new ArgumentNullException(nameof(urlRes), "UrlRes cannot be null or empty."), null);
+            }
+
+            lock (_lock)
+            {
+                if (_customerByUrlRes.TryGetValue(urlRes, out var customer))
+                {
+                    return new Tuple<Exception, JCustomer>(null, customer);
+                }
+            }
+
+            return new Tuple<Exception, JCustomer>(new KeyNotFoundException($"Customer with UrlRes {urlRes} not found."), null);
         }
 
         #endregion

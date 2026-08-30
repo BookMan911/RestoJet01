@@ -17,5 +17,8 @@
   "Your cart is empty.": "Ihr Warenkorb ist leer.",
   "Submit Order": "Bestellung absenden",
   "Loading...": "Wird geladen...",
-  "Error loading cart.": "Fehler beim Laden des Warenkorbs."
+  "Error loading cart.": "Fehler beim Laden des Warenkorbs.",
+  "invalid_url_title": "Ungültige URL",
+  "invalid_url_message": "Diese URL ist ungültig oder abgelaufen.",
+  "contact_admin": "Bitte kontaktieren Sie den Administrator für weitere Unterstützung."
 }
