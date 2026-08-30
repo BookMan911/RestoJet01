@@ -31,6 +31,7 @@ namespace RestoJett.Core
         Tuple<Exception, JPilot> AddPilot(JUser loggedUser, JPilot pilot);
         Tuple<Exception, JPilot> UpdatePilot(JUser loggedUser, string pilotGuid, JPilot pilot);
         Tuple<Exception, bool> RemovePilot(JUser loggedUser, string pilotGuid);
+        Tuple<Exception, JPilot> RenewPilotResUrl(JUser loggedUser, string pilotGuid);
 
         // Order operations
         Tuple<Exception, List<JOrder>> GetOrders(JUser loggedUser);
@@ -563,6 +564,32 @@ namespace RestoJett.Core
 
             LogAction(loggedUser, "Delete", "Pilot", pilotGuid, $"Removed pilot: {pilotGuid}");
             return new Tuple<Exception, bool>(null, true);
+        }
+
+        public Tuple<Exception, JPilot> RenewPilotResUrl(JUser loggedUser, string pilotGuid)
+        {
+            var validation = ValidateUser(loggedUser, requireAdmin: true);
+            if (validation.Item1 != null)
+            {
+                return new Tuple<Exception, JPilot>(validation.Item1, null);
+            }
+
+            lock (_lock)
+            {
+                var pilot = _pilots.FirstOrDefault(p => p.Guid == pilotGuid);
+                if (pilot == null)
+                {
+                    var ex = new KeyNotFoundException($"Pilot with GUID {pilotGuid} not found.");
+                    return new Tuple<Exception, JPilot>(ex, null);
+                }
+
+                var oldUrl = pilot.CurrentResUrl;
+                var newUrl = GenerateGuid();
+                pilot.CurrentResUrl = newUrl;
+
+                LogAction(loggedUser, "Update", "Pilot", pilotGuid, $"Renewed CurrentResUrl for pilot: {pilot.Name}");
+                return new Tuple<Exception, JPilot>(null, pilot);
+            }
         }
 
         #endregion

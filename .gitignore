@@ -1,29 +1,42 @@
 ```
-# Build results
+# Build artifacts
 bin/
 obj/
+*.pdb
+*.dll
+*.exe
+*.so
+*.dylib
+*.nupkg
 
-# User-specific files
-.vs/
-.idea/
+# Dependencies
+packages/
+node_modules/
 *.userprefs
-
-# Environment specific settings
-.env
-.env.local
-*.env.*
-
-# OS generated files
-.DS_Store
-Thumbs.db
+*.userosscache
+*.suo
+*.user
+*.aps
+*.ncb
+*.ilk
+*.iobj
+*.ipdb
+*.metaproj
+*.opendb
+*.opensdf
 
 # Logs
 *.log
 
-# NuGet packages
-packages/
-*.nupkg
-
-# Test results
-TestResults/
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+$RECYCLE.BIN/
+*.backup*
 ```

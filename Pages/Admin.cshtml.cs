@@ -182,7 +182,36 @@ namespace RestoJett.Pages
                 UserType = JUserType.Admin
             };
 
+            // Generate a random UUID for CurrentResUrl if not provided
+            if (string.IsNullOrEmpty(pilot.CurrentResUrl))
+            {
+                pilot.CurrentResUrl = Guid.NewGuid().ToString();
+            }
+
             var result = _restaurantService.AddPilot(testAdmin, pilot);
+            if (result.Item1 != null)
+            {
+                PilotError = result.Item1;
+            }
+
+            LoadData(testAdmin);
+            LoggedUser = testAdmin;
+            return Page();
+        }
+
+        public IActionResult OnPostRenewPilotResUrl(string pilotGuid)
+        {
+            LangService.For("en");
+
+            var testAdmin = new JUser
+            {
+                Name = "admin",
+                Password = "admin123",
+                Guid = "admin-guid",
+                UserType = JUserType.Admin
+            };
+
+            var result = _restaurantService.RenewPilotResUrl(testAdmin, pilotGuid);
             if (result.Item1 != null)
             {
                 PilotError = result.Item1;

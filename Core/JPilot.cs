@@ -5,5 +5,6 @@ namespace RestoJett.Core
         public string Guid { get; set; }
         public string Name { get; set; }
         public string PhoneNumber { get; set; }
+        public string CurrentResUrl { get; set; }
     }
 }
