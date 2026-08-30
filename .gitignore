@@ -1,8 +1,8 @@
 ```
 # Compiled and build artifacts
 *.pdb
-*.exe
 *.dll
+*.exe
 *.so
 *.dylib
 *.class
@@ -11,17 +11,21 @@
 *.out
 *.a
 
-# .NET specific
+# Build directories
 bin/
 obj/
-*.user
-*.suo
-*.userosscache
-*.sln.docstates
+out/
+dist/
+build/
+target/
 
 # Dependencies
 node_modules/
-packages/
+venv/
+.venv/
+__pycache__/
+*.egg-info/
+.Python
 
 # Logs and temp files
 *.log
@@ -39,14 +43,57 @@ packages/
 .vscode/
 .idea/
 *.swp
-*~
+*.swo
 
-# OS generated files
+# OS
 .DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
 Thumbs.db
+
+# Coverage
+coverage/
+htmlcov/
+.coverage
+
+# Python specific
+*.pyc
+*.pyo
+*.pyd
+__pycache__/
+.pytest_cache/
+.mypy_cache/
+.tox/
+
+# Java specific
+*.class
+*.jar
+*.war
+*.ear
+.gradle/
+build/
+
+# .NET specific
+bin/
+obj/
+*.user
+*.userosscache
+*.suo
+*.userprefs
+[Nn]uget[Pp]ackages/
+.visualstudio/
+TestResults/
+
+# Node.js specific
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# C# specific
+*.pidb
+*.userprefs
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Tt]est[Rr]esults/
+*.sln.DotSettings.user
 ```
