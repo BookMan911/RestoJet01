@@ -169,7 +169,11 @@
                                         }
                                     </td>
                                     <td>
-                                        <button class="btn btn-sm btn-warning" onclick="editCustomer('@customer.Guid')">@Model.LangService.Transilate("Edit")</button>
+                                        <form method="post" asp-page-handler="RenewCustomerUrlRes" class="d-inline" onsubmit="return confirm('@Model.LangService.Transilate("Are you sure you want to renew the URL for this customer?")');">
+                                            <input type="hidden" name="customerGuid" value="@customer.Guid" />
+                                            <button type="submit" class="btn btn-sm btn-info me-1">@Model.LangService.Transilate("New URL")</button>
+                                        </form>
+                                        <button class="btn btn-sm btn-warning me-1" onclick="editCustomer('@customer.Guid')">@Model.LangService.Transilate("Edit")</button>
                                         <button class="btn btn-sm btn-danger" onclick="deleteCustomer('@customer.Guid')">@Model.LangService.Transilate("Delete")</button>
                                     </td>
                                 </tr>
@@ -205,15 +209,21 @@
                         <tbody>
                             @foreach (var pilot in Model.Pilots)
                             {
+                                var resUrl = !string.IsNullOrEmpty(pilot.CurrentResUrl) ? pilot.CurrentResUrl : "";
+                                var pilotLink = $"/Pilot?name={Uri.EscapeDataString(pilot.Name)}&resUrl={Uri.EscapeDataString(resUrl)}";
                                 <tr>
                                     <td>
-                                        <a href="/Pilot?pilot=@pilot.Guid&name=@Uri.EscapeDataString(pilot.Name)" class="text-decoration-none">
+                                        <a href="@pilotLink" class="text-decoration-none">
                                             @pilot.Name
                                         </a>
                                     </td>
                                     <td>@pilot.PhoneNumber</td>
                                     <td>
-                                        <button class="btn btn-sm btn-warning" onclick="editPilot('@pilot.Guid')">@Model.LangService.Transilate("Edit")</button>
+                                        <form method="post" asp-page-handler="RenewPilotResUrl" class="d-inline" onsubmit="return confirm('@Model.LangService.Transilate("Are you sure you want to renew the URL for this pilot?")');">
+                                            <input type="hidden" name="pilotGuid" value="@pilot.Guid" />
+                                            <button type="submit" class="btn btn-sm btn-info me-1">@Model.LangService.Transilate("New URL")</button>
+                                        </form>
+                                        <button class="btn btn-sm btn-warning me-1" onclick="editPilot('@pilot.Guid')">@Model.LangService.Transilate("Edit")</button>
                                         <button class="btn btn-sm btn-danger" onclick="deletePilot('@pilot.Guid')">@Model.LangService.Transilate("Delete")</button>
                                     </td>
                                 </tr>

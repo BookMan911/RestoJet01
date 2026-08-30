@@ -1,35 +1,49 @@
 ```
-# .NET build artifacts
-bin/
-obj/
-
-# Compiled binaries
+# Compiled and build artifacts
 *.pdb
-*.exe
 *.dll
+*.exe
 *.so
 *.dylib
+*.class
+*.o
+*.obj
+*.out
 *.a
 
-# Dependencies
-packages/
-node_modules/
-vendor/
+# Build directories
+bin/
+obj/
+out/
+dist/
+build/
+target/
 
-# Logs
+# Dependencies
+node_modules/
+venv/
+.venv/
+__pycache__/
+*.egg-info/
+.Python
+
+# Logs and temp files
 *.log
+*.tmp
+*.temp
+*.swp
+*.swo
 
 # Environment
 .env
 .env.local
-*.env.*
+.env.*
 
-# Editor/IDE
+# Editors
 .vscode/
 .idea/
 *.swp
 *.swo
-*.tmp
 
 # OS
 .DS_Store
@@ -38,18 +52,48 @@ Thumbs.db
 # Coverage
 coverage/
 htmlcov/
-*.coverage
+.coverage
 
-# Python (if applicable)
-__pycache__/
+# Python specific
 *.pyc
 *.pyo
-.Python
-*.so
-.Python
-*.egg-info/
-.eggs/
-dist/
+*.pyd
+__pycache__/
+.pytest_cache/
+.mypy_cache/
+.tox/
+
+# Java specific
+*.class
+*.jar
+*.war
+*.ear
+.gradle/
 build/
-*.egg
+
+# .NET specific
+bin/
+obj/
+*.user
+*.userosscache
+*.suo
+*.userprefs
+[Nn]uget[Pp]ackages/
+.visualstudio/
+TestResults/
+
+# Node.js specific
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# C# specific
+*.pidb
+*.userprefs
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Tt]est[Rr]esults/
+*.sln.DotSettings.user
 ```

@@ -24,12 +24,14 @@ namespace RestoJett.Core
         Tuple<Exception, JCustomer> UpdateCustomer(JUser loggedUser, string customerGuid, JCustomer customer);
         Tuple<Exception, bool> RemoveCustomer(JUser loggedUser, string customerGuid);
         Tuple<Exception, JCustomer> GetCustomerByUrlRes(string urlRes);
+        Tuple<Exception, JCustomer> RenewCustomerUrlRes(JUser loggedUser, string customerGuid);
 
         // Pilot operations
         Tuple<Exception, List<JPilot>> GetPilots(JUser loggedUser);
         Tuple<Exception, JPilot> AddPilot(JUser loggedUser, JPilot pilot);
         Tuple<Exception, JPilot> UpdatePilot(JUser loggedUser, string pilotGuid, JPilot pilot);
         Tuple<Exception, bool> RemovePilot(JUser loggedUser, string pilotGuid);
+        Tuple<Exception, JPilot> RenewPilotResUrl(JUser loggedUser, string pilotGuid);
 
         // Order operations
         Tuple<Exception, List<JOrder>> GetOrders(JUser loggedUser);
@@ -441,6 +443,39 @@ namespace RestoJett.Core
             return new Tuple<Exception, JCustomer>(new KeyNotFoundException($"Customer with UrlRes {urlRes} not found."), null);
         }
 
+        public Tuple<Exception, JCustomer> RenewCustomerUrlRes(JUser loggedUser, string customerGuid)
+        {
+            var validation = ValidateUser(loggedUser, requireAdmin: true);
+            if (validation.Item1 != null)
+            {
+                return new Tuple<Exception, JCustomer>(validation.Item1, null);
+            }
+
+            JCustomer? customer = null;
+            lock (_lock)
+            {
+                customer = _customers.FirstOrDefault(c => c.Guid == customerGuid);
+                if (customer == null)
+                {
+                    var ex = new KeyNotFoundException($"Customer with GUID {customerGuid} not found.");
+                    return new Tuple<Exception, JCustomer>(ex, null);
+                }
+
+                // Remove old UrlRes mapping if it exists
+                if (!string.IsNullOrEmpty(customer.CurrentUrlRes) && _customerByUrlRes.ContainsKey(customer.CurrentUrlRes))
+                {
+                    _customerByUrlRes.Remove(customer.CurrentUrlRes);
+                }
+
+                // Generate new UrlRes
+                customer.CurrentUrlRes = Guid.NewGuid().ToString();
+                _customerByUrlRes[customer.CurrentUrlRes] = customer;
+            }
+
+            LogAction(loggedUser, "Update", "Customer", customerGuid, $"Renewed CurrentUrlRes for customer: {customer.Name}");
+            return new Tuple<Exception, JCustomer>(null, customer);
+        }
+
         #endregion
 
         #region Pilot Operations
@@ -529,6 +564,32 @@ namespace RestoJett.Core
 
             LogAction(loggedUser, "Delete", "Pilot", pilotGuid, $"Removed pilot: {pilotGuid}");
             return new Tuple<Exception, bool>(null, true);
+        }
+
+        public Tuple<Exception, JPilot> RenewPilotResUrl(JUser loggedUser, string pilotGuid)
+        {
+            var validation = ValidateUser(loggedUser, requireAdmin: true);
+            if (validation.Item1 != null)
+            {
+                return new Tuple<Exception, JPilot>(validation.Item1, null);
+            }
+
+            lock (_lock)
+            {
+                var pilot = _pilots.FirstOrDefault(p => p.Guid == pilotGuid);
+                if (pilot == null)
+                {
+                    var ex = new KeyNotFoundException($"Pilot with GUID {pilotGuid} not found.");
+                    return new Tuple<Exception, JPilot>(ex, null);
+                }
+
+                var oldUrl = pilot.CurrentResUrl;
+                var newUrl = GenerateGuid();
+                pilot.CurrentResUrl = newUrl;
+
+                LogAction(loggedUser, "Update", "Pilot", pilotGuid, $"Renewed CurrentResUrl for pilot: {pilot.Name}");
+                return new Tuple<Exception, JPilot>(null, pilot);
+            }
         }
 
         #endregion
