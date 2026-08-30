@@ -21,6 +21,10 @@
       "PackagePath": "staticwebassets/lang/de.json"
     },
     {
+      "Id": "/workspace/wwwroot/lang/en.json",
+      "PackagePath": "staticwebassets/lang/en.json"
+    },
+    {
       "Id": "/workspace/wwwroot/lang/fr.json",
       "PackagePath": "staticwebassets/lang/fr.json"
     },

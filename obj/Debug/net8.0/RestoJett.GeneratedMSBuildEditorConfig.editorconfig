@@ -30,6 +30,10 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = UGFnZXMvSW5kZXguY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
+[/workspace/Pages/InvalidUrl.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXMvSW52YWxpZFVybC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
 [/workspace/Pages/Order.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXMvT3JkZXIuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 

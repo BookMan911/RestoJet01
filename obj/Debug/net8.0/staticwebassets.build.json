@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "ZFh6dPZQgucYgwcYgkl66sud0U9RlxPtPfHu1yLTxhU=",
+  "Hash": "TbaLdE4Q4Uudv5CpuMilX2TKXXZuIwxISqfrZXL9s94=",
   "Source": "RestoJett",
   "BasePath": "_content/RestoJett",
   "Mode": "Default",
@@ -129,6 +129,25 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot/lang/de.json"
+    },
+    {
+      "Identity": "/workspace/wwwroot/lang/en.json",
+      "SourceId": "RestoJett",
+      "SourceType": "Discovered",
+      "ContentRoot": "/workspace/wwwroot/",
+      "BasePath": "_content/RestoJett",
+      "RelativePath": "lang/en.json",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot/lang/en.json"
     },
     {
       "Identity": "/workspace/wwwroot/lang/fr.json",

@@ -1,45 +1,55 @@
-# Compiled and build artifacts
-*.pyc
-__pycache__/
-*.o
-*.obj
-*.class
+```
+# .NET build artifacts
+bin/
+obj/
+
+# Compiled binaries
+*.pdb
+*.exe
 *.dll
 *.so
+*.dylib
 *.a
-*.out
 
 # Dependencies
-.venv/
-venv/
-__pycache__/
-.mypy_cache/
-.pytest_cache/
+packages/
+node_modules/
+vendor/
 
-# Logs and temp files
+# Logs
 *.log
-*.tmp
-*.swp
-
-# Editors
-.vscode/
-.idea/
 
 # Environment
 .env
 .env.local
 *.env.*
 
-# Coverage reports
+# Editor/IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*.tmp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Coverage
 coverage/
 htmlcov/
-.coverage
+*.coverage
 
-# Build directories
+# Python (if applicable)
+__pycache__/
+*.pyc
+*.pyo
+.Python
+*.so
+.Python
+*.egg-info/
+.eggs/
 dist/
 build/
-target/
-.gradle/
-
-# Node packages
-node_modules/
+*.egg
+```
