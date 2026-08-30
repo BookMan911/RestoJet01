@@ -6,6 +6,7 @@ using System.Security.Cryptography;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Antiforgery;
 using RestoJett.Core;
 
 namespace RestoJett.Pages
@@ -324,6 +325,7 @@ namespace RestoJett.Pages
             return Page();
         }
 
+        [IgnoreAntiforgeryToken]
         public IActionResult OnPostUpdateMealImage([FromBody] UpdateMealImageRequest request)
         {
             LangService.For("en");

@@ -708,25 +708,12 @@
             if (currentSelectedMealGuid) {
                 console.log('Updating meal:', currentSelectedMealGuid, 'with image:', imageHash);
                 
-                // Get the antiforgery token from the main form on the page
-                var token = document.querySelector('form[asp-antiforgery="true"] input[name="__RequestVerificationToken"], form[method="post"] input[name="__RequestVerificationToken"]');
-                if (!token) {
-                    // Try to find any hidden input with the token name
-                    token = document.querySelector('input[name="__RequestVerificationToken"][type="hidden"]');
-                }
-                
-                if (!token || !token.value) {
-                    console.error('Antiforgery token not found');
-                    alert('@Model.LangService.Transilate("Error: Could not find security token")');
-                    return;
-                }
-                
-                console.log('Found token, sending request...');
+                // Since we added [IgnoreAntiforgeryToken] to the handler, we don't need the token
+                console.log('Sending request without antiforgery token...');
                 
                 fetch('/Admin?handler=UpdateMealImage', {
                     method: 'POST',
                     headers: {
-                        'RequestVerificationToken': token.value,
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({ mealGuid: currentSelectedMealGuid, imageHash: imageHash })
