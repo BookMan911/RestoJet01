@@ -115,6 +115,12 @@ namespace RestoJett.Pages
                 UserType = JUserType.Admin
             };
 
+            // Generate a random UUID for CurrentUrlRes if not provided
+            if (string.IsNullOrEmpty(customer.CurrentUrlRes))
+            {
+                customer.CurrentUrlRes = Guid.NewGuid().ToString();
+            }
+
             var result = _restaurantService.AddCustomer(testAdmin, customer);
             if (result.Item1 != null)
             {
