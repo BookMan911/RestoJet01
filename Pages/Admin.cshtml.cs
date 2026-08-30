@@ -421,5 +421,64 @@ namespace RestoJett.Pages
 
             return new JsonResult(new { success = true });
         }
+
+        public IActionResult OnPostAssignMealImage(string mealGuid, string imageHash)
+        {
+            LangService.For("en");
+
+            var testAdmin = new JUser
+            {
+                Name = "admin",
+                Password = "admin123",
+                Guid = "admin-guid",
+                UserType = JUserType.Admin
+            };
+
+            if (string.IsNullOrEmpty(mealGuid) || string.IsNullOrEmpty(imageHash))
+            {
+                return new JsonResult(new { success = false, error = "Invalid parameters" });
+            }
+
+            // Find the meal and update its ImageHash
+            var mealsResult = _restaurantService.GetMeals(testAdmin);
+            if (mealsResult.Item1 != null)
+            {
+                return new JsonResult(new { success = false, error = mealsResult.Item1.Message });
+            }
+
+            var meal = mealsResult.Item2.FirstOrDefault(m => m.Guid == mealGuid);
+            if (meal == null)
+            {
+                return new JsonResult(new { success = false, error = "Meal not found" });
+            }
+
+            // Extract just the MD5 hash (without extension) for storage
+            var md5Hash = Path.GetFileNameWithoutExtension(imageHash);
+            
+            // Create a copy of the meal with updated ImageHash
+            var updatedMeal = new JMeal
+            {
+                Guid = meal.Guid,
+                Name = meal.Name,
+                Price = meal.Price,
+                Discount = meal.Discount,
+                Version = meal.Version,
+                Description = meal.Description,
+                ImageHash = md5Hash
+            };
+
+            // Update the meal through the service
+            var result = _restaurantService.UpdateMeal(testAdmin, mealGuid, updatedMeal);
+            if (result.Item1 != null)
+            {
+                return new JsonResult(new { success = false, error = result.Item1.Message });
+            }
+
+            LoadData(testAdmin);
+            LoadMealImages();
+            LoggedUser = testAdmin;
+
+            return new JsonResult(new { success = true });
+        }
     }
 }
