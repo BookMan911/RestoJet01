@@ -351,10 +351,12 @@
             <div class="card shadow-sm">
                 <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
                     <h5 class="mb-0">@Model.LangService.Transilate("Meal Images")</h5>
-                    <button class="btn btn-light btn-sm" onclick="document.getElementById('imageUpload').click()">
-                        <i class="bi bi-upload"></i> @Model.LangService.Transilate("Upload Image")
-                    </button>
-                    <input type="file" id="imageUpload" accept="image/*" style="display: none;" onchange="uploadImage(this)" />
+                    <form method="post" asp-page-handler="UploadMealImage" asp-antiforgery="true" enctype="multipart/form-data" style="display: inline;">
+                        <button type="button" class="btn btn-light btn-sm" onclick="document.getElementById('imageUpload').click()">
+                            <i class="bi bi-upload"></i> @Model.LangService.Transilate("Upload Image")
+                        </button>
+                        <input type="file" id="imageUpload" name="image" accept="image/*" style="display: none;" onchange="uploadImage(this)" />
+                    </form>
                 </div>
                 <div class="card-body">
                     <div id="imageGrid" class="row row-cols-6 g-3" style="max-height: 70vh; overflow-y: auto;">
@@ -669,28 +671,8 @@
             const file = input.files[0];
             if (!file) return;
 
-            const formData = new FormData();
-            formData.append('image', file);
-
-            fetch('/Admin?handler=UploadMealImage', {
-                method: 'POST',
-                headers: {
-                    'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
-                },
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    location.reload();
-                } else {
-                    alert('Error: ' + data.error);
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Failed to upload image');
-            });
+            // Submit the parent form directly
+            input.closest('form').submit();
         }
 
         function deleteImage(imageName) {
@@ -698,28 +680,30 @@
                 return;
             }
 
-            const formData = new FormData();
-            formData.append('imageName', imageName);
-
-            fetch('/Admin?handler=DeleteMealImage', {
-                method: 'POST',
-                headers: {
-                    'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
-                },
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    location.reload();
-                } else {
-                    alert('Error: ' + data.error);
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Failed to delete image');
-            });
+            // Create a form and submit it
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '/Admin?handler=DeleteMealImage';
+            
+            // Add antiforgery token
+            const tokenInput = document.querySelector('input[name="__RequestVerificationToken"]');
+            if (tokenInput) {
+                const hiddenToken = document.createElement('input');
+                hiddenToken.type = 'hidden';
+                hiddenToken.name = '__RequestVerificationToken';
+                hiddenToken.value = tokenInput.value;
+                form.appendChild(hiddenToken);
+            }
+            
+            // Add image name parameter
+            const hiddenInput = document.createElement('input');
+            hiddenInput.type = 'hidden';
+            hiddenInput.name = 'imageName';
+            hiddenInput.value = imageName;
+            form.appendChild(hiddenInput);
+            
+            document.body.appendChild(form);
+            form.submit();
         }
 
         let selectedMealGuid = null;

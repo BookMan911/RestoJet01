@@ -82,6 +82,7 @@ namespace RestoJett.Pages
             }
 
             LoadData(testAdmin);
+            LoadMealImages();
             LoggedUser = testAdmin;
             return Page();
         }
@@ -342,14 +343,22 @@ namespace RestoJett.Pages
             var file = Request.Form.Files.FirstOrDefault();
             if (file == null || file.Length == 0)
             {
-                return new JsonResult(new { success = false, error = "No file uploaded" });
+                MealError = new Exception("No file uploaded");
+                LoadData(testAdmin);
+                LoadMealImages();
+                LoggedUser = testAdmin;
+                return Page();
             }
 
             // Validate file is an image
             var contentType = file.ContentType;
             if (!contentType.StartsWith("image/"))
             {
-                return new JsonResult(new { success = false, error = "Invalid file type. Please upload an image." });
+                MealError = new Exception("Invalid file type. Please upload an image.");
+                LoadData(testAdmin);
+                LoadMealImages();
+                LoggedUser = testAdmin;
+                return Page();
             }
 
             // Calculate MD5 hash of the file
@@ -384,7 +393,7 @@ namespace RestoJett.Pages
             LoadMealImages();
             LoggedUser = testAdmin;
 
-            return new JsonResult(new { success = true });
+            return Page();
         }
 
         public IActionResult OnPostDeleteMealImage(string imageName)
@@ -402,7 +411,11 @@ namespace RestoJett.Pages
             // Validate filename to prevent directory traversal attacks
             if (string.IsNullOrEmpty(imageName) || imageName.Contains("..") || imageName.Contains("/"))
             {
-                return new JsonResult(new { success = false, error = "Invalid image name" });
+                MealError = new Exception("Invalid image name");
+                LoadData(testAdmin);
+                LoadMealImages();
+                LoggedUser = testAdmin;
+                return Page();
             }
 
             var imagesPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "meal-images");
@@ -410,7 +423,11 @@ namespace RestoJett.Pages
 
             if (!System.IO.File.Exists(filePath))
             {
-                return new JsonResult(new { success = false, error = "Image not found" });
+                MealError = new Exception("Image not found");
+                LoadData(testAdmin);
+                LoadMealImages();
+                LoggedUser = testAdmin;
+                return Page();
             }
 
             System.IO.File.Delete(filePath);
@@ -419,7 +436,7 @@ namespace RestoJett.Pages
             LoadMealImages();
             LoggedUser = testAdmin;
 
-            return new JsonResult(new { success = true });
+            return Page();
         }
 
         public IActionResult OnPostAssignMealImage(string mealGuid, string imageHash)
@@ -436,20 +453,32 @@ namespace RestoJett.Pages
 
             if (string.IsNullOrEmpty(mealGuid) || string.IsNullOrEmpty(imageHash))
             {
-                return new JsonResult(new { success = false, error = "Invalid parameters" });
+                MealError = new Exception("Invalid parameters");
+                LoadData(testAdmin);
+                LoadMealImages();
+                LoggedUser = testAdmin;
+                return Page();
             }
 
             // Find the meal and update its ImageHash
             var mealsResult = _restaurantService.GetMeals(testAdmin);
             if (mealsResult.Item1 != null)
             {
-                return new JsonResult(new { success = false, error = mealsResult.Item1.Message });
+                MealError = new Exception(mealsResult.Item1.Message);
+                LoadData(testAdmin);
+                LoadMealImages();
+                LoggedUser = testAdmin;
+                return Page();
             }
 
             var meal = mealsResult.Item2.FirstOrDefault(m => m.Guid == mealGuid);
             if (meal == null)
             {
-                return new JsonResult(new { success = false, error = "Meal not found" });
+                MealError = new Exception("Meal not found");
+                LoadData(testAdmin);
+                LoadMealImages();
+                LoggedUser = testAdmin;
+                return Page();
             }
 
             // Extract just the MD5 hash (without extension) for storage
@@ -471,14 +500,18 @@ namespace RestoJett.Pages
             var result = _restaurantService.UpdateMeal(testAdmin, mealGuid, updatedMeal);
             if (result.Item1 != null)
             {
-                return new JsonResult(new { success = false, error = result.Item1.Message });
+                MealError = new Exception(result.Item1.Message);
+                LoadData(testAdmin);
+                LoadMealImages();
+                LoggedUser = testAdmin;
+                return Page();
             }
 
             LoadData(testAdmin);
             LoadMealImages();
             LoggedUser = testAdmin;
 
-            return new JsonResult(new { success = true });
+            return Page();
         }
     }
 }
