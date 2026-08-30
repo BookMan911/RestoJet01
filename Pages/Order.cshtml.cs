@@ -79,7 +79,8 @@ namespace RestoJett.Pages
                     // Create new customer
                     var newCustomer = new JCustomer
                     {
-                        Name = customerName
+                        Name = customerName,
+                        CurrentUrlRes = Guid.NewGuid().ToString()
                     };
                     var addResult = _restaurantService.AddCustomer(testAdmin, newCustomer);
                     if (addResult.Item1 == null)
@@ -132,7 +133,7 @@ namespace RestoJett.Pages
                 CurrentCustomer = customersResult.Item2.FirstOrDefault(c => c.Name == CustomerName);
                 if (CurrentCustomer == null)
                 {
-                    var newCustomer = new JCustomer { Name = CustomerName };
+                    var newCustomer = new JCustomer { Name = CustomerName, CurrentUrlRes = Guid.NewGuid().ToString() };
                     var addResult = _restaurantService.AddCustomer(testAdmin, newCustomer);
                     if (addResult.Item1 == null)
                     {
