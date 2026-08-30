@@ -2,6 +2,7 @@
 @model RestoJett.Pages.OrderModel
 @{
     ViewData["Title"] = "Place Order - " + Model.CustomerName;
+    var urlResParam = !string.IsNullOrEmpty(Model.CurrentCustomer?.CurrentUrlRes) ? Model.CurrentCustomer.CurrentUrlRes : "";
 }
 
 <div class="container mt-4">
@@ -9,11 +10,11 @@
     <div class="row mb-3">
         <div class="col-md-12 text-end">
             <div class="btn-group" role="group">
-                <a asp-page="Order" asp-route-customerName="@Model.CustomerName" asp-route-lang="en" 
+                <a asp-page="Order" asp-route-customerName="@Model.CustomerName" asp-route-urlRes="@urlResParam" asp-route-lang="en" 
                    class="btn btn-sm @(Model.CurrentLanguage == "en" ? "btn-primary" : "btn-outline-primary")">English</a>
-                <a asp-page="Order" asp-route-customerName="@Model.CustomerName" asp-route-lang="de" 
+                <a asp-page="Order" asp-route-customerName="@Model.CustomerName" asp-route-urlRes="@urlResParam" asp-route-lang="de" 
                    class="btn btn-sm @(Model.CurrentLanguage == "de" ? "btn-primary" : "btn-outline-primary")">Deutsch</a>
-                <a asp-page="Order" asp-route-customerName="@Model.CustomerName" asp-route-lang="fr" 
+                <a asp-page="Order" asp-route-customerName="@Model.CustomerName" asp-route-urlRes="@urlResParam" asp-route-lang="fr" 
                    class="btn btn-sm @(Model.CurrentLanguage == "fr" ? "btn-primary" : "btn-outline-primary")">Français</a>
             </div>
         </div>
@@ -29,7 +30,7 @@
             <p>@Model.LangService.Transilate("Your order has been placed. Order ID:") <strong>@Model.OrderConfirmationGuid</strong></p>
             <p>@Model.LangService.Transilate("Thank you for your order,"), @Model.CustomerName!</p>
             <hr>
-            <a asp-page="Order" asp-route-customerName="@Model.CustomerName" asp-route-lang="@Model.CurrentLanguage" class="btn btn-outline-success">@Model.LangService.Transilate("Place Another Order")</a>
+            <a asp-page="Order" asp-route-customerName="@Model.CustomerName" asp-route-urlRes="@urlResParam" asp-route-lang="@Model.CurrentLanguage" class="btn btn-outline-success">@Model.LangService.Transilate("Place Another Order")</a>
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     }
@@ -84,6 +85,7 @@
                                     
                                     <form method="post" asp-page-handler="AddToCart" class="d-flex align-items-center">
                                         <input type="hidden" name="CustomerName" value="@Model.CustomerName" />
+                                        <input type="hidden" name="CurrentUrlRes" value="@urlResParam" />
                                         <input type="hidden" name="lang" value="@Model.CurrentLanguage" />
                                         <input type="hidden" name="MealGuid" value="@meal.Guid" />
                                         <input type="hidden" name="MealName" value="@meal.Name" />
@@ -127,6 +129,7 @@
                         <form method="post" asp-page-handler="SubmitOrder">
                             <input type="hidden" name="CustomerName" value="@Model.CustomerName" />
                             <input type="hidden" name="CustomerGuid" value="@Model.CurrentCustomer.Guid" />
+                            <input type="hidden" name="CurrentUrlRes" value="@urlResParam" />
                             <input type="hidden" name="lang" value="@Model.CurrentLanguage" />
                             
                             <button type="submit" class="btn btn-success w-100 btn-lg">
@@ -150,9 +153,14 @@
     <script>
         const customerName = '@Model.CustomerName';
         const currentLang = '@Model.CurrentLanguage';
+        const urlRes = '@(Model.CurrentCustomer?.CurrentUrlRes ?? "")';
         
         function loadCart() {
-            fetch(`/Order?handler=CartItems&customerName=${encodeURIComponent(customerName)}&lang=${encodeURIComponent(currentLang)}`)
+            let url = `/Order?handler=CartItems&customerName=${encodeURIComponent(customerName)}&lang=${encodeURIComponent(currentLang)}`;
+            if (urlRes) {
+                url += `&urlRes=${encodeURIComponent(urlRes)}`;
+            }
+            fetch(url)
                 .then(response => response.json())
                 .then(items => {
                     const cartDiv = document.getElementById('cartItems');

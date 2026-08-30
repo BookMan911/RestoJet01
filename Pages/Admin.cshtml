@@ -149,8 +149,10 @@
                             @foreach (var customer in Model.Customers)
                             {
                                 var customerOrders = Model.Orders.Where(o => o.CustomerGuid == customer.Guid).ToList();
+                                var urlRes = !string.IsNullOrEmpty(customer.CurrentUrlRes) ? customer.CurrentUrlRes : "";
+                                var customerLink = $"/Order?customerName={Uri.EscapeDataString(customer.Name)}&urlRes={Uri.EscapeDataString(urlRes)}";
                                 <tr>
-                                    <td><a href="/Order?customer=@customer.Guid" class="text-decoration-none">@customer.Name</a></td>
+                                    <td><a href="@customerLink" class="text-decoration-none">@customer.Name</a></td>
                                     <td>
                                         @if (customerOrders.Any())
                                         {

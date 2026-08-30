@@ -30,7 +30,7 @@ namespace RestoJett.Pages
             LangService = langService;
         }
 
-        public IActionResult OnGet(string customerName, string lang = "en")
+        public IActionResult OnGet(string customerName, string lang = "en", string urlRes = "")
         {
             CurrentLanguage = lang;
             
@@ -69,18 +69,29 @@ namespace RestoJett.Pages
                 Meals = mealsResult.Item2;
             }
 
-            // Try to find existing customer or create one
+            // Try to find existing customer by CurrentUrlRes first, then by name
             var customersResult = _restaurantService.GetCustomers(testAdmin);
             if (customersResult.Item1 == null)
             {
-                CurrentCustomer = customersResult.Item2.FirstOrDefault(c => c.Name == customerName);
+                // First try to find by CurrentUrlRes if provided
+                if (!string.IsNullOrEmpty(urlRes))
+                {
+                    CurrentCustomer = customersResult.Item2.FirstOrDefault(c => c.CurrentUrlRes == urlRes);
+                }
+                
+                // If not found by urlRes, try by name
+                if (CurrentCustomer == null)
+                {
+                    CurrentCustomer = customersResult.Item2.FirstOrDefault(c => c.Name == customerName);
+                }
+                
                 if (CurrentCustomer == null)
                 {
                     // Create new customer
                     var newCustomer = new JCustomer
                     {
                         Name = customerName,
-                        CurrentUrlRes = Guid.NewGuid().ToString()
+                        CurrentUrlRes = !string.IsNullOrEmpty(urlRes) ? urlRes : Guid.NewGuid().ToString()
                     };
                     var addResult = _restaurantService.AddCustomer(testAdmin, newCustomer);
                     if (addResult.Item1 == null)
@@ -125,15 +136,31 @@ namespace RestoJett.Pages
 
             // Get customer name from form
             CustomerName = Request.Form["CustomerName"].ToString();
+            var urlRes = Request.Form["CurrentUrlRes"].ToString();
 
             // Find or create customer
             var customersResult = _restaurantService.GetCustomers(testAdmin);
             if (customersResult.Item1 == null)
             {
-                CurrentCustomer = customersResult.Item2.FirstOrDefault(c => c.Name == CustomerName);
+                // Try to find by CurrentUrlRes first if provided
+                if (!string.IsNullOrEmpty(urlRes))
+                {
+                    CurrentCustomer = customersResult.Item2.FirstOrDefault(c => c.CurrentUrlRes == urlRes);
+                }
+                
+                // If not found, try by name
                 if (CurrentCustomer == null)
                 {
-                    var newCustomer = new JCustomer { Name = CustomerName, CurrentUrlRes = Guid.NewGuid().ToString() };
+                    CurrentCustomer = customersResult.Item2.FirstOrDefault(c => c.Name == CustomerName);
+                }
+                
+                if (CurrentCustomer == null)
+                {
+                    var newCustomer = new JCustomer 
+                    { 
+                        Name = CustomerName, 
+                        CurrentUrlRes = !string.IsNullOrEmpty(urlRes) ? urlRes : Guid.NewGuid().ToString() 
+                    };
                     var addResult = _restaurantService.AddCustomer(testAdmin, newCustomer);
                     if (addResult.Item1 == null)
                     {
@@ -171,7 +198,7 @@ namespace RestoJett.Pages
             TempData[cartKey] = System.Text.Json.JsonSerializer.Serialize(cartItems);
             TempData.Keep(cartKey);
 
-            return RedirectToPage(new { customerName = CustomerName });
+            return RedirectToPage(new { customerName = CustomerName, urlRes = !string.IsNullOrEmpty(urlRes) ? urlRes : CurrentCustomer?.CurrentUrlRes });
         }
 
         public IActionResult OnPostSubmitOrder(string lang = "en")
@@ -200,6 +227,7 @@ namespace RestoJett.Pages
             // Get customer name from form
             CustomerName = Request.Form["CustomerName"].ToString();
             var customerGuid = Request.Form["CustomerGuid"].ToString();
+            var urlRes = Request.Form["CurrentUrlRes"].ToString();
 
             // Get cart items from TempData
             var cartKey = $"cart_{CustomerName}";
@@ -222,7 +250,7 @@ namespace RestoJett.Pages
                     Meals = mealsResult.Item2;
                 }
 
-                CurrentCustomer = new JCustomer { Name = CustomerName, Guid = customerGuid };
+                CurrentCustomer = new JCustomer { Name = CustomerName, Guid = customerGuid, CurrentUrlRes = urlRes };
                 return Page();
             }
 
@@ -261,7 +289,7 @@ namespace RestoJett.Pages
                     Meals = mealsResult.Item2;
                 }
 
-                CurrentCustomer = new JCustomer { Name = CustomerName, Guid = customerGuid };
+                CurrentCustomer = new JCustomer { Name = CustomerName, Guid = customerGuid, CurrentUrlRes = urlRes };
                 return Page();
             }
 
@@ -278,11 +306,11 @@ namespace RestoJett.Pages
                 Meals = mealsResult2.Item2;
             }
 
-            CurrentCustomer = new JCustomer { Name = CustomerName, Guid = customerGuid };
+            CurrentCustomer = new JCustomer { Name = CustomerName, Guid = customerGuid, CurrentUrlRes = urlRes };
             return Page();
         }
 
-        public IActionResult OnGetCartItems(string customerName, string lang = "en")
+        public IActionResult OnGetCartItems(string customerName, string lang = "en", string urlRes = "")
         {
             CurrentLanguage = lang;
             
