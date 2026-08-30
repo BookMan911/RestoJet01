@@ -21,7 +21,7 @@
             {
                 <div class="alert alert-danger">@Model.Error.Message</div>
             }
-            else if (string.IsNullOrEmpty(Model.PilotGuid))
+            else if (string.IsNullOrEmpty(Model.ResUrl))
             {
                 <div class="alert alert-warning">
                     <i class="bi bi-exclamation-triangle"></i> @Model.LangService.Transilate("No pilot specified. Please provide a valid pilot identifier.")

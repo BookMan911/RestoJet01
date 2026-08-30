@@ -17,7 +17,7 @@ namespace RestoJett.Web.Pages
         }
 
         [BindProperty(SupportsGet = true)]
-        public string PilotGuid { get; set; }
+        public string ResUrl { get; set; }
 
         [BindProperty(SupportsGet = true)]
         public string PilotName { get; set; }
@@ -29,29 +29,35 @@ namespace RestoJett.Web.Pages
         {
             LangService.For("en");
 
-            if (string.IsNullOrEmpty(PilotGuid))
-            {
-                // Try to get from query parameter 'pilot' as fallback
-                PilotGuid = Request.Query["pilot"].ToString();
-                if (!string.IsNullOrEmpty(Request.Query["name"]))
-                {
-                    PilotName = Request.Query["name"].ToString();
-                }
-            }
-
-            if (string.IsNullOrEmpty(PilotGuid))
+            if (string.IsNullOrEmpty(ResUrl))
             {
                 return;
             }
 
-            var result = _restaurantService.GetOrdersByPilot(PilotGuid);
+            var result = _restaurantService.GetPilotByResUrl(ResUrl);
             if (result.Item1 != null)
             {
-                Error = result.Item1;
+                // Invalid ResUrl - redirect to InvalidUrl page
+                HttpContext.Response.Redirect("/InvalidUrl");
+                return;
+            }
+
+            var pilot = result.Item2;
+            if (pilot == null)
+            {
+                HttpContext.Response.Redirect("/InvalidUrl");
+                return;
+            }
+
+            // Get orders for this pilot using their Guid
+            var ordersResult = _restaurantService.GetOrdersByPilot(pilot.Guid);
+            if (ordersResult.Item1 != null)
+            {
+                Error = ordersResult.Item1;
             }
             else
             {
-                Orders = result.Item2 ?? new List<JOrder>();
+                Orders = ordersResult.Item2 ?? new List<JOrder>();
             }
         }
     }
