@@ -1,5 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Security.Cryptography;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using RestoJett.Core;
@@ -9,6 +14,7 @@ namespace RestoJett.Pages
     public class AdminModel : PageModel
     {
         private readonly IRestaurantService _restaurantService;
+        private readonly IHostingEnvironment _hostingEnvironment;
         public readonly LanguageService LangService;
 
         public List<JMeal> Meals { get; set; } = new List<JMeal>();
@@ -17,12 +23,15 @@ namespace RestoJett.Pages
         public List<JPilot> Pilots { get; set; } = new List<JPilot>();
         public List<JOrder> Orders { get; set; } = new List<JOrder>();
         public List<AuditLog> AuditLogs { get; set; } = new List<AuditLog>();
+        public List<string> MealImages { get; set; } = new List<string>();
 
         public Exception MealError { get; set; }
         public Exception UserError { get; set; }
         public Exception CustomerError { get; set; }
         public Exception PilotError { get; set; }
         public Exception OrderError { get; set; }
+        public Exception ImageError { get; set; }
+        public string ImageSuccess { get; set; }
 
         [BindProperty]
         public JUser LoggedUser { get; set; }
@@ -30,10 +39,11 @@ namespace RestoJett.Pages
         [BindProperty]
         public List<JOrderItem> OrderItems { get; set; } = new List<JOrderItem>();
 
-        public AdminModel(IRestaurantService restaurantService, LanguageService langService)
+        public AdminModel(IRestaurantService restaurantService, LanguageService langService, IHostingEnvironment hostingEnvironment)
         {
             _restaurantService = restaurantService;
             LangService = langService;
+            _hostingEnvironment = hostingEnvironment;
         }
 
         public IActionResult OnGet()
@@ -52,6 +62,7 @@ namespace RestoJett.Pages
 
             // Load all data
             LoadData(testAdmin);
+            LoadMealImages();
 
             LoggedUser = testAdmin;
             return Page();
@@ -308,6 +319,119 @@ namespace RestoJett.Pages
             {
                 AuditLogs = auditResult.Item2;
             }
+        }
+
+        private void LoadMealImages()
+        {
+            var imagesPath = Path.Combine(_hostingEnvironment.WebRootPath, "images");
+            if (Directory.Exists(imagesPath))
+            {
+                var imageFiles = Directory.GetFiles(imagesPath, "*.*")
+                    .Where(f => f.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase) ||
+                                f.EndsWith(".jpeg", StringComparison.OrdinalIgnoreCase) ||
+                                f.EndsWith(".png", StringComparison.OrdinalIgnoreCase) ||
+                                f.EndsWith(".gif", StringComparison.OrdinalIgnoreCase) ||
+                                f.EndsWith(".webp", StringComparison.OrdinalIgnoreCase));
+                
+                MealImages = imageFiles.Select(f => "/images/" + Path.GetFileName(f)).ToList();
+            }
+            else
+            {
+                MealImages = new List<string>();
+            }
+        }
+
+        public IActionResult OnPostUploadMealImage(IFormFile imageFile)
+        {
+            LangService.For("en");
+
+            var testAdmin = new JUser
+            {
+                Name = "admin",
+                Password = "admin123",
+                Guid = "admin-guid",
+                UserType = JUserType.Admin
+            };
+
+            try
+            {
+                if (imageFile != null && imageFile.Length > 0)
+                {
+                    var imagesPath = Path.Combine(_hostingEnvironment.WebRootPath, "images");
+                    
+                    if (!Directory.Exists(imagesPath))
+                    {
+                        Directory.CreateDirectory(imagesPath);
+                    }
+
+                    using (var memoryStream = new MemoryStream())
+                    {
+                        imageFile.CopyTo(memoryStream);
+                        var fileBytes = memoryStream.ToArray();
+                        
+                        using (var md5 = MD5.Create())
+                        {
+                            var hashBytes = md5.ComputeHash(fileBytes);
+                            var hashString = BitConverter.ToString(hashBytes).Replace("-", "").ToLowerInvariant();
+                            
+                            var extension = Path.GetExtension(imageFile.FileName);
+                            var fileName = hashString + extension;
+                            
+                            var filePath = Path.Combine(imagesPath, fileName);
+                            
+                            System.IO.File.WriteAllBytes(filePath, fileBytes);
+                            
+                            ImageSuccess = "Image uploaded successfully!";
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                ImageError = new Exception("Failed to upload image: " + ex.Message);
+            }
+
+            LoadData(testAdmin);
+            LoadMealImages();
+            LoggedUser = testAdmin;
+            return Page();
+        }
+
+        public IActionResult OnPostDeleteMealImage(string imageName)
+        {
+            LangService.For("en");
+
+            var testAdmin = new JUser
+            {
+                Name = "admin",
+                Password = "admin123",
+                Guid = "admin-guid",
+                UserType = JUserType.Admin
+            };
+
+            try
+            {
+                if (!string.IsNullOrEmpty(imageName))
+                {
+                    var imagesPath = Path.Combine(_hostingEnvironment.WebRootPath, "images");
+                    var filePath = Path.Combine(imagesPath, imageName);
+                    
+                    if (System.IO.File.Exists(filePath))
+                    {
+                        System.IO.File.Delete(filePath);
+                        ImageSuccess = "Image deleted successfully!";
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                ImageError = new Exception("Failed to delete image: " + ex.Message);
+            }
+
+            LoadData(testAdmin);
+            LoadMealImages();
+            LoggedUser = testAdmin;
+            return Page();
         }
     }
 }
