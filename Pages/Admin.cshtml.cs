@@ -1,7 +1,12 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Security.Cryptography;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Antiforgery;
 using RestoJett.Core;
 
 namespace RestoJett.Pages
@@ -17,18 +22,27 @@ namespace RestoJett.Pages
         public List<JPilot> Pilots { get; set; } = new List<JPilot>();
         public List<JOrder> Orders { get; set; } = new List<JOrder>();
         public List<AuditLog> AuditLogs { get; set; } = new List<AuditLog>();
+        public List<string> MealImages { get; set; } = new List<string>();
 
         public Exception MealError { get; set; }
         public Exception UserError { get; set; }
         public Exception CustomerError { get; set; }
         public Exception PilotError { get; set; }
         public Exception OrderError { get; set; }
+        public Exception ImageError { get; set; }
+        public string ImageMessage { get; set; }
 
         [BindProperty]
         public JUser LoggedUser { get; set; }
 
         [BindProperty]
         public List<JOrderItem> OrderItems { get; set; } = new List<JOrderItem>();
+
+        public class UpdateMealImageRequest
+        {
+            public string MealGuid { get; set; }
+            public string ImageHash { get; set; }
+        }
 
         public AdminModel(IRestaurantService restaurantService, LanguageService langService)
         {
@@ -52,9 +66,75 @@ namespace RestoJett.Pages
 
             // Load all data
             LoadData(testAdmin);
+            LoadMealImages();
 
             LoggedUser = testAdmin;
             return Page();
+        }
+
+        public IActionResult OnPostUploadMealImage(IFormFile imageFile)
+        {
+            LangService.For("en");
+
+            var testAdmin = new JUser
+            {
+                Name = "admin",
+                Password = "admin123",
+                Guid = "admin-guid",
+                UserType = JUserType.Admin
+            };
+
+            try
+            {
+                if (imageFile != null && imageFile.Length > 0)
+                {
+                    var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "mealimages");
+                    Directory.CreateDirectory(uploadsFolder);
+
+                    using (var md5 = MD5.Create())
+                    {
+                        using (var stream = imageFile.OpenReadStream())
+                        {
+                            var hashBytes = md5.ComputeHash(stream);
+                            var hashString = BitConverter.ToString(hashBytes).Replace("-", "").ToLowerInvariant();
+                            
+                            var extension = Path.GetExtension(imageFile.FileName);
+                            var fileName = $"{hashString}{extension}";
+                            var filePath = Path.Combine(uploadsFolder, fileName);
+
+                            stream.Position = 0;
+                            using (var fileStream = System.IO.File.Create(filePath))
+                            {
+                                stream.CopyTo(fileStream);
+                            }
+                        }
+                    }
+
+                    ImageMessage = "Image uploaded successfully!";
+                }
+            }
+            catch (Exception ex)
+            {
+                ImageError = ex;
+            }
+
+            LoadData(testAdmin);
+            LoadMealImages();
+            LoggedUser = testAdmin;
+            return Page();
+        }
+
+        private void LoadMealImages()
+        {
+            var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "mealimages");
+            if (Directory.Exists(uploadsFolder))
+            {
+                var imageExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".webp" };
+                MealImages = Directory.GetFiles(uploadsFolder)
+                    .Where(f => imageExtensions.Contains(Path.GetExtension(f).ToLowerInvariant()))
+                    .Select(f => $"/mealimages/{Path.GetFileName(f)}")
+                    .ToList();
+            }
         }
 
         public IActionResult OnPostAddMeal([Bind(Prefix = "meal")] JMeal meal)
@@ -243,6 +323,47 @@ namespace RestoJett.Pages
             LoadData(testAdmin);
             LoggedUser = testAdmin;
             return Page();
+        }
+
+        [IgnoreAntiforgeryToken]
+        public IActionResult OnPostUpdateMealImage([FromBody] UpdateMealImageRequest request)
+        {
+            LangService.For("en");
+
+            var testAdmin = new JUser
+            {
+                Name = "admin",
+                Password = "admin123",
+                Guid = "admin-guid",
+                UserType = JUserType.Admin
+            };
+
+            try
+            {
+                // Reload meals data since it's not populated on POST
+                LoadData(testAdmin);
+                
+                var meal = Meals.FirstOrDefault(m => m.Guid == request.MealGuid);
+                if (meal != null)
+                {
+                    meal.ImageHash = request.ImageHash;
+                    var result = _restaurantService.UpdateMeal(testAdmin, request.MealGuid, meal);
+                    if (result.Item1 != null)
+                    {
+                        MealError = result.Item1;
+                        return new JsonResult(new { success = false, error = result.Item1.Message });
+                    }
+                    
+                    return new JsonResult(new { success = true, imageHash = request.ImageHash });
+                }
+                
+                return new JsonResult(new { success = false, error = "Meal not found or update failed" });
+            }
+            catch (Exception ex)
+            {
+                MealError = ex;
+                return new JsonResult(new { success = false, error = ex.Message });
+            }
         }
 
         private void LoadData(JUser user)
