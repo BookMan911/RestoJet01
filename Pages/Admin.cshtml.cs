@@ -6,6 +6,7 @@ using System.Security.Cryptography;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Antiforgery;
 using RestoJett.Core;
 
 namespace RestoJett.Pages
@@ -324,6 +325,7 @@ namespace RestoJett.Pages
             return Page();
         }
 
+        [IgnoreAntiforgeryToken]
         public IActionResult OnPostUpdateMealImage([FromBody] UpdateMealImageRequest request)
         {
             LangService.For("en");
@@ -338,6 +340,9 @@ namespace RestoJett.Pages
 
             try
             {
+                // Reload meals data since it's not populated on POST
+                LoadData(testAdmin);
+                
                 var meal = Meals.FirstOrDefault(m => m.Guid == request.MealGuid);
                 if (meal != null)
                 {
@@ -349,15 +354,7 @@ namespace RestoJett.Pages
                         return new JsonResult(new { success = false, error = result.Item1.Message });
                     }
                     
-                    // Reload data to ensure we have the updated meal
-                    LoadData(testAdmin);
-                    
-                    // Check if the update was successful
-                    var updatedMeal = Meals.FirstOrDefault(m => m.Guid == request.MealGuid);
-                    if (updatedMeal != null && updatedMeal.ImageHash == request.ImageHash)
-                    {
-                        return new JsonResult(new { success = true, imageHash = request.ImageHash });
-                    }
+                    return new JsonResult(new { success = true, imageHash = request.ImageHash });
                 }
                 
                 return new JsonResult(new { success = false, error = "Meal not found or update failed" });
