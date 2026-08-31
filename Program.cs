@@ -12,8 +12,8 @@ builder.Services.AddSingleton<IRestaurantService, RestaurantService>();
 // Register LanguageService as a singleton
 builder.Services.AddSingleton<LanguageService>();
 
-// Register IHostingEnvironment for accessing web root path
-builder.Services.AddSingleton<IHostingEnvironment>(builder.Environment);
+// Register IWebHostEnvironment for accessing web root path
+builder.Services.AddSingleton<IWebHostEnvironment>(builder.Environment);
 
 var app = builder.Build();
 

@@ -14,7 +14,7 @@ namespace RestoJett.Pages
     public class AdminModel : PageModel
     {
         private readonly IRestaurantService _restaurantService;
-        private readonly IHostingEnvironment _hostingEnvironment;
+        private readonly IWebHostEnvironment _hostingEnvironment;
         public readonly LanguageService LangService;
 
         public List<JMeal> Meals { get; set; } = new List<JMeal>();
@@ -39,7 +39,7 @@ namespace RestoJett.Pages
         [BindProperty]
         public List<JOrderItem> OrderItems { get; set; } = new List<JOrderItem>();
 
-        public AdminModel(IRestaurantService restaurantService, LanguageService langService, IHostingEnvironment hostingEnvironment)
+        public AdminModel(IRestaurantService restaurantService, LanguageService langService, IWebHostEnvironment hostingEnvironment)
         {
             _restaurantService = restaurantService;
             LangService = langService;
