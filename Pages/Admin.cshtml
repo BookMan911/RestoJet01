@@ -54,6 +54,7 @@
                     <table class="table table-hover">
                         <thead>
                             <tr>
+                                <th>@Model.LangService.Transilate("Thumb")</th>
                                 <th>@Model.LangService.Transilate("Name")</th>
                                 <th>@Model.LangService.Transilate("Price")</th>
                                 <th>@Model.LangService.Transilate("Discount")</th>
@@ -66,12 +67,23 @@
                             @foreach (var meal in Model.Meals)
                             {
                                 <tr>
+                                    <td>
+                                        @if (!string.IsNullOrEmpty(meal.ImageHash))
+                                        {
+                                            <img src="/images/meals/@meal.ImageHash" alt="@meal.Name" style="width: 50px; height: 50px; object-fit: cover;" />
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">No Image</span>
+                                        }
+                                    </td>
                                     <td>@meal.Name</td>
                                     <td>@meal.Price.ToString("C")</td>
                                     <td>@meal.Discount.ToString("P")</td>
                                     <td>@meal.Version</td>
                                     <td>@meal.Description</td>
                                     <td>
+                                        <button class="btn btn-sm btn-info" onclick="selectImage('@meal.Guid')">Select Image</button>
                                         <button class="btn btn-sm btn-warning" onclick="editMeal('@meal.Guid')">@Model.LangService.Transilate("Edit")</button>
                                         <button class="btn btn-sm btn-danger" onclick="deleteMeal('@meal.Guid')">@Model.LangService.Transilate("Delete")</button>
                                     </td>
@@ -610,5 +622,56 @@
                 alert('@Model.LangService.Transilate("At least one meal is required")');
             }
         }
+
+        let currentMealGuid = null;
+
+        function selectImage(mealGuid) {
+            currentMealGuid = mealGuid;
+            const modal = new bootstrap.Modal(document.getElementById('imageSelectionModal'));
+            modal.show();
+        }
+
+        function imageClicked(imageHash) {
+            console.log(imageHash);
+            const modalElement = document.getElementById('imageSelectionModal');
+            const modal = bootstrap.Modal.getInstance(modalElement);
+            if (modal) {
+                modal.hide();
+            }
+        }
     </script>
+
+    <!-- Image Selection Modal -->
+    <div class="modal fade" id="imageSelectionModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">@Model.LangService.Transilate("Select Image")</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row" id="imagesContainer">
+                        @{
+                            var imagesPath = "/workspace/wwwroot/images/meals";
+                            if (System.IO.Directory.Exists(imagesPath))
+                            {
+                                foreach (var imageFile in System.IO.Directory.GetFiles(imagesPath))
+                                {
+                                    var fileName = System.IO.Path.GetFileName(imageFile);
+                                    <div class="col-md-4 mb-3">
+                                        <div class="card" style="cursor: pointer;" onclick="imageClicked('@fileName')">
+                                            <img src="/images/meals/@fileName" class="card-img-top" alt="@fileName" style="height: 150px; object-fit: cover;" />
+                                            <div class="card-body p-2">
+                                                <small class="text-muted">@fileName</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            }
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 }

@@ -1,25 +1,30 @@
 ```
-# Build artifacts
-bin/
-obj/
-*.pdb
-*.dll
-*.exe
-*.so
-*.dylib
-*.class
+# Compiled and build artifacts
+*.pyc
+__pycache__/
+*.o
+*.obj
+dist/
+build/
+target/
 
 # Dependencies
+.venv/
+venv/
 node_modules/
-packages/
+.julia/
+.zig-cache/
 
-# Logs
+# Logs and temp files
 *.log
+*.tmp
+*.swp
+*.swo
 
 # Environment
 .env
 .env.local
-*.env.*
+.env.*
 
 # Editors
 .vscode/
@@ -27,22 +32,14 @@ packages/
 *.swp
 *.swo
 
-# OS
+# System files
 .DS_Store
 Thumbs.db
 
 # Coverage
 coverage/
 htmlcov/
-*.coverage
-
-# Python specific (if applicable)
-__pycache__/
-*.pyc
-*.pyo
-*.pyd
-.Python
-*.so
+.coverage
 
 # Compressed files
 *.zip
