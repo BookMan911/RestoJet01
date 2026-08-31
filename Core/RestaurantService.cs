@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.IO;
+using System.Security.Cryptography;
 
 namespace RestoJett.Core
 {
@@ -46,6 +48,10 @@ namespace RestoJett.Core
 
         // Audit logs (Admin only)
         Tuple<Exception, List<AuditLog>> GetAuditLogs(JUser loggedUser);
+
+        // Image operations (Admin only)
+        Tuple<Exception, string> AddImage(JUser loggedUser, byte[] imageBytes);
+        Tuple<Exception, List<string>> GetImages(JUser loggedUser);
     }
 
     public class RestaurantService : IRestaurantService
@@ -58,6 +64,7 @@ namespace RestoJett.Core
         private readonly List<AuditLog> _auditLogs;
         private readonly List<JPilot> _pilots;
         private readonly object _lock = new object();
+        private readonly string _imagesDir;
 
         public JMenu MainMenu { get; set; }
 
@@ -71,6 +78,13 @@ namespace RestoJett.Core
             _auditLogs = new List<AuditLog>();
             _pilots = new List<JPilot>();
             MainMenu = new JMenu();
+            
+            // Set images directory path
+            _imagesDir = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images");
+            if (!Directory.Exists(_imagesDir))
+            {
+                Directory.CreateDirectory(_imagesDir);
+            }
         }
 
         #region Helper Methods
@@ -765,6 +779,68 @@ namespace RestoJett.Core
             }
 
             return new Tuple<Exception, List<AuditLog>>(null, _auditLogs.ToList());
+        }
+
+        #endregion
+
+        #region Image Operations
+
+        public Tuple<Exception, string> AddImage(JUser loggedUser, byte[] imageBytes)
+        {
+            var validation = ValidateUser(loggedUser, requireAdmin: true);
+            if (validation.Item1 != null)
+            {
+                return new Tuple<Exception, string>(validation.Item1, null);
+            }
+
+            if (imageBytes == null || imageBytes.Length == 0)
+            {
+                var ex = new ArgumentNullException(nameof(imageBytes), "Image bytes cannot be null or empty.");
+                return new Tuple<Exception, string>(ex, null);
+            }
+
+            // Calculate MD5 hash of the image content
+            string md5Hash;
+            using (var md5 = MD5.Create())
+            {
+                byte[] hashBytes = md5.ComputeHash(imageBytes);
+                md5Hash = BitConverter.ToString(hashBytes).Replace("-", "").ToLowerInvariant();
+            }
+
+            // Save the image with the MD5 hash as filename (no extension)
+            string filePath = Path.Combine(_imagesDir, md5Hash);
+            
+            lock (_lock)
+            {
+                File.WriteAllBytes(filePath, imageBytes);
+            }
+
+            LogAction(loggedUser, "Create", "Image", md5Hash, $"Added image with hash: {md5Hash}");
+            return new Tuple<Exception, string>(null, md5Hash);
+        }
+
+        public Tuple<Exception, List<string>> GetImages(JUser loggedUser)
+        {
+            var validation = ValidateUser(loggedUser, requireAdmin: true);
+            if (validation.Item1 != null)
+            {
+                return new Tuple<Exception, List<string>>(validation.Item1, new List<string>());
+            }
+
+            lock (_lock)
+            {
+                if (!Directory.Exists(_imagesDir))
+                {
+                    return new Tuple<Exception, List<string>>(null, new List<string>());
+                }
+
+                var imageFiles = Directory.GetFiles(_imagesDir)
+                    .Select(Path.GetFileName)
+                    .ToList();
+
+                LogAction(loggedUser, "Read", "Image", "*", "Retrieved all images");
+                return new Tuple<Exception, List<string>>(null, imageFiles);
+            }
         }
 
         #endregion
