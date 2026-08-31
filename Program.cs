@@ -1,4 +1,5 @@
 using RestoJett.Core;
+using Microsoft.AspNetCore.Hosting;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,6 +11,9 @@ builder.Services.AddSingleton<IRestaurantService, RestaurantService>();
 
 // Register LanguageService as a singleton
 builder.Services.AddSingleton<LanguageService>();
+
+// Register IWebHostEnvironment for accessing web root path
+builder.Services.AddSingleton<IWebHostEnvironment>(builder.Environment);
 
 var app = builder.Build();
 

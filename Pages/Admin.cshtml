@@ -34,6 +34,9 @@
         <li class="nav-item" role="presentation">
             <button class="nav-link" id="audit-tab" data-bs-toggle="tab" data-bs-target="#audit" type="button" role="tab">@Model.LangService.Transilate("Audit Logs")</button>
         </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="meals-images-tab" data-bs-toggle="tab" data-bs-target="#meals-images" type="button" role="tab">@Model.LangService.Transilate("Meals Images")</button>
+        </li>
     </ul>
 
     <div class="tab-content" id="adminTabsContent">
@@ -325,6 +328,56 @@
                             }
                         </tbody>
                     </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Meals Images Tab -->
+        <div class="tab-pane fade" id="meals-images" role="tabpanel">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">@Model.LangService.Transilate("Meals Images")</h5>
+                    <form method="post" asp-page-handler="UploadMealImage" enctype="multipart/form-data" class="d-inline">
+                        <div class="input-group input-group-sm">
+                            <input type="file" class="form-control" name="imageFile" accept="image/*" required />
+                            <button type="submit" class="btn btn-light">@Model.LangService.Transilate("Upload")</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="card-body">
+                    @if (Model.ImageError != null)
+                    {
+                        <div class="alert alert-danger">@Model.ImageError.Message</div>
+                    }
+                    @if (Model.ImageSuccess != null)
+                    {
+                        <div class="alert alert-success">@Model.ImageSuccess</div>
+                    }
+                    <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-4">
+                        @if (Model.MealImages != null && Model.MealImages.Any())
+                        {
+                            @foreach (var image in Model.MealImages)
+                            {
+                                <div class="col">
+                                    <div class="card h-100">
+                                        <img src="@image" class="card-img-top" alt="Meal Image" style="height: 200px; object-fit: cover;" />
+                                        <div class="card-body p-2 text-center">
+                                            <form method="post" asp-page-handler="DeleteMealImage" onsubmit="return confirm('Are you sure you want to delete this image?');">
+                                                <input type="hidden" name="imageName" value="@System.IO.Path.GetFileName(image)" />
+                                                <button type="submit" class="btn btn-sm btn-danger">@Model.LangService.Transilate("Delete")</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <div class="col-12">
+                                <p class="text-muted text-center">@Model.LangService.Transilate("No images uploaded yet.")</p>
+                            </div>
+                        }
+                    </div>
                 </div>
             </div>
         </div>
