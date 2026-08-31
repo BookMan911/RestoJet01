@@ -57,6 +57,7 @@
                     <table class="table table-hover">
                         <thead>
                             <tr>
+                                <th>@Model.LangService.Transilate("Image")</th>
                                 <th>@Model.LangService.Transilate("Name")</th>
                                 <th>@Model.LangService.Transilate("Price")</th>
                                 <th>@Model.LangService.Transilate("Discount")</th>
@@ -68,13 +69,20 @@
                         <tbody>
                             @foreach (var meal in Model.Meals)
                             {
+                                var imageUrl = !string.IsNullOrEmpty(meal.ImageHash) ? $"/images/{meal.ImageHash}" : "/images/placeholder.png";
                                 <tr>
+                                    <td>
+                                        <img src="@imageUrl" alt="@meal.Name" style="width: 60px; height: 60px; object-fit: cover; border-radius: 4px;" />
+                                    </td>
                                     <td>@meal.Name</td>
                                     <td>@meal.Price.ToString("C")</td>
                                     <td>@meal.Discount.ToString("P")</td>
                                     <td>@meal.Version</td>
                                     <td>@meal.Description</td>
                                     <td>
+                                        <button class="btn btn-sm btn-info me-1" onclick="openImageSelector('@meal.Guid', '@meal.Name')">
+                                            <i class="bi bi-image"></i> @Model.LangService.Transilate("Select Image")
+                                        </button>
                                         <button class="btn btn-sm btn-warning" onclick="editMeal('@meal.Guid')">@Model.LangService.Transilate("Edit")</button>
                                         <button class="btn btn-sm btn-danger" onclick="deleteMeal('@meal.Guid')">@Model.LangService.Transilate("Delete")</button>
                                     </td>
@@ -384,6 +392,50 @@
     </div>
 </div>
 
+<!-- Image Selector Modal -->
+<div class="modal fade" id="imageSelectorModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">@Model.LangService.Transilate("Select Image for Meal")</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="selectImageForm" method="post" asp-page-handler="UpdateMealImage" asp-antiforgery="true">
+                    <input type="hidden" name="mealGuid" id="selectedMealGuid" />
+                    <input type="hidden" name="imageHash" id="selectedImageHash" />
+                    <div class="row row-cols-2 row-cols-md-3 g-4" id="imageSelectionContainer">
+                        @if (Model.MealImages != null && Model.MealImages.Any())
+                        {
+                            @foreach (var image in Model.MealImages)
+                            {
+                                var imageName = System.IO.Path.GetFileName(image);
+                                <div class="col">
+                                    <div class="card h-100" style="cursor: pointer;" onclick="selectImage('@imageName')">
+                                        <img src="@image" class="card-img-top" alt="Meal Image" style="height: 150px; object-fit: cover;" />
+                                        <div class="card-body p-2 text-center">
+                                            <small class="text-muted">@imageName</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <div class="col-12">
+                                <p class="text-muted text-center">@Model.LangService.Transilate("No images uploaded yet. Please upload images in the Meals Images tab.")</p>
+                            </div>
+                        }
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@Model.LangService.Transilate("Close")</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Add Meal Modal -->
 <div class="modal fade" id="addMealModal" tabindex="-1">
     <div class="modal-dialog">
@@ -661,6 +713,20 @@
                 row.remove();
             } else {
                 alert('@Model.LangService.Transilate("At least one meal is required")');
+            }
+        }
+
+        function openImageSelector(mealGuid, mealName) {
+            document.getElementById('selectedMealGuid').value = mealGuid;
+            document.querySelector('#imageSelectorModal .modal-title').textContent = '@Model.LangService.Transilate("Select Image for Meal") - ' + mealName;
+            var modal = new bootstrap.Modal(document.getElementById('imageSelectorModal'));
+            modal.show();
+        }
+
+        function selectImage(imageHash) {
+            if (confirm('@Model.LangService.Transilate("Are you sure you want to assign this image to the meal?")')) {
+                document.getElementById('selectedImageHash').value = imageHash;
+                document.getElementById('selectImageForm').submit();
             }
         }
     </script>

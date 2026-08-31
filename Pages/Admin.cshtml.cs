@@ -433,5 +433,48 @@ namespace RestoJett.Pages
             LoggedUser = testAdmin;
             return Page();
         }
+
+        public IActionResult OnPostUpdateMealImage(string mealGuid, string imageHash)
+        {
+            LangService.For("en");
+
+            var testAdmin = new JUser
+            {
+                Name = "admin",
+                Password = "admin123",
+                Guid = "admin-guid",
+                UserType = JUserType.Admin
+            };
+
+            try
+            {
+                if (!string.IsNullOrEmpty(mealGuid) && !string.IsNullOrEmpty(imageHash))
+                {
+                    var meal = Meals.FirstOrDefault(m => m.Guid == mealGuid);
+                    if (meal != null)
+                    {
+                        meal.ImageHash = imageHash;
+                        var result = _restaurantService.UpdateMeal(testAdmin, mealGuid, meal);
+                        if (result.Item1 != null)
+                        {
+                            MealError = result.Item1;
+                        }
+                        else
+                        {
+                            ImageSuccess = $"Image assigned to meal '{meal.Name}' successfully!";
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                ImageError = new Exception("Failed to assign image to meal: " + ex.Message);
+            }
+
+            LoadData(testAdmin);
+            LoadMealImages();
+            LoggedUser = testAdmin;
+            return Page();
+        }
     }
 }

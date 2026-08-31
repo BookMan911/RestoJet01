@@ -1,51 +1,63 @@
-# Compiled and build artifacts
-*.pyc
-__pycache__/
-*.o
-*.obj
-*.dll
-*.so
-*.exe
-*.class
-*.out
+```csharp
+# Build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+bld/
+[Bb]in/
+[Oo]bj/
 
-# Dependencies
-.venv/
-venv/
-node_modules/
-dist/
-build/
-target/
-.gradle/
+# Visual Studio files
+*.user
+*.userosscache
+*.suo
+*.csproj.user
+*.vbproj.user
+*.fsproj.user
+*.userprefs
 
-# Logs and temp files
+# Visual Studio Code files
+.vscode/
+
+# ASP.NET Core
+bin/
+obj/
+out/
+
+# User-specific files
+.vs/
+*.userprefs
+*.sln.docstates
+
+# Log files
 *.log
-*.tmp
-*.swp
-*.swo
 
-# Environment
+# Environment specific files
 .env
 .env.local
 *.env.*
 
-# Editors
-.vscode/
-.idea/
-*.swp
-*.swo
-
-# System files
+# OS generated files
 .DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
 Thumbs.db
+desktop.ini
 
-# Coverage
-coverage/
-htmlcov/
-.coverage
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*.cache
+*.jar
 
-# Python specific
-*.pyc
-__pycache__/
-.mypy_cache/
-.pytest_cache/
+# Dependencies
+node_modules/
+packages/
+```
