@@ -32,6 +32,9 @@
             <button class="nav-link" id="orders-tab" data-bs-toggle="tab" data-bs-target="#orders" type="button" role="tab">@Model.LangService.Transilate("Orders")</button>
         </li>
         <li class="nav-item" role="presentation">
+            <button class="nav-link" id="mealimages-tab" data-bs-toggle="tab" data-bs-target="#mealimages" type="button" role="tab">@Model.LangService.Transilate("Meal Images")</button>
+        </li>
+        <li class="nav-item" role="presentation">
             <button class="nav-link" id="audit-tab" data-bs-toggle="tab" data-bs-target="#audit" type="button" role="tab">@Model.LangService.Transilate("Audit Logs")</button>
         </li>
     </ul>
@@ -325,6 +328,47 @@
                             }
                         </tbody>
                     </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Meal Images Tab -->
+        <div class="tab-pane fade" id="mealimages" role="tabpanel">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">@Model.LangService.Transilate("Meal Images")</h5>
+                    <form method="post" asp-page-handler="UploadImage" asp-antiforgery="true" enctype="multipart/form-data" class="d-inline">
+                        <input type="file" name="imageFile" class="form-control form-control-sm d-inline-block w-auto" accept="image/*" required />
+                        <button type="submit" class="btn btn-light btn-sm ms-2">
+                            <i class="bi bi-upload"></i> @Model.LangService.Transilate("Upload Image")
+                        </button>
+                    </form>
+                </div>
+                <div class="card-body">
+                    @if (Model.ImageError != null)
+                    {
+                        <div class="alert alert-danger">@Model.ImageError.Message</div>
+                    }
+                    @if (Model.MealImages.Any())
+                    {
+                        <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-4">
+                            @foreach (var imageHash in Model.MealImages)
+                            {
+                                <div class="col">
+                                    <div class="card h-100">
+                                        <img src="/images/@imageHash" class="card-img-top" alt="@imageHash" style="height: 200px; object-fit: cover;" />
+                                        <div class="card-body p-2">
+                                            <small class="text-muted">@imageHash</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-muted">@Model.LangService.Transilate("No images uploaded yet.")</p>
+                    }
                 </div>
             </div>
         </div>

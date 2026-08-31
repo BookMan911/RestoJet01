@@ -17,12 +17,14 @@ namespace RestoJett.Pages
         public List<JPilot> Pilots { get; set; } = new List<JPilot>();
         public List<JOrder> Orders { get; set; } = new List<JOrder>();
         public List<AuditLog> AuditLogs { get; set; } = new List<AuditLog>();
+        public List<string> MealImages { get; set; } = new List<string>();
 
         public Exception MealError { get; set; }
         public Exception UserError { get; set; }
         public Exception CustomerError { get; set; }
         public Exception PilotError { get; set; }
         public Exception OrderError { get; set; }
+        public Exception ImageError { get; set; }
 
         [BindProperty]
         public JUser LoggedUser { get; set; }
@@ -308,6 +310,49 @@ namespace RestoJett.Pages
             {
                 AuditLogs = auditResult.Item2;
             }
+
+            // Load meal images
+            var imagesResult = _restaurantService.GetImages(user);
+            if (imagesResult.Item1 == null)
+            {
+                MealImages = imagesResult.Item2;
+            }
+            else
+            {
+                ImageError = imagesResult.Item1;
+            }
+        }
+
+        public IActionResult OnPostUploadImage(IFormFile imageFile)
+        {
+            LangService.For("en");
+
+            var testAdmin = new JUser
+            {
+                Name = "admin",
+                Password = "admin123",
+                Guid = "admin-guid",
+                UserType = JUserType.Admin
+            };
+
+            if (imageFile != null && imageFile.Length > 0)
+            {
+                using (var memoryStream = new MemoryStream())
+                {
+                    imageFile.CopyTo(memoryStream);
+                    var imageBytes = memoryStream.ToArray();
+
+                    var result = _restaurantService.AddImage(testAdmin, imageBytes);
+                    if (result.Item1 != null)
+                    {
+                        ImageError = result.Item1;
+                    }
+                }
+            }
+
+            LoadData(testAdmin);
+            LoggedUser = testAdmin;
+            return Page();
         }
     }
 }
