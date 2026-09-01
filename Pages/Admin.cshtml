@@ -75,7 +75,8 @@
                                     <td>@meal.Version</td>
                                     <td>@meal.Description</td>
                                     <td>
-                                        <button class="btn btn-sm btn-warning" onclick="editMeal('@meal.Guid')">@Model.LangService.Transilate("Edit")</button>
+                                        <button class="btn btn-sm btn-info me-1" onclick="selectMealImage('@meal.Guid', '@meal.Name')">@Model.LangService.Transilate("Select Image")</button>
+                                        <button class="btn btn-sm btn-warning me-1" onclick="editMeal('@meal.Guid')">@Model.LangService.Transilate("Edit")</button>
                                         <button class="btn btn-sm btn-danger" onclick="deleteMeal('@meal.Guid')">@Model.LangService.Transilate("Delete")</button>
                                     </td>
                                 </tr>
@@ -384,6 +385,44 @@
     </div>
 </div>
 
+<!-- Select Meal Image Modal -->
+<div class="modal fade" id="selectMealImageModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">@Model.LangService.Transilate("Select Image for") <span id="selectedMealName"></span></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="selectedMealGuid" />
+                <div class="row row-cols-2 row-cols-md-3 g-4" id="mealImagesContainer">
+                    @if (Model.MealImages != null && Model.MealImages.Any())
+                    {
+                        @foreach (var image in Model.MealImages)
+                        {
+                            var imageName = System.IO.Path.GetFileName(image);
+                            <div class="col">
+                                <div class="card h-100" style="cursor: pointer;" onclick="chooseImage('@image', '@imageName')">
+                                    <img src="@image" class="card-img-top" alt="Meal Image" style="height: 150px; object-fit: cover;" />
+                                    <div class="card-body p-2 text-center">
+                                        <p class="card-text small mb-0">@imageName</p>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="col-12">
+                            <p class="text-muted text-center">@Model.LangService.Transilate("No images uploaded yet.")</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Add Meal Modal -->
 <div class="modal fade" id="addMealModal" tabindex="-1">
     <div class="modal-dialog">
@@ -661,6 +700,25 @@
                 row.remove();
             } else {
                 alert('@Model.LangService.Transilate("At least one meal is required")');
+            }
+        }
+        
+        function selectMealImage(mealGuid, mealName) {
+            document.getElementById('selectedMealGuid').value = mealGuid;
+            document.getElementById('selectedMealName').textContent = mealName;
+            var modal = new bootstrap.Modal(document.getElementById('selectMealImageModal'));
+            modal.show();
+        }
+        
+        function chooseImage(imageSrc, imageName) {
+            console.log('Selected Image Info:');
+            console.log('Name: ' + imageName);
+            console.log('Src: ' + imageSrc);
+            alert('Selected Image:\nName: ' + imageName + '\nSrc: ' + imageSrc);
+            var modalElement = document.getElementById('selectMealImageModal');
+            var modal = bootstrap.Modal.getInstance(modalElement);
+            if (modal) {
+                modal.hide();
             }
         }
     </script>
