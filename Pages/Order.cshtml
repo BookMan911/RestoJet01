@@ -64,7 +64,7 @@
                             <div class="card h-100">
                                 @if (!string.IsNullOrEmpty(meal.ImageHash))
                                 {
-                                    <img src="@meal.ImageHash" class="card-img-top" alt="@meal.Name" style="height: 200px; object-fit: cover;">
+                                    <img src="/images/@meal.ImageHash" class="card-img-top" alt="@meal.Name" style="height: 200px; object-fit: cover;">
                                 }
                                 <div class="card-body">
                                     <h5 class="card-title">@meal.Name</h5>
