@@ -733,7 +733,6 @@
             fetch('/Admin?handler=SetMealImage', {
                 method: 'POST',
                 headers: {
-                    'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value,
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({ mealGuid: currentMealGuid, imageName: imageName })

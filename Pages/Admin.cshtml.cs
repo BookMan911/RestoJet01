@@ -434,6 +434,7 @@ namespace RestoJett.Pages
             return Page();
         }
 
+        [IgnoreAntiforgeryToken]
         public async Task<IActionResult> OnPostSetMealImage()
         {
             LangService.For("en");
@@ -449,10 +450,21 @@ namespace RestoJett.Pages
             try
             {
                 Request.EnableBuffering();
+                
+                if (!Request.ContentType?.Contains("application/json") ?? true)
+                {
+                    return BadRequest(new { message = "Content-Type must be application/json" });
+                }
+                
                 using (var reader = new StreamReader(Request.Body, leaveOpen: true))
                 {
                     var body = await reader.ReadToEndAsync();
                     Request.Body.Position = 0;
+                    
+                    if (string.IsNullOrEmpty(body))
+                    {
+                        return BadRequest(new { message = "Empty request body" });
+                    }
                     
                     var options = new System.Text.Json.JsonSerializerOptions
                     {
