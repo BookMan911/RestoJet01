@@ -12,6 +12,7 @@ namespace RestoJett.Core
         Tuple<Exception, JMeal> UpdateMeal(JUser loggedUser, string mealGuid, JMeal meal);
         Tuple<Exception, bool> RemoveMeal(JUser loggedUser, string mealGuid);
 
+        Exception setImageHash(JUser loggedUser, string mealGuid, string imageHash); 
         // User operations
         Tuple<Exception, List<JUser>> GetUsers(JUser loggedUser);
         Tuple<Exception, JUser> AddUser(JUser loggedUser, JUser user);
@@ -75,6 +76,8 @@ namespace RestoJett.Core
 
         #region Helper Methods
 
+
+
         private Tuple<Exception, bool> ValidateUser(JUser loggedUser, bool requireAdmin = false)
         {
             if (loggedUser == null)
@@ -118,6 +121,48 @@ namespace RestoJett.Core
 
         #region Meal Operations
 
+
+        public Exception setImageHash(JUser loggedUser, string mealGuid, string imageHash){
+
+            
+            try{
+
+            
+                var validation = ValidateUser(loggedUser, requireAdmin: true);
+                    if (validation.Item1 != null)
+                    {
+                        return validation.Item1;
+                    }
+
+                    lock (_lock)
+                    {
+                        var existingMeal = _meals.FirstOrDefault(m => m.Guid == mealGuid);
+                        if (existingMeal == null)
+                        {
+                            var ex = new KeyNotFoundException($"Meal with GUID {mealGuid} not found.");
+                            return ex;
+                        }
+
+                        existingMeal.ImageHash = imageHash;
+                        existingMeal.Version += 1.0f;
+
+                        // Update in menu if name changed
+                        if (MainMenu.Meals.Contains(existingMeal.Name))
+                        {
+                            MainMenu.Meals[existingMeal.Name] = existingMeal;
+                        }
+                    }
+
+                    LogAction(loggedUser, "Update", "Meal", mealGuid, $"Updated image hash for meal: {mealGuid}");
+                    return null; // No exception, operation successful
+
+
+            }catch(Exception ex){
+                return ex;
+            }
+
+            
+        }
         public Tuple<Exception, List<JMeal>> GetMeals(JUser loggedUser)
         {
             var validation = ValidateUser(loggedUser);

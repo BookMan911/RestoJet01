@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using RestoJett.Core;
-
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 namespace RestoJett.Pages
 {
     public class AdminModel : PageModel
@@ -341,6 +341,28 @@ namespace RestoJett.Pages
             }
         }
 
+
+public async Task<IActionResult> OnPostAssignMealImageAsync([FromBody] string mealGuid, [FromBody] string imageSrc, [FromBody] string imageName)
+{
+    try
+    {
+        // Update your meal with the image
+        var meal = Meals.FirstOrDefault(m => m.Guid == mealGuid);
+        if (meal != null)
+        {
+            meal.ImageHash = imageSrc;
+            // Save to database
+            // await _repository.UpdateMealAsync(meal);
+        }
+
+        Console.WriteLine($"Assigned image {imageName} to meal {mealGuid}");
+        return new JsonResult(new { success = true, message = "Image assigned successfully" });
+    }
+    catch (Exception ex)
+    {
+        return new JsonResult(new { success = false, message = ex.Message });
+    }
+}
         public IActionResult OnPostUploadMealImage(IFormFile imageFile)
         {
             LangService.For("en");

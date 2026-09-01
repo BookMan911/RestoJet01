@@ -618,7 +618,8 @@
         </div>
     </div>
 </div>
-
+<form id="antiForgeryCsrfForm" method="post">
+</form>
 @section Scripts {
     <script>
         function deleteMeal(guid) {
@@ -709,17 +710,57 @@
             var modal = new bootstrap.Modal(document.getElementById('selectMealImageModal'));
             modal.show();
         }
-        
         function chooseImage(imageSrc, imageName) {
-            console.log('Selected Image Info:');
-            console.log('Name: ' + imageName);
-            console.log('Src: ' + imageSrc);
-            alert('Selected Image:\nName: ' + imageName + '\nSrc: ' + imageSrc);
-            var modalElement = document.getElementById('selectMealImageModal');
-            var modal = bootstrap.Modal.getInstance(modalElement);
-            if (modal) {
-                modal.hide();
-            }
+    console.log('Selected Image Info:');
+    console.log('Name: ' + imageName);
+    console.log('Src: ' + imageSrc);
+    const mealGuid = document.getElementById('selectedMealGuid').value;
+    console.log('Meal GUID: ' + mealGuid);
+
+    // Get CSRF token
+    const form = document.getElementById('antiForgeryCsrfForm');
+    const token = form.querySelector('input[name="__RequestVerificationToken"]')?.value;
+
+    if (!token) {
+        alert('CSRF token not found. Please refresh the page.');
+        return;
+    }
+
+    // Use FormData instead of JSON
+    const formData = new FormData();
+    formData.append('mealGuid', mealGuid);
+    formData.append('imageSrc', imageSrc);
+    formData.append('imageName', imageName);
+    formData.append('__RequestVerificationToken', token);
+
+    fetch('/Admin?handler=AssignMealImage', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => {
+        console.log('Response status:', response.status);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
         }
+        return response.json();
+    })
+    .then(data => {
+        console.log('Success:', data);
+       // alert('Image assigned successfully!');
+        var modalElement = document.getElementById('selectMealImageModal');
+        var modal = bootstrap.Modal.getInstance(modalElement);
+        if (modal) {
+            modal.hide();
+        }
+        location.reload();
+    })
+    .catch(error => {
+        console.error('Error:', error);
+      //  alert('Failed to assign image: ' + error.message);
+    });
+}
+     
+ 
+ 
     </script>
 }

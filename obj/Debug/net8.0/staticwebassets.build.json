@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "TbaLdE4Q4Uudv5CpuMilX2TKXXZuIwxISqfrZXL9s94=",
+  "Hash": "OIFh4+XjdlDcLxk/Y3ruHpicq/z+Q4caNBmm2A6XVcg=",
   "Source": "RestoJett",
   "BasePath": "_content/RestoJett",
   "Mode": "Default",
@@ -8,19 +8,19 @@
   "ReferencedProjectsConfiguration": [],
   "DiscoveryPatterns": [
     {
-      "Name": "RestoJett/wwwroot",
+      "Name": "RestoJett\\wwwroot",
       "Source": "RestoJett",
-      "ContentRoot": "/workspace/wwwroot/",
+      "ContentRoot": "C:\\Users\\HUDHOD_1\\Desktop\\RestoJet\\RestoJet01\\wwwroot\\",
       "BasePath": "_content/RestoJett",
       "Pattern": "**"
     }
   ],
   "Assets": [
     {
-      "Identity": "/workspace/obj/Debug/net8.0/scopedcss/bundle/RestoJett.styles.css",
+      "Identity": "C:\\Users\\HUDHOD_1\\Desktop\\RestoJet\\RestoJet01\\obj\\Debug\\net8.0\\scopedcss\\bundle\\RestoJett.styles.css",
       "SourceId": "RestoJett",
       "SourceType": "Computed",
-      "ContentRoot": "/workspace/obj/Debug/net8.0/scopedcss/bundle/",
+      "ContentRoot": "C:\\Users\\HUDHOD_1\\Desktop\\RestoJet\\RestoJet01\\obj\\Debug\\net8.0\\scopedcss\\bundle\\",
       "BasePath": "_content/RestoJett",
       "RelativePath": "RestoJett.styles.css",
       "AssetKind": "All",
@@ -33,13 +33,13 @@
       "AssetTraitValue": "ApplicationBundle",
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
-      "OriginalItemSpec": "/workspace/obj/Debug/net8.0/scopedcss/bundle/RestoJett.styles.css"
+      "OriginalItemSpec": "C:\\Users\\HUDHOD_1\\Desktop\\RestoJet\\RestoJet01\\obj\\Debug\\net8.0\\scopedcss\\bundle\\RestoJett.styles.css"
     },
     {
-      "Identity": "/workspace/obj/Debug/net8.0/scopedcss/projectbundle/RestoJett.bundle.scp.css",
+      "Identity": "C:\\Users\\HUDHOD_1\\Desktop\\RestoJet\\RestoJet01\\obj\\Debug\\net8.0\\scopedcss\\projectbundle\\RestoJett.bundle.scp.css",
       "SourceId": "RestoJett",
       "SourceType": "Computed",
-      "ContentRoot": "/workspace/obj/Debug/net8.0/scopedcss/projectbundle/",
+      "ContentRoot": "C:\\Users\\HUDHOD_1\\Desktop\\RestoJet\\RestoJet01\\obj\\Debug\\net8.0\\scopedcss\\projectbundle\\",
       "BasePath": "_content/RestoJett",
       "RelativePath": "RestoJett.bundle.scp.css",
       "AssetKind": "All",
@@ -52,13 +52,13 @@
       "AssetTraitValue": "ProjectBundle",
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
-      "OriginalItemSpec": "/workspace/obj/Debug/net8.0/scopedcss/projectbundle/RestoJett.bundle.scp.css"
+      "OriginalItemSpec": "C:\\Users\\HUDHOD_1\\Desktop\\RestoJet\\RestoJet01\\obj\\Debug\\net8.0\\scopedcss\\projectbundle\\RestoJett.bundle.scp.css"
     },
     {
-      "Identity": "/workspace/wwwroot/css/site.css",
+      "Identity": "C:\\Users\\HUDHOD_1\\Desktop\\RestoJet\\RestoJet01\\wwwroot\\css\\site.css",
       "SourceId": "RestoJett",
       "SourceType": "Discovered",
-      "ContentRoot": "/workspace/wwwroot/",
+      "ContentRoot": "C:\\Users\\HUDHOD_1\\Desktop\\RestoJet\\RestoJet01\\wwwroot\\",
       "BasePath": "_content/RestoJett",
       "RelativePath": "css/site.css",
       "AssetKind": "All",
@@ -71,13 +71,13 @@
       "AssetTraitValue": "",
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
-      "OriginalItemSpec": "wwwroot/css/site.css"
+      "OriginalItemSpec": "wwwroot\\css\\site.css"
     },
     {
-      "Identity": "/workspace/wwwroot/favicon.ico",
+      "Identity": "C:\\Users\\HUDHOD_1\\Desktop\\RestoJet\\RestoJet01\\wwwroot\\favicon.ico",
       "SourceId": "RestoJett",
       "SourceType": "Discovered",
-      "ContentRoot": "/workspace/wwwroot/",
+      "ContentRoot": "C:\\Users\\HUDHOD_1\\Desktop\\RestoJet\\RestoJet01\\wwwroot\\",
       "BasePath": "_content/RestoJett",
       "RelativePath": "favicon.ico",
       "AssetKind": "All",
@@ -90,13 +90,32 @@
       "AssetTraitValue": "",
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
-      "OriginalItemSpec": "wwwroot/favicon.ico"
+      "OriginalItemSpec": "wwwroot\\favicon.ico"
     },
     {
-      "Identity": "/workspace/wwwroot/js/site.js",
+      "Identity": "C:\\Users\\HUDHOD_1\\Desktop\\RestoJet\\RestoJet01\\wwwroot\\images\\4ca582af1022185bebb23a17f68824ba.jpg",
       "SourceId": "RestoJett",
       "SourceType": "Discovered",
-      "ContentRoot": "/workspace/wwwroot/",
+      "ContentRoot": "C:\\Users\\HUDHOD_1\\Desktop\\RestoJet\\RestoJet01\\wwwroot\\",
+      "BasePath": "_content/RestoJett",
+      "RelativePath": "images/4ca582af1022185bebb23a17f68824ba.jpg",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\images\\4ca582af1022185bebb23a17f68824ba.jpg"
+    },
+    {
+      "Identity": "C:\\Users\\HUDHOD_1\\Desktop\\RestoJet\\RestoJet01\\wwwroot\\js\\site.js",
+      "SourceId": "RestoJett",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\HUDHOD_1\\Desktop\\RestoJet\\RestoJet01\\wwwroot\\",
       "BasePath": "_content/RestoJett",
       "RelativePath": "js/site.js",
       "AssetKind": "All",
@@ -109,13 +128,13 @@
       "AssetTraitValue": "",
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
-      "OriginalItemSpec": "wwwroot/js/site.js"
+      "OriginalItemSpec": "wwwroot\\js\\site.js"
     },
     {
-      "Identity": "/workspace/wwwroot/lang/de.json",
+      "Identity": "C:\\Users\\HUDHOD_1\\Desktop\\RestoJet\\RestoJet01\\wwwroot\\lang\\de.json",
       "SourceId": "RestoJett",
       "SourceType": "Discovered",
-      "ContentRoot": "/workspace/wwwroot/",
+      "ContentRoot": "C:\\Users\\HUDHOD_1\\Desktop\\RestoJet\\RestoJet01\\wwwroot\\",
       "BasePath": "_content/RestoJett",
       "RelativePath": "lang/de.json",
       "AssetKind": "All",
@@ -128,13 +147,13 @@
       "AssetTraitValue": "",
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
-      "OriginalItemSpec": "wwwroot/lang/de.json"
+      "OriginalItemSpec": "wwwroot\\lang\\de.json"
     },
     {
-      "Identity": "/workspace/wwwroot/lang/en.json",
+      "Identity": "C:\\Users\\HUDHOD_1\\Desktop\\RestoJet\\RestoJet01\\wwwroot\\lang\\en.json",
       "SourceId": "RestoJett",
       "SourceType": "Discovered",
-      "ContentRoot": "/workspace/wwwroot/",
+      "ContentRoot": "C:\\Users\\HUDHOD_1\\Desktop\\RestoJet\\RestoJet01\\wwwroot\\",
       "BasePath": "_content/RestoJett",
       "RelativePath": "lang/en.json",
       "AssetKind": "All",
@@ -147,13 +166,13 @@
       "AssetTraitValue": "",
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
-      "OriginalItemSpec": "wwwroot/lang/en.json"
+      "OriginalItemSpec": "wwwroot\\lang\\en.json"
     },
     {
-      "Identity": "/workspace/wwwroot/lang/fr.json",
+      "Identity": "C:\\Users\\HUDHOD_1\\Desktop\\RestoJet\\RestoJet01\\wwwroot\\lang\\fr.json",
       "SourceId": "RestoJett",
       "SourceType": "Discovered",
-      "ContentRoot": "/workspace/wwwroot/",
+      "ContentRoot": "C:\\Users\\HUDHOD_1\\Desktop\\RestoJet\\RestoJet01\\wwwroot\\",
       "BasePath": "_content/RestoJett",
       "RelativePath": "lang/fr.json",
       "AssetKind": "All",
@@ -166,7 +185,7 @@
       "AssetTraitValue": "",
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
-      "OriginalItemSpec": "wwwroot/lang/fr.json"
+      "OriginalItemSpec": "wwwroot\\lang\\fr.json"
     }
   ]
 }

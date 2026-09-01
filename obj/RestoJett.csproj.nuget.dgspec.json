@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "/workspace/RestoJett.csproj": {}
+    "C:\\Users\\HUDHOD_1\\Desktop\\RestoJet\\RestoJet01\\RestoJett.csproj": {}
   },
   "projects": {
-    "/workspace/RestoJett.csproj": {
+    "C:\\Users\\HUDHOD_1\\Desktop\\RestoJet\\RestoJet01\\RestoJett.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/workspace/RestoJett.csproj",
+        "projectUniqueName": "C:\\Users\\HUDHOD_1\\Desktop\\RestoJet\\RestoJet01\\RestoJett.csproj",
         "projectName": "RestoJett",
-        "projectPath": "/workspace/RestoJett.csproj",
-        "packagesPath": "/root/.nuget/packages/",
-        "outputPath": "/workspace/obj/",
+        "projectPath": "C:\\Users\\HUDHOD_1\\Desktop\\RestoJet\\RestoJet01\\RestoJett.csproj",
+        "packagesPath": "C:\\Users\\HUDHOD_1\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\HUDHOD_1\\Desktop\\RestoJet\\RestoJet01\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "/root/.nuget/NuGet/NuGet.Config"
+          "C:\\Users\\HUDHOD_1\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net8.0"
@@ -67,7 +67,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/8.0.424/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.424/PortableRuntimeIdentifierGraph.json"
         }
       }
     }
