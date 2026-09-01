@@ -6,73 +6,32 @@
 [Rr]eleases/
 x64/
 x86/
+build/
 bld/
 [Bb]in/
 [Oo]bj/
 
 # Visual Studio files
-*.sln
-*.csproj.user
+*.user
 *.userosscache
 *.suo
-*.user
-*.userprefs
-[Oo]rleans.codegen.cs
-
-# Visual Studio Code files
+*.csproj.user
+*.vbproj.user
+*.vcxproj.user
+.vs/
 .vscode/
 
-# Web
-node_modules/
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
+# ASP.NET Core
+bin/
+obj/
+out/
 
-# User-specific configurations
-.vs/
-*.user
-*.userosscache
-*.suo
-
-# Localized resources
-*.resx
-
-# Compiled binaries
-*.dll
-*.exe
-*.pdb
-*.mdb
-*.exe.config
-*.userprefs
-
-# Dependencies
-packages/
-lib/
-dist/
-build/
-
-# Environment specific
-.env
-.env.local
-*.env.*
-
-# OS generated files
-.DS_Store
-Thumbs.db
-desktop.ini
-
-# Logs
+# Log files
 *.log
 
-# Temporary files
-*.tmp
-*.temp
-```
-
-Wait, I need to reconsider this. The input shows only C# source files (.cshtml, .cshtml.cs) being modified, which are source code files. According to rule #6, if the changes contain only source files and no build artifacts, dependencies, or temp files, I should output nothing.
-
-Since only Pages/Admin.cshtml and Pages/Admin.cshtml.cs were modified (both source code files), no .gitignore entries are needed.
-
-```csharp
-
+# User-specific files
+.suo
+.user
+.userosscache
+.lock
 ```

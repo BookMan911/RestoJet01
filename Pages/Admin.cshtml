@@ -730,6 +730,8 @@
         function selectImage(imageName) {
             if (!currentMealGuid) return;
             
+            console.log('Sending request:', { mealGuid: currentMealGuid, imageName: imageName });
+            
             fetch('/Admin?handler=SetMealImage', {
                 method: 'POST',
                 headers: {
@@ -738,14 +740,20 @@
                 body: JSON.stringify({ mealGuid: currentMealGuid, imageName: imageName })
             })
             .then(response => {
-                if (response.ok) {
+                console.log('Response status:', response.status);
+                return response.json().then(data => ({ ok: response.ok, data: data }));
+            })
+            .then(result => {
+                console.log('Response data:', result.data);
+                if (result.ok && result.data.success) {
                     location.reload();
                 } else {
+                    console.error('Error response:', result.data);
                     alert('@Model.LangService.Transilate("Failed to set image")');
                 }
             })
             .catch(error => {
-                console.error('Error:', error);
+                console.error('Fetch error:', error);
                 alert('@Model.LangService.Transilate("Failed to set image")');
             });
         }

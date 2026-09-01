@@ -434,6 +434,7 @@ namespace RestoJett.Pages
             return Page();
         }
 
+        [HttpPost]
         [IgnoreAntiforgeryToken]
         public async Task<IActionResult> OnPostSetMealImage()
         {
