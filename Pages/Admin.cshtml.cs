@@ -434,7 +434,7 @@ namespace RestoJett.Pages
             return Page();
         }
 
-        public IActionResult OnPostSetMealImage()
+        public async Task<IActionResult> OnPostSetMealImage()
         {
             LangService.For("en");
 
@@ -448,12 +448,19 @@ namespace RestoJett.Pages
 
             try
             {
-                using (var reader = new StreamReader(Request.Body))
+                Request.EnableBuffering();
+                using (var reader = new StreamReader(Request.Body, leaveOpen: true))
                 {
-                    var body = reader.ReadToEndAsync().Result;
-                    var data = System.Text.Json.JsonSerializer.Deserialize<SetMealImageRequest>(body);
+                    var body = await reader.ReadToEndAsync();
+                    Request.Body.Position = 0;
                     
-                    if (!string.IsNullOrEmpty(data.mealGuid) && !string.IsNullOrEmpty(data.imageName))
+                    var options = new System.Text.Json.JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive = true
+                    };
+                    var data = System.Text.Json.JsonSerializer.Deserialize<SetMealImageRequest>(body, options);
+                    
+                    if (!string.IsNullOrEmpty(data?.mealGuid) && !string.IsNullOrEmpty(data?.imageName))
                     {
                         var meal = Meals.FirstOrDefault(m => m.Guid == data.mealGuid);
                         if (meal != null)
