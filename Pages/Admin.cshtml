@@ -57,6 +57,7 @@
                     <table class="table table-hover">
                         <thead>
                             <tr>
+                                <th>@Model.LangService.Transilate("Image")</th>
                                 <th>@Model.LangService.Transilate("Name")</th>
                                 <th>@Model.LangService.Transilate("Price")</th>
                                 <th>@Model.LangService.Transilate("Discount")</th>
@@ -68,14 +69,28 @@
                         <tbody>
                             @foreach (var meal in Model.Meals)
                             {
+                                var imageUrl = string.IsNullOrEmpty(meal.ImageHash) ? null : $"/images/{meal.ImageHash}";
                                 <tr>
+                                    <td style="width: 80px;">
+                                        @if (!string.IsNullOrEmpty(imageUrl))
+                                        {
+                                            <img src="@imageUrl" alt="@meal.Name" style="width: 60px; height: 60px; object-fit: cover; border-radius: 4px;" />
+                                        }
+                                        else
+                                        {
+                                            <div style="width: 60px; height: 60px; background-color: #e9ecef; border-radius: 4px; display: flex; align-items: center; justify-content: center;">
+                                                <i class="bi bi-image" style="color: #adb5bd;"></i>
+                                            </div>
+                                        }
+                                    </td>
                                     <td>@meal.Name</td>
                                     <td>@meal.Price.ToString("C")</td>
                                     <td>@meal.Discount.ToString("P")</td>
                                     <td>@meal.Version</td>
                                     <td>@meal.Description</td>
                                     <td>
-                                        <button class="btn btn-sm btn-warning" onclick="editMeal('@meal.Guid')">@Model.LangService.Transilate("Edit")</button>
+                                        <button class="btn btn-sm btn-info me-1" data-bs-toggle="modal" data-bs-target="#selectImageModal" onclick="openSelectImageModal('@meal.Guid', '@meal.Name')">@Model.LangService.Transilate("Select Image")</button>
+                                        <button class="btn btn-sm btn-warning me-1" onclick="editMeal('@meal.Guid')">@Model.LangService.Transilate("Edit")</button>
                                         <button class="btn btn-sm btn-danger" onclick="deleteMeal('@meal.Guid')">@Model.LangService.Transilate("Delete")</button>
                                     </td>
                                 </tr>
@@ -580,6 +595,47 @@
     </div>
 </div>
 
+<!-- Select Image Modal -->
+<div class="modal fade" id="selectImageModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">@Model.LangService.Transilate("Select Image for") <span id="selectedMealName"></span></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row row-cols-2 row-cols-md-3 g-4">
+                    @if (Model.MealImages != null && Model.MealImages.Any())
+                    {
+                        @foreach (var image in Model.MealImages)
+                        {
+                            var imageName = System.IO.Path.GetFileName(image);
+                            var imageHash = System.IO.Path.GetFileNameWithoutExtension(imageName);
+                            <div class="col">
+                                <div class="card h-100" style="cursor: pointer;" onclick="selectImage('@imageName')">
+                                    <img src="@image" class="card-img-top" alt="Meal Image" style="height: 150px; object-fit: cover;" />
+                                    <div class="card-body p-2 text-center">
+                                        <small class="text-muted">@Model.LangService.Transilate("Click to select")</small>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="col-12">
+                            <p class="text-muted text-center">@Model.LangService.Transilate("No images available. Please upload images first.")</p>
+                        </div>
+                    }
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@Model.LangService.Transilate("Close")</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 @section Scripts {
     <script>
         function deleteMeal(guid) {
@@ -662,6 +718,37 @@
             } else {
                 alert('@Model.LangService.Transilate("At least one meal is required")');
             }
+        }
+
+        let currentMealGuid = null;
+
+        function openSelectImageModal(mealGuid, mealName) {
+            currentMealGuid = mealGuid;
+            document.getElementById('selectedMealName').textContent = mealName;
+        }
+
+        function selectImage(imageName) {
+            if (!currentMealGuid) return;
+            
+            fetch('/Admin?handler=SetMealImage', {
+                method: 'POST',
+                headers: {
+                    'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ mealGuid: currentMealGuid, imageName: imageName })
+            })
+            .then(response => {
+                if (response.ok) {
+                    location.reload();
+                } else {
+                    alert('@Model.LangService.Transilate("Failed to set image")');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('@Model.LangService.Transilate("Failed to set image")');
+            });
         }
     </script>
 }

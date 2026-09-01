@@ -433,5 +433,54 @@ namespace RestoJett.Pages
             LoggedUser = testAdmin;
             return Page();
         }
+
+        public IActionResult OnPostSetMealImage()
+        {
+            LangService.For("en");
+
+            var testAdmin = new JUser
+            {
+                Name = "admin",
+                Password = "admin123",
+                Guid = "admin-guid",
+                UserType = JUserType.Admin
+            };
+
+            try
+            {
+                using (var reader = new StreamReader(Request.Body))
+                {
+                    var body = reader.ReadToEndAsync().Result;
+                    var data = System.Text.Json.JsonSerializer.Deserialize<SetMealImageRequest>(body);
+                    
+                    if (!string.IsNullOrEmpty(data.mealGuid) && !string.IsNullOrEmpty(data.imageName))
+                    {
+                        var meal = Meals.FirstOrDefault(m => m.Guid == data.mealGuid);
+                        if (meal != null)
+                        {
+                            // Extract just the filename from the path if it contains path separators
+                            var imageHash = Path.GetFileName(data.imageName);
+                            // Remove extension to get just the hash
+                            meal.ImageHash = Path.GetFileNameWithoutExtension(imageHash);
+                            
+                            _restaurantService.UpdateMeal(testAdmin, data.mealGuid, meal);
+                            return Ok();
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+
+            return BadRequest(new { message = "Failed to set image" });
+        }
+    }
+
+    public class SetMealImageRequest
+    {
+        public string mealGuid { get; set; }
+        public string imageName { get; set; }
     }
 }
