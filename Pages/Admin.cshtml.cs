@@ -464,7 +464,7 @@ namespace RestoJett.Pages
                             meal.ImageHash = Path.GetFileNameWithoutExtension(imageHash);
                             
                             _restaurantService.UpdateMeal(testAdmin, data.mealGuid, meal);
-                            return Ok();
+                            return new JsonResult(new { success = true });
                         }
                     }
                 }
