@@ -739,16 +739,21 @@
                 },
                 body: JSON.stringify({ mealGuid: currentMealGuid, imageName: imageName })
             })
-            .then(response => {
+            .then(async response => {
                 console.log('Response status:', response.status);
-                return response.json().then(data => ({ ok: response.ok, data: data }));
-            })
-            .then(result => {
-                console.log('Response data:', result.data);
-                if (result.ok && result.data.success) {
-                    location.reload();
-                } else {
-                    console.error('Error response:', result.data);
+                const text = await response.text();
+                console.log('Response body:', text);
+                
+                try {
+                    const data = JSON.parse(text);
+                    if (response.ok && data.success) {
+                        location.reload();
+                    } else {
+                        console.error('Error response:', data);
+                        alert(data.message || '@Model.LangService.Transilate("Failed to set image")');
+                    }
+                } catch (e) {
+                    console.error('JSON parse error:', e);
                     alert('@Model.LangService.Transilate("Failed to set image")');
                 }
             })

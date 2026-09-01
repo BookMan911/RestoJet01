@@ -1,37 +1,37 @@
-```csharp
-# Build results
-[Dd]ebug/
-[Dd]ebugPublic/
-[Rr]elease/
-[Rr]eleases/
-x64/
-x86/
-build/
-bld/
-[Bb]in/
-[Oo]bj/
+```
+# Build artifacts
+*.dll
+*.exe
+*.pdb
+*.config
+bin/
+obj/
+Debug/
+Release/
 
-# Visual Studio files
+# Dependencies
+packages/
+node_modules/
+vendor/
+
+# Logs
+*.log
+
+# Environment
+.env
+.env.local
 *.user
 *.userosscache
 *.suo
-*.csproj.user
-*.vbproj.user
-*.vcxproj.user
+
+# IDE
 .vs/
 .vscode/
+.idea/
+*.swp
+*.swo
 
-# ASP.NET Core
-bin/
-obj/
-out/
-
-# Log files
-*.log
-
-# User-specific files
-.suo
-.user
-.userosscache
-.lock
+# OS
+.DS_Store
+Thumbs.db
 ```

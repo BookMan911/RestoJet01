@@ -454,7 +454,7 @@ namespace RestoJett.Pages
                 
                 if (!Request.ContentType?.Contains("application/json") ?? true)
                 {
-                    return BadRequest(new { message = "Content-Type must be application/json" });
+                    return new JsonResult(new { success = false, message = "Content-Type must be application/json" }) { StatusCode = 400 };
                 }
                 
                 using (var reader = new StreamReader(Request.Body, leaveOpen: true))
@@ -464,7 +464,7 @@ namespace RestoJett.Pages
                     
                     if (string.IsNullOrEmpty(body))
                     {
-                        return BadRequest(new { message = "Empty request body" });
+                        return new JsonResult(new { success = false, message = "Empty request body" }) { StatusCode = 400 };
                     }
                     
                     var options = new System.Text.Json.JsonSerializerOptions
@@ -473,7 +473,7 @@ namespace RestoJett.Pages
                     };
                     var data = System.Text.Json.JsonSerializer.Deserialize<SetMealImageRequest>(body, options);
                     
-                    if (!string.IsNullOrEmpty(data?.mealGuid) && !string.IsNullOrEmpty(data?.imageName))
+                    if (data != null && !string.IsNullOrEmpty(data.mealGuid) && !string.IsNullOrEmpty(data.imageName))
                     {
                         var meal = Meals.FirstOrDefault(m => m.Guid == data.mealGuid);
                         if (meal != null)
@@ -486,15 +486,21 @@ namespace RestoJett.Pages
                             _restaurantService.UpdateMeal(testAdmin, data.mealGuid, meal);
                             return new JsonResult(new { success = true });
                         }
+                        else
+                        {
+                            return new JsonResult(new { success = false, message = "Meal not found" }) { StatusCode = 400 };
+                        }
+                    }
+                    else
+                    {
+                        return new JsonResult(new { success = false, message = "Invalid request data" }) { StatusCode = 400 };
                     }
                 }
             }
             catch (Exception ex)
             {
-                return BadRequest(new { message = ex.Message });
+                return new JsonResult(new { success = false, message = ex.Message }) { StatusCode = 400 };
             }
-
-            return BadRequest(new { message = "Failed to set image" });
         }
     }
 
