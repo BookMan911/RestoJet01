@@ -433,5 +433,29 @@ namespace RestoJett.Pages
             LoggedUser = testAdmin;
             return Page();
         }
+
+        public IActionResult OnPostUpdateMeal(string mealGuid, [Bind(Prefix = "meal")] JMeal meal)
+        {
+            LangService.For("en");
+
+            var testAdmin = new JUser
+            {
+                Name = "admin",
+                Password = "admin123",
+                Guid = "admin-guid",
+                UserType = JUserType.Admin
+            };
+
+            var result = _restaurantService.UpdateMeal(testAdmin, mealGuid, meal);
+            if (result.Item1 != null)
+            {
+                MealError = result.Item1;
+            }
+
+            LoadData(testAdmin);
+            LoadMealImages();
+            LoggedUser = testAdmin;
+            return Page();
+        }
     }
 }
