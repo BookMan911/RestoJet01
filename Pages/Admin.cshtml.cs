@@ -433,5 +433,80 @@ namespace RestoJett.Pages
             LoggedUser = testAdmin;
             return Page();
         }
+
+        [HttpPost]
+        [IgnoreAntiforgeryToken]
+        public async Task<IActionResult> OnPostSetMealImage()
+        {
+            LangService.For("en");
+
+            var testAdmin = new JUser
+            {
+                Name = "admin",
+                Password = "admin123",
+                Guid = "admin-guid",
+                UserType = JUserType.Admin
+            };
+
+            try
+            {
+                Request.EnableBuffering();
+                
+                if (!Request.ContentType?.Contains("application/json") ?? true)
+                {
+                    return new JsonResult(new { success = false, message = "Content-Type must be application/json" }) { StatusCode = 400 };
+                }
+                
+                using (var reader = new StreamReader(Request.Body, leaveOpen: true))
+                {
+                    var body = await reader.ReadToEndAsync();
+                    Request.Body.Position = 0;
+                    
+                    if (string.IsNullOrEmpty(body))
+                    {
+                        return new JsonResult(new { success = false, message = "Empty request body" }) { StatusCode = 400 };
+                    }
+                    
+                    var options = new System.Text.Json.JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive = true
+                    };
+                    var data = System.Text.Json.JsonSerializer.Deserialize<SetMealImageRequest>(body, options);
+                    
+                    if (data != null && !string.IsNullOrEmpty(data.mealGuid) && !string.IsNullOrEmpty(data.imageName))
+                    {
+                        var meal = Meals.FirstOrDefault(m => m.Guid == data.mealGuid);
+                        if (meal != null)
+                        {
+                            // Extract just the filename from the path if it contains path separators
+                            var imageHash = Path.GetFileName(data.imageName);
+                            // Remove extension to get just the hash
+                            meal.ImageHash = Path.GetFileNameWithoutExtension(imageHash);
+                            
+                            _restaurantService.UpdateMeal(testAdmin, data.mealGuid, meal);
+                            return new JsonResult(new { success = true });
+                        }
+                        else
+                        {
+                            return new JsonResult(new { success = false, message = "Meal not found" }) { StatusCode = 400 };
+                        }
+                    }
+                    else
+                    {
+                        return new JsonResult(new { success = false, message = "Invalid request data" }) { StatusCode = 400 };
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return new JsonResult(new { success = false, message = ex.Message }) { StatusCode = 400 };
+            }
+        }
+    }
+
+    public class SetMealImageRequest
+    {
+        public string mealGuid { get; set; }
+        public string imageName { get; set; }
     }
 }
