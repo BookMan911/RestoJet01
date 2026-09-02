@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "Ooku+J25EWhnP5p/VODLa8dZ1KwBAg39BsN4WF5xaHk=",
+  "Hash": "vJTtaoq8q3CmAkGOJ/OrzhLrRUNdO3XG1umtAQvjp5M=",
   "Source": "RestoJett",
   "BasePath": "_content/RestoJett",
   "Mode": "Default",
@@ -129,6 +129,25 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\images\\4ca582af1022185bebb23a17f68824ba.jpg"
+    },
+    {
+      "Identity": "C:\\Users\\HUDHOD_1\\Desktop\\RestoJet\\RestoJet01\\wwwroot\\images\\placeholder.png",
+      "SourceId": "RestoJett",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\HUDHOD_1\\Desktop\\RestoJet\\RestoJet01\\wwwroot\\",
+      "BasePath": "_content/RestoJett",
+      "RelativePath": "images/placeholder.png",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\images\\placeholder.png"
     },
     {
       "Identity": "C:\\Users\\HUDHOD_1\\Desktop\\RestoJet\\RestoJet01\\wwwroot\\js\\site.js",

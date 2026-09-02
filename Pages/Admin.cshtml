@@ -1,6 +1,7 @@
 @page
 @model RestoJett.Pages.AdminModel
 @using System
+@using System.IO
 @using System.Linq
 @{
     Layout = "_Layout";
@@ -69,7 +70,7 @@
                         <tbody>
                             @foreach (var meal in Model.Meals)
                             {
-                                var imageUrl = !string.IsNullOrEmpty(meal.ImageHash) ? $"/images/{meal.ImageHash}.jpg" : "/images/placeholder.png";
+                                var imageUrl = !string.IsNullOrEmpty(meal.ImageHash) ? $"/images/{System.IO.Path.GetFileName(meal.ImageHash)}" : "/images/placeholder.png";
                                 <tr>
                                     <td><img src="@imageUrl" alt="@meal.Name" style="width: 36px; height: 36px; object-fit: cover;" /></td>
                                     <td>@meal.Name</td>

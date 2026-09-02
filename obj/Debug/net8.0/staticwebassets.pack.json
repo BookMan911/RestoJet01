@@ -21,6 +21,10 @@
       "PackagePath": "staticwebassets\\images\\4ca582af1022185bebb23a17f68824ba.jpg"
     },
     {
+      "Id": "C:\\Users\\HUDHOD_1\\Desktop\\RestoJet\\RestoJet01\\wwwroot\\images\\placeholder.png",
+      "PackagePath": "staticwebassets\\images\\placeholder.png"
+    },
+    {
       "Id": "C:\\Users\\HUDHOD_1\\Desktop\\RestoJet\\RestoJet01\\wwwroot\\js\\site.js",
       "PackagePath": "staticwebassets\\js\\site.js"
     },
