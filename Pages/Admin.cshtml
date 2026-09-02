@@ -57,6 +57,7 @@
                     <table class="table table-hover">
                         <thead>
                             <tr>
+                                <th>@Model.LangService.Transilate("Image")</th>
                                 <th>@Model.LangService.Transilate("Name")</th>
                                 <th>@Model.LangService.Transilate("Price")</th>
                                 <th>@Model.LangService.Transilate("Discount")</th>
@@ -68,7 +69,9 @@
                         <tbody>
                             @foreach (var meal in Model.Meals)
                             {
+                                var imageUrl = !string.IsNullOrEmpty(meal.ImageHash) ? $"/images/{meal.ImageHash}.jpg" : "/images/placeholder.png";
                                 <tr>
+                                    <td><img src="@imageUrl" alt="@meal.Name" style="width: 36px; height: 36px; object-fit: cover;" /></td>
                                     <td>@meal.Name</td>
                                     <td>@meal.Price.ToString("C")</td>
                                     <td>@meal.Discount.ToString("P")</td>
