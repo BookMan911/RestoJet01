@@ -182,10 +182,10 @@ namespace RestoJett.Pages
                 }
             }
 
-            // Add item to cart (stored in TempData for session-like behavior)
+            // Add item to cart (stored in Session for session-like behavior)
             var cartKey = $"cart_{CustomerName}";
-            var existingCart = TempData[cartKey] as string;
-            
+            var existingCart = HttpContext.Session.GetString(cartKey);
+
             var cartItems = new List<OrderItemViewModel>();
             if (!string.IsNullOrEmpty(existingCart))
             {
@@ -208,8 +208,7 @@ namespace RestoJett.Pages
                 });
             }
 
-            TempData[cartKey] = System.Text.Json.JsonSerializer.Serialize(cartItems);
-            TempData.Keep(cartKey);
+            HttpContext.Session.SetString(cartKey, System.Text.Json.JsonSerializer.Serialize(cartItems));
 
             return RedirectToPage(new { customerName = CustomerName, urlRes = !string.IsNullOrEmpty(urlRes) ? urlRes : CurrentCustomer?.CurrentUrlRes });
         }
@@ -242,10 +241,10 @@ namespace RestoJett.Pages
             var customerGuid = Request.Form["CustomerGuid"].ToString();
             var urlRes = Request.Form["CurrentUrlRes"].ToString();
 
-            // Get cart items from TempData
+            // Get cart items from Session
             var cartKey = $"cart_{CustomerName}";
-            var existingCart = TempData[cartKey] as string;
-            
+            var existingCart = HttpContext.Session.GetString(cartKey);
+
             var cartItems = new List<OrderItemViewModel>();
             if (!string.IsNullOrEmpty(existingCart))
             {
@@ -306,8 +305,8 @@ namespace RestoJett.Pages
                 return Page();
             }
 
-            // Clear cart
-            TempData.Remove(cartKey);
+            // Clear cart from Session
+            HttpContext.Session.Remove(cartKey);
 
             OrderSubmitted = true;
             OrderConfirmationGuid = result.Item2.Guid;
@@ -337,8 +336,7 @@ namespace RestoJett.Pages
             LangService.For(lang);
             
             var cartKey = $"cart_{customerName}";
-            var existingCart = TempData[cartKey] as string;
-            TempData.Keep(cartKey);
+            var existingCart = HttpContext.Session.GetString(cartKey);
 
             if (string.IsNullOrEmpty(existingCart))
             {
