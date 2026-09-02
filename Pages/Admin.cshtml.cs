@@ -342,27 +342,46 @@ namespace RestoJett.Pages
         }
 
 
-public async Task<IActionResult> OnPostAssignMealImageAsync([FromBody] string mealGuid, [FromBody] string imageSrc, [FromBody] string imageName)
-{
-    try
-    {
-        // Update your meal with the image
-        var meal = Meals.FirstOrDefault(m => m.Guid == mealGuid);
-        if (meal != null)
+        public IActionResult OnPostAssignMealImage([FromForm] ImageAssignmentRequest request)
         {
-            meal.ImageHash = imageSrc;
-            // Save to database
-            // await _repository.UpdateMealAsync(meal);
+            LangService.For("en");
+
+            var testAdmin = new JUser
+            {
+                Name = "admin",
+                Password = "admin123",
+                Guid = "admin-guid",
+                UserType = JUserType.Admin
+            };
+
+            if (request == null || string.IsNullOrWhiteSpace(request.MealGuid) ||
+                string.IsNullOrWhiteSpace(request.ImageSrc))
+            {
+                return new JsonResult(new { success = false, message = "Meal GUID and image are required." })
+                {
+                    StatusCode = StatusCodes.Status400BadRequest
+                };
+            }
+
+            var error = _restaurantService.setImageHash(testAdmin, request.MealGuid, request.ImageSrc);
+            if (error != null)
+            {
+                return new JsonResult(new { success = false, message = error.Message })
+                {
+                    StatusCode = StatusCodes.Status400BadRequest
+                };
+            }
+
+            Console.WriteLine($"Assigned image {request.ImageName} to meal {request.MealGuid}");
+            return new JsonResult(new { success = true, message = "Image assigned successfully" });
         }
 
-        Console.WriteLine($"Assigned image {imageName} to meal {mealGuid}");
-        return new JsonResult(new { success = true, message = "Image assigned successfully" });
-    }
-    catch (Exception ex)
-    {
-        return new JsonResult(new { success = false, message = ex.Message });
-    }
-}
+        public class ImageAssignmentRequest
+        {
+            public string MealGuid { get; set; }
+            public string ImageSrc { get; set; }
+            public string ImageName { get; set; }
+        }
         public IActionResult OnPostUploadMealImage(IFormFile imageFile)
         {
             LangService.For("en");

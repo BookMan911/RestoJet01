@@ -65,3 +65,16 @@ C:\Users\HUDHOD_1\Desktop\RestoJet\RestoJet01\obj\Debug\net8.0\refint\RestoJett.
 C:\Users\HUDHOD_1\Desktop\RestoJet\RestoJet01\obj\Debug\net8.0\RestoJett.pdb
 C:\Users\HUDHOD_1\Desktop\RestoJet\RestoJet01\obj\Debug\net8.0\RestoJett.genruntimeconfig.cache
 C:\Users\HUDHOD_1\Desktop\RestoJet\RestoJet01\obj\Debug\net8.0\ref\RestoJett.dll
+C:\Users\HUDHOD_1\Desktop\RestoJet\RestoJet01\artifacts\compile-check\appsettings.Development.json
+C:\Users\HUDHOD_1\Desktop\RestoJet\RestoJet01\artifacts\compile-check\appsettings.json
+C:\Users\HUDHOD_1\Desktop\RestoJet\RestoJet01\artifacts\compile-check\RestoJett.staticwebassets.runtime.json
+C:\Users\HUDHOD_1\Desktop\RestoJet\RestoJet01\artifacts\compile-check\RestoJett.deps.json
+C:\Users\HUDHOD_1\Desktop\RestoJet\RestoJet01\artifacts\compile-check\RestoJett.runtimeconfig.json
+C:\Users\HUDHOD_1\Desktop\RestoJet\RestoJet01\artifacts\compile-check\RestoJett.dll
+C:\Users\HUDHOD_1\Desktop\RestoJet\RestoJet01\artifacts\compile-check\RestoJett.pdb
+C:\Users\HUDHOD_1\Desktop\RestoJet\RestoJet01\artifacts\compile-check\Newtonsoft.Json.dll
+C:\Users\HUDHOD_1\Desktop\RestoJet\RestoJet01\bin\Debug\net8.0\artifacts\compile-check\appsettings.Development.json
+C:\Users\HUDHOD_1\Desktop\RestoJet\RestoJet01\bin\Debug\net8.0\artifacts\compile-check\appsettings.json
+C:\Users\HUDHOD_1\Desktop\RestoJet\RestoJet01\bin\Debug\net8.0\artifacts\compile-check\RestoJett.deps.json
+C:\Users\HUDHOD_1\Desktop\RestoJet\RestoJet01\bin\Debug\net8.0\artifacts\compile-check\RestoJett.runtimeconfig.json
+C:\Users\HUDHOD_1\Desktop\RestoJet\RestoJet01\bin\Debug\net8.0\artifacts\compile-check\RestoJett.staticwebassets.runtime.json

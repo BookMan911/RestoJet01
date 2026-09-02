@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "OIFh4+XjdlDcLxk/Y3ruHpicq/z+Q4caNBmm2A6XVcg=",
+  "Hash": "Ooku+J25EWhnP5p/VODLa8dZ1KwBAg39BsN4WF5xaHk=",
   "Source": "RestoJett",
   "BasePath": "_content/RestoJett",
   "Mode": "Default",
@@ -91,6 +91,25 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\favicon.ico"
+    },
+    {
+      "Identity": "C:\\Users\\HUDHOD_1\\Desktop\\RestoJet\\RestoJet01\\wwwroot\\images\\2682a8d59b057f2f47bc151d06c222a8.jpg",
+      "SourceId": "RestoJett",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\HUDHOD_1\\Desktop\\RestoJet\\RestoJet01\\wwwroot\\",
+      "BasePath": "_content/RestoJett",
+      "RelativePath": "images/2682a8d59b057f2f47bc151d06c222a8.jpg",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\images\\2682a8d59b057f2f47bc151d06c222a8.jpg"
     },
     {
       "Identity": "C:\\Users\\HUDHOD_1\\Desktop\\RestoJet\\RestoJet01\\wwwroot\\images\\4ca582af1022185bebb23a17f68824ba.jpg",

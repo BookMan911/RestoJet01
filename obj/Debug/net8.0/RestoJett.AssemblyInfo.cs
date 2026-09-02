@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("RestoJett")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+3d6ef61833e65fbc8989df7520187be8b3ac3c71")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+7ff761e1687e7b5d14eb2ac477df220a2e3ee056")]
 [assembly: System.Reflection.AssemblyProductAttribute("RestoJett")]
 [assembly: System.Reflection.AssemblyTitleAttribute("RestoJett")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
