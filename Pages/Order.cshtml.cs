@@ -305,8 +305,8 @@ namespace RestoJett.Pages
                 return Page();
             }
 
-            // Clear cart
-            TempData.Remove(cartKey);
+            // Clear cart from Session
+            HttpContext.Session.Remove(cartKey);
 
             OrderSubmitted = true;
             OrderConfirmationGuid = result.Item2.Guid;
@@ -336,8 +336,7 @@ namespace RestoJett.Pages
             LangService.For(lang);
             
             var cartKey = $"cart_{customerName}";
-            var existingCart = TempData[cartKey] as string;
-            TempData.Keep(cartKey);
+            var existingCart = HttpContext.Session.GetString(cartKey);
 
             if (string.IsNullOrEmpty(existingCart))
             {
