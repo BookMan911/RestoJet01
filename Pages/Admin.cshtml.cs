@@ -382,6 +382,7 @@ namespace RestoJett.Pages
             public string ImageSrc { get; set; }
             public string ImageName { get; set; }
         }
+
         public IActionResult OnPostUploadMealImage(IFormFile imageFile)
         {
             LangService.For("en");
