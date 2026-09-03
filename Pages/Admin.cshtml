@@ -3,6 +3,7 @@
 @using System
 @using System.IO
 @using System.Linq
+@using RestoJett.Core
 @{
     Layout = "_Layout";
     ViewData["Title"] = "Admin Dashboard";
@@ -292,14 +293,18 @@
                                     <td>@order.OrderStatus</td>
                                     <td>@order.DeliveryStatus</td>
                                     <td>
-                                        @if (!order.Confirmed)
+                                        @if (!order.Confirmed && order.OrderStatus != JOrderStatus.Cancelled)
                                         {
                                             <button class="btn btn-sm btn-success me-1" onclick="acceptOrder('@order.Guid')">@Model.LangService.Transilate("Accept")</button>
                                             <button class="btn btn-sm btn-danger me-1" onclick="declineOrder('@order.Guid')">@Model.LangService.Transilate("Decline")</button>
                                         }
-                                        else
+                                        else if (order.Confirmed)
                                         {
                                             <span class="badge bg-success">@Model.LangService.Transilate("Accepted")</span>
+                                        }
+                                        else if (order.OrderStatus == JOrderStatus.Cancelled)
+                                        {
+                                            <span class="badge bg-danger">@Model.LangService.Transilate("Declined")</span>
                                         }
                                         <button class="btn btn-sm btn-warning" onclick="editOrder('@order.Guid')">@Model.LangService.Transilate("Edit")</button>
                                         <button class="btn btn-sm btn-danger" onclick="deleteOrder('@order.Guid')">@Model.LangService.Transilate("Delete")</button>

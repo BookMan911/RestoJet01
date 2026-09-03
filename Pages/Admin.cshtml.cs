@@ -251,6 +251,9 @@ namespace RestoJett.Pages
                 }
             }
 
+            // Admin-created orders are confirmed by default
+            order.Confirmed = true;
+
             var result = _restaurantService.AddOrder(testAdmin, order);
             if (result.Item1 != null)
             {
