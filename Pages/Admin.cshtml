@@ -730,11 +730,18 @@
                 fetch(`/Admin?handler=AcceptOrder&orderGuid=${encodeURIComponent(guid)}`, { 
                     method: 'POST',
                     headers: {
-                        'RequestVerificationToken': token
+                        'RequestVerificationToken': token,
+                        'Content-Type': 'application/json'
                     }
                 })
                     .then(response => {
-                        if (response.ok) {
+                        if (!response.ok) {
+                            return response.text().then(text => { throw new Error(text || response.statusText); });
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data.success) {
                             // Hide buttons and show accepted badge without reload
                             const actionButtonsId = 'action-buttons-' + guid.replace(/-/g, '');
                             const statusBadgeId = 'status-badge-' + guid.replace(/-/g, '');
@@ -749,8 +756,12 @@
                                 location.reload();
                             }
                         } else {
-                            alert('@Model.LangService.Transilate("Failed to accept order")');
+                            alert('@Model.LangService.Transilate("Failed to accept order"): ' + (data.error || ''));
                         }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('@Model.LangService.Transilate("Failed to accept order"): ' + error.message);
                     });
             }
         }
@@ -760,11 +771,18 @@
                 fetch(`/Admin?handler=DeclineOrder&orderGuid=${encodeURIComponent(guid)}`, { 
                     method: 'POST',
                     headers: {
-                        'RequestVerificationToken': token
+                        'RequestVerificationToken': token,
+                        'Content-Type': 'application/json'
                     }
                 })
                     .then(response => {
-                        if (response.ok) {
+                        if (!response.ok) {
+                            return response.text().then(text => { throw new Error(text || response.statusText); });
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data.success) {
                             // Hide buttons and show declined badge without reload
                             const actionButtonsId = 'action-buttons-' + guid.replace(/-/g, '');
                             const statusBadgeId = 'status-badge-' + guid.replace(/-/g, '');
@@ -779,8 +797,12 @@
                                 location.reload();
                             }
                         } else {
-                            alert('@Model.LangService.Transilate("Failed to decline order")');
+                            alert('@Model.LangService.Transilate("Failed to decline order"): ' + (data.error || ''));
                         }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('@Model.LangService.Transilate("Failed to decline order"): ' + error.message);
                     });
             }
         }
