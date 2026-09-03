@@ -730,8 +730,7 @@
                 fetch(`/Admin?handler=AcceptOrder&orderGuid=${encodeURIComponent(guid)}`, { 
                     method: 'POST',
                     headers: {
-                        'RequestVerificationToken': token,
-                        'Content-Type': 'application/json'
+                        'RequestVerificationToken': token
                     }
                 })
                     .then(response => {
@@ -771,8 +770,7 @@
                 fetch(`/Admin?handler=DeclineOrder&orderGuid=${encodeURIComponent(guid)}`, { 
                     method: 'POST',
                     headers: {
-                        'RequestVerificationToken': token,
-                        'Content-Type': 'application/json'
+                        'RequestVerificationToken': token
                     }
                 })
                     .then(response => {
