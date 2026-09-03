@@ -112,10 +112,17 @@ namespace RestoJett.Pages
                 if (result.Item1 != null)
                 {
                     OrderError = result.Item1;
+                    return new JsonResult(new { success = false, error = result.Item1.Message });
+                }
+                // Update the local Orders list with the updated order
+                var updatedOrder = result.Item2;
+                var index = Orders.FindIndex(o => o.Guid == orderGuid);
+                if (index >= 0)
+                {
+                    Orders[index] = updatedOrder;
                 }
             }
 
-            LoadData(testAdmin);
             LoggedUser = testAdmin;
             return new JsonResult(new { success = true });
         }
@@ -141,10 +148,17 @@ namespace RestoJett.Pages
                 if (result.Item1 != null)
                 {
                     OrderError = result.Item1;
+                    return new JsonResult(new { success = false, error = result.Item1.Message });
+                }
+                // Update the local Orders list with the updated order
+                var updatedOrder = result.Item2;
+                var index = Orders.FindIndex(o => o.Guid == orderGuid);
+                if (index >= 0)
+                {
+                    Orders[index] = updatedOrder;
                 }
             }
 
-            LoadData(testAdmin);
             LoggedUser = testAdmin;
             return new JsonResult(new { success = true });
         }

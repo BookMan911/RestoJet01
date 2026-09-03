@@ -722,6 +722,8 @@ namespace RestoJett.Core
                 existingOrder.DeliveryStatus = order.DeliveryStatus;
                 existingOrder.OrderStatus = order.OrderStatus;
                 existingOrder.Confirmed = order.Confirmed;
+                existingOrder.PaymentType = order.PaymentType;
+                existingOrder.AddressInfo = order.AddressInfo;
                 
                 // Update items
                 existingOrder.Items.Clear();
