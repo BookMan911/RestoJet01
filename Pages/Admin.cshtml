@@ -295,8 +295,12 @@
                                     <td>
                                         @if (!order.Confirmed && order.OrderStatus != JOrderStatus.Cancelled)
                                         {
-                                            <button class="btn btn-sm btn-success me-1" onclick="acceptOrder('@order.Guid')">@Model.LangService.Transilate("Accept")</button>
-                                            <button class="btn btn-sm btn-danger me-1" onclick="declineOrder('@order.Guid')">@Model.LangService.Transilate("Decline")</button>
+                                            <div id="action-buttons-@order.Guid.ToString().Replace("-", "")">
+                                                <button class="btn btn-sm btn-success me-1" onclick="acceptOrder('@order.Guid')">@Model.LangService.Transilate("Accept")</button>
+                                                <button class="btn btn-sm btn-danger me-1" onclick="declineOrder('@order.Guid')">@Model.LangService.Transilate("Decline")</button>
+                                            </div>
+                                            <div id="status-badge-@order.Guid.ToString().Replace("-", "")" style="display:none;">
+                                            </div>
                                         }
                                         else if (order.Confirmed)
                                         {
@@ -731,7 +735,19 @@
                 })
                     .then(response => {
                         if (response.ok) {
-                            location.reload();
+                            // Hide buttons and show accepted badge without reload
+                            const actionButtonsId = 'action-buttons-' + guid.replace(/-/g, '');
+                            const statusBadgeId = 'status-badge-' + guid.replace(/-/g, '');
+                            const actionButtons = document.getElementById(actionButtonsId);
+                            const statusBadge = document.getElementById(statusBadgeId);
+                            
+                            if (actionButtons && statusBadge) {
+                                actionButtons.style.display = 'none';
+                                statusBadge.innerHTML = '<span class="badge bg-success">@Model.LangService.Transilate("Accepted")</span>';
+                                statusBadge.style.display = 'inline';
+                            } else {
+                                location.reload();
+                            }
                         } else {
                             alert('@Model.LangService.Transilate("Failed to accept order")');
                         }
@@ -749,7 +765,19 @@
                 })
                     .then(response => {
                         if (response.ok) {
-                            location.reload();
+                            // Hide buttons and show declined badge without reload
+                            const actionButtonsId = 'action-buttons-' + guid.replace(/-/g, '');
+                            const statusBadgeId = 'status-badge-' + guid.replace(/-/g, '');
+                            const actionButtons = document.getElementById(actionButtonsId);
+                            const statusBadge = document.getElementById(statusBadgeId);
+                            
+                            if (actionButtons && statusBadge) {
+                                actionButtons.style.display = 'none';
+                                statusBadge.innerHTML = '<span class="badge bg-danger">@Model.LangService.Transilate("Declined")</span>';
+                                statusBadge.style.display = 'inline';
+                            } else {
+                                location.reload();
+                            }
                         } else {
                             alert('@Model.LangService.Transilate("Failed to decline order")');
                         }
