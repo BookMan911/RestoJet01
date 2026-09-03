@@ -668,7 +668,7 @@
         </div>
     </div>
 </div>
-<form id="antiForgeryCsrfForm" method="post">
+<form id="antiForgeryCsrfForm" method="post" asp-antiforgery="true">
 </form>
 @section Scripts {
     <script>
@@ -717,7 +717,13 @@
         }
         function acceptOrder(guid) {
             if(confirm('@Model.LangService.Transilate("Accept this order?")')) {
-                fetch(`/Admin?handler=AcceptOrder&orderGuid=${encodeURIComponent(guid)}`, { method: 'POST' })
+                const token = document.querySelector('#antiForgeryCsrfForm input[name="__RequestVerificationToken"]').value;
+                fetch(`/Admin?handler=AcceptOrder&orderGuid=${encodeURIComponent(guid)}`, { 
+                    method: 'POST',
+                    headers: {
+                        'RequestVerificationToken': token
+                    }
+                })
                     .then(response => {
                         if (response.ok) {
                             location.reload();
@@ -729,7 +735,13 @@
         }
         function declineOrder(guid) {
             if(confirm('@Model.LangService.Transilate("Decline this order?")')) {
-                fetch(`/Admin?handler=DeclineOrder&orderGuid=${encodeURIComponent(guid)}`, { method: 'POST' })
+                const token = document.querySelector('#antiForgeryCsrfForm input[name="__RequestVerificationToken"]').value;
+                fetch(`/Admin?handler=DeclineOrder&orderGuid=${encodeURIComponent(guid)}`, { 
+                    method: 'POST',
+                    headers: {
+                        'RequestVerificationToken': token
+                    }
+                })
                     .then(response => {
                         if (response.ok) {
                             location.reload();
