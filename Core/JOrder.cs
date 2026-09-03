@@ -13,5 +13,6 @@ namespace RestoJett.Core
         public JDeliveryStatus DeliveryStatus { get; set; }
         public JOrderStatus OrderStatus { get; set; }
         public JPaymentType PaymentType { get; set; }
+        public string AddressInfo { get; set; }
     }
 }

@@ -20,6 +20,7 @@ namespace RestoJett.Pages
         public bool OrderSubmitted { get; set; }
         public string OrderConfirmationGuid { get; set; }
         public string CurrentLanguage { get; set; } = "en";
+        public List<CustomerOrderViewModel> CustomerOrders { get; set; } = new List<CustomerOrderViewModel>();
 
         [BindProperty]
         public JUser LoggedUser { get; set; }
@@ -108,6 +109,33 @@ namespace RestoJett.Pages
                         }
                     }
                 }
+            }
+
+            // Load customer orders
+            var allOrdersResult = _restaurantService.GetOrders(testAdmin);
+            if (allOrdersResult.Item1 == null && CurrentCustomer != null)
+            {
+                CustomerOrders = allOrdersResult.Item2
+                    .Where(o => o.CustomerGuid == CurrentCustomer.Guid)
+                    .Select(o => new CustomerOrderViewModel
+                    {
+                        OrderGuid = o.Guid,
+                        OrderName = o.Name,
+                        OrderDate = o.Date,
+                        OrderStatus = o.OrderStatus.ToString(),
+                        DeliveryStatus = o.DeliveryStatus.ToString(),
+                        PaymentType = o.PaymentType.ToString(),
+                        Items = o.Items.Values.Select(i => new OrderItemViewModel
+                        {
+                            MealGuid = i.MealGuid,
+                            MealName = i.MealName,
+                            Count = i.Count,
+                            Price = i.Price
+                        }).ToList(),
+                        TotalAmount = o.Items.Values.Sum(i => i.Price * i.Count)
+                    })
+                    .OrderByDescending(o => o.OrderDate)
+                    .ToList();
             }
 
             return Page();
@@ -353,6 +381,18 @@ namespace RestoJett.Pages
             public string MealName { get; set; }
             public decimal Price { get; set; }
             public int Count { get; set; }
+        }
+
+        public class CustomerOrderViewModel
+        {
+            public string OrderGuid { get; set; }
+            public string OrderName { get; set; }
+            public string OrderDate { get; set; }
+            public string OrderStatus { get; set; }
+            public string DeliveryStatus { get; set; }
+            public string PaymentType { get; set; }
+            public List<OrderItemViewModel> Items { get; set; } = new List<OrderItemViewModel>();
+            public decimal TotalAmount { get; set; }
         }
     }
 }
