@@ -68,6 +68,87 @@ namespace RestoJett.Pages
             return Page();
         }
 
+        public IActionResult OnPostEditMeal([Bind(Prefix = "meal")] JMeal meal)
+        {
+            LangService.For("en");
+
+            var testAdmin = new JUser
+            {
+                Name = "admin",
+                Password = "admin123",
+                Guid = "admin-guid",
+                UserType = JUserType.Admin
+            };
+
+            // Find existing meal and update it
+            var result = _restaurantService.UpdateMeal(testAdmin, meal.Guid, meal);
+            if (result.Item1 != null)
+            {
+                MealError = result.Item1;
+            }
+
+            LoadData(testAdmin);
+            LoggedUser = testAdmin;
+            return Page();
+        }
+
+        public IActionResult OnPostAcceptOrder(string orderGuid)
+        {
+            LangService.For("en");
+
+            var testAdmin = new JUser
+            {
+                Name = "admin",
+                Password = "admin123",
+                Guid = "admin-guid",
+                UserType = JUserType.Admin
+            };
+
+            var order = Orders.FirstOrDefault(o => o.Guid == orderGuid);
+            if (order != null)
+            {
+                order.Confirmed = true;
+                var result = _restaurantService.UpdateOrder(testAdmin, orderGuid, order);
+                if (result.Item1 != null)
+                {
+                    OrderError = result.Item1;
+                }
+            }
+
+            LoadData(testAdmin);
+            LoggedUser = testAdmin;
+            return new JsonResult(new { success = true });
+        }
+
+        public IActionResult OnPostDeclineOrder(string orderGuid)
+        {
+            LangService.For("en");
+
+            var testAdmin = new JUser
+            {
+                Name = "admin",
+                Password = "admin123",
+                Guid = "admin-guid",
+                UserType = JUserType.Admin
+            };
+
+            var order = Orders.FirstOrDefault(o => o.Guid == orderGuid);
+            if (order != null)
+            {
+                order.Confirmed = false;
+                order.OrderStatus = JOrderStatus.Cancelled;
+                var result = _restaurantService.UpdateOrder(testAdmin, orderGuid, order);
+                if (result.Item1 != null)
+                {
+                    OrderError = result.Item1;
+                }
+            }
+
+            LoadData(testAdmin);
+            LoggedUser = testAdmin;
+            return new JsonResult(new { success = true });
+        }
+
         public IActionResult OnPostAddMeal([Bind(Prefix = "meal")] JMeal meal)
         {
             LangService.For("en");

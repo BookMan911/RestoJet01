@@ -721,6 +721,7 @@ namespace RestoJett.Core
                 existingOrder.PilotGuid = order.PilotGuid;
                 existingOrder.DeliveryStatus = order.DeliveryStatus;
                 existingOrder.OrderStatus = order.OrderStatus;
+                existingOrder.Confirmed = order.Confirmed;
                 
                 // Update items
                 existingOrder.Items.Clear();

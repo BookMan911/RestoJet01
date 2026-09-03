@@ -80,7 +80,7 @@
                                     <td>@meal.Description</td>
                                     <td>
                                         <button class="btn btn-sm btn-info me-1" onclick="selectMealImage('@meal.Guid', '@meal.Name')">@Model.LangService.Transilate("Select Image")</button>
-                                        <button class="btn btn-sm btn-warning me-1" onclick="editMeal('@meal.Guid')">@Model.LangService.Transilate("Edit")</button>
+                                        <button class="btn btn-sm btn-warning me-1" onclick="editMeal('@meal.Guid', '@meal.Name', @meal.Price.ToString("F2"), @meal.Discount.ToString("F2"), '@meal.Description')">@Model.LangService.Transilate("Edit")</button>
                                         <button class="btn btn-sm btn-danger" onclick="deleteMeal('@meal.Guid')">@Model.LangService.Transilate("Delete")</button>
                                     </td>
                                 </tr>
@@ -292,6 +292,15 @@
                                     <td>@order.OrderStatus</td>
                                     <td>@order.DeliveryStatus</td>
                                     <td>
+                                        @if (!order.Confirmed)
+                                        {
+                                            <button class="btn btn-sm btn-success me-1" onclick="acceptOrder('@order.Guid')">@Model.LangService.Transilate("Accept")</button>
+                                            <button class="btn btn-sm btn-danger me-1" onclick="declineOrder('@order.Guid')">@Model.LangService.Transilate("Decline")</button>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-success">@Model.LangService.Transilate("Accepted")</span>
+                                        }
                                         <button class="btn btn-sm btn-warning" onclick="editOrder('@order.Guid')">@Model.LangService.Transilate("Edit")</button>
                                         <button class="btn btn-sm btn-danger" onclick="deleteOrder('@order.Guid')">@Model.LangService.Transilate("Delete")</button>
                                     </td>
@@ -457,6 +466,43 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@Model.LangService.Transilate("Close")</button>
                     <button type="submit" class="btn btn-primary">@Model.LangService.Transilate("Save")</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Meal Modal -->
+<div class="modal fade" id="editMealModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="post" asp-page-handler="EditMeal" asp-antiforgery="true">
+                <div class="modal-header">
+                    <h5 class="modal-title">@Model.LangService.Transilate("Edit Meal")</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="editMealGuid" name="meal.Guid" />
+                    <div class="mb-3">
+                        <label class="form-label">@Model.LangService.Transilate("Name")</label>
+                        <input type="text" class="form-control" id="editMealName" name="meal.Name" required />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">@Model.LangService.Transilate("Price")</label>
+                        <input type="number" step="0.01" class="form-control" id="editMealPrice" name="meal.Price" required />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">@Model.LangService.Transilate("Discount")</label>
+                        <input type="number" step="0.01" class="form-control" id="editMealDiscount" name="meal.Discount" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">@Model.LangService.Transilate("Description")</label>
+                        <textarea class="form-control" id="editMealDescription" name="meal.Description"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@Model.LangService.Transilate("Close")</button>
+                    <button type="submit" class="btn btn-warning">@Model.LangService.Transilate("Update")</button>
                 </div>
             </form>
         </div>
@@ -631,8 +677,14 @@
                 // Implement delete logic
             }
         }
-        function editMeal(guid) {
-            // Implement edit logic
+        function editMeal(guid, name, price, discount, description) {
+            document.getElementById('editMealGuid').value = guid;
+            document.getElementById('editMealName').value = name;
+            document.getElementById('editMealPrice').value = price;
+            document.getElementById('editMealDiscount').value = discount;
+            document.getElementById('editMealDescription').value = description;
+            var modal = new bootstrap.Modal(document.getElementById('editMealModal'));
+            modal.show();
         }
         function deleteUser(guid) {
             if(confirm('@Model.LangService.Transilate("Are you sure?")')) {
@@ -663,8 +715,29 @@
                 // Implement delete logic
             }
         }
-        function editOrder(guid) {
-            // Implement edit logic
+        function acceptOrder(guid) {
+            if(confirm('@Model.LangService.Transilate("Accept this order?")')) {
+                fetch(`/Admin?handler=AcceptOrder&orderGuid=${encodeURIComponent(guid)}`, { method: 'POST' })
+                    .then(response => {
+                        if (response.ok) {
+                            location.reload();
+                        } else {
+                            alert('@Model.LangService.Transilate("Failed to accept order")');
+                        }
+                    });
+            }
+        }
+        function declineOrder(guid) {
+            if(confirm('@Model.LangService.Transilate("Decline this order?")')) {
+                fetch(`/Admin?handler=DeclineOrder&orderGuid=${encodeURIComponent(guid)}`, { method: 'POST' })
+                    .then(response => {
+                        if (response.ok) {
+                            location.reload();
+                        } else {
+                            alert('@Model.LangService.Transilate("Failed to decline order")');
+                        }
+                    });
+            }
         }
         
         function viewPilotOrders(pilotGuid, pilotName) {
