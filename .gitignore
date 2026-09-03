@@ -1,1 +1,38 @@
-Nothing should be ignored since only a source code file (.cs) was modified and there are no build artifacts, dependencies, or temporary files in the changes.
+```
+# Build artifacts
+bin/
+obj/
+*.dll
+*.exe
+*.pdb
+*.config
+
+# Dependencies
+packages/
+node_modules/
+bower_components/
+
+# Logs
+*.log
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Visual Studio
+*.user
+*.userosscache
+*.suo
+.vs/
+.vscode/
+
+# ASP.NET Core
+*.db
+*.db-journal
+appsettings*.json
+Properties/PublishProfiles/
+
+# Temporary files
+*.tmp
+*.temp
+```
