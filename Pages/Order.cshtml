@@ -35,6 +35,67 @@
         </div>
     }
 
+    <!-- Customer Order History Section -->
+    @if (Model.CustomerOrders != null && Model.CustomerOrders.Count > 0)
+    {
+        <div class="row mb-4">
+            <div class="col-md-12">
+                <h2>@Model.LangService.Transilate("My Orders")</h2>
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>@Model.LangService.Transilate("Order ID")</th>
+                                <th>@Model.LangService.Transilate("Date")</th>
+                                <th>@Model.LangService.Transilate("Status")</th>
+                                <th>@Model.LangService.Transilate("Delivery")</th>
+                                <th>@Model.LangService.Transilate("Payment")</th>
+                                <th>@Model.LangService.Transilate("Items")</th>
+                                <th>@Model.LangService.Transilate("Total")</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var order in Model.CustomerOrders)
+                            {
+                                <tr>
+                                    <td><small>@order.OrderGuid</small></td>
+                                    <td>@order.OrderDate</td>
+                                    <td>
+                                        <span class="badge 
+                                            @(order.OrderStatus == "Unpaid" ? "bg-warning" : 
+                                              order.OrderStatus == "Paid" ? "bg-success" : 
+                                              order.OrderStatus == "Cancelled" ? "bg-danger" : "bg-info")">
+                                            @order.OrderStatus
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="badge 
+                                            @(order.DeliveryStatus == "Pending" ? "bg-warning" : 
+                                              order.DeliveryStatus == "Delivering" ? "bg-primary" : 
+                                              order.DeliveryStatus == "Delivered" ? "bg-success" : 
+                                              order.DeliveryStatus == "Cancelled" ? "bg-danger" : "bg-secondary")">
+                                            @order.DeliveryStatus
+                                        </span>
+                                    </td>
+                                    <td>@order.PaymentType</td>
+                                    <td>
+                                        <ul class="list-unstyled mb-0">
+                                            @foreach (var item in order.Items)
+                                            {
+                                                <li><small>@item.MealName x @item.Count</small></li>
+                                            }
+                                        </ul>
+                                    </td>
+                                    <td><strong>@order.TotalAmount.ToString("C")</strong></td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    }
+
     @if (Model.OrderError != null)
     {
         <div class="alert alert-danger alert-dismissible fade show" role="alert">
