@@ -268,6 +268,15 @@ namespace RestoJett.Pages
             CustomerName = Request.Form["CustomerName"].ToString();
             var customerGuid = Request.Form["CustomerGuid"].ToString();
             var urlRes = Request.Form["CurrentUrlRes"].ToString();
+            var selectedAddress = Request.Form["SelectedAddress"].ToString();
+            var selectedPaymentTypeStr = Request.Form["SelectedPaymentType"].ToString();
+
+            // Parse payment type
+            JPaymentType selectedPaymentType = JPaymentType.None;
+            if (!string.IsNullOrEmpty(selectedPaymentTypeStr))
+            {
+                Enum.TryParse(selectedPaymentTypeStr, out selectedPaymentType);
+            }
 
             // Get cart items from Session
             var cartKey = $"cart_{CustomerName}";
@@ -301,7 +310,10 @@ namespace RestoJett.Pages
                 Name = $"Order for {CustomerName}",
                 Items = new Dictionary<string, JOrderItem>(),
                 OrderStatus = JOrderStatus.Unpaid,
-                DeliveryStatus = JDeliveryStatus.Pending
+                DeliveryStatus = JDeliveryStatus.Pending,
+                PaymentType = selectedPaymentType,
+                AddressInfo = selectedAddress,
+                Confirmed = false
             };
 
             // Add items to order

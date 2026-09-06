@@ -14,5 +14,6 @@ namespace RestoJett.Core
         public JOrderStatus OrderStatus { get; set; }
         public JPaymentType PaymentType { get; set; }
         public string AddressInfo { get; set; }
+        public bool Confirmed { get; set; }
     }
 }

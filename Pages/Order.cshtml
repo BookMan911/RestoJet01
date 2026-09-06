@@ -187,13 +187,46 @@
 
                     @if (Model.CurrentCustomer != null)
                     {
+                        <!-- Address Selection -->
+                        <div class="mb-3">
+                            <label class="form-label">@Model.LangService.Transilate("Delivery Address")</label>
+                            <select id="addressSelect" class="form-select mb-2" onchange="toggleAddressInput()">
+                                <option value="">@Model.LangService.Transilate("Select Address")</option>
+                                @if (Model.CurrentCustomer.Address != null)
+                                {
+                                    var idx = 0;
+                                    foreach (var addr in Model.CurrentCustomer.Address)
+                                    {
+                                        <option value="@addr">@addr</option>
+                                        idx++;
+                                    }
+                                }
+                                <option value="__new__">@Model.LangService.Transilate("Add New Address")</option>
+                            </select>
+                            <input type="text" id="newAddressInput" class="form-control" placeholder="@Model.LangService.Transilate("Enter new address")" style="display: none;" />
+                        </div>
+
+                        <!-- Payment Type Selection -->
+                        <div class="mb-3">
+                            <label class="form-label">@Model.LangService.Transilate("Payment Type")</label>
+                            <select id="paymentTypeSelect" class="form-select">
+                                <option value="None">@Model.LangService.Transilate("Select Payment")</option>
+                                <option value="Cash">@Model.LangService.Transilate("Cash")</option>
+                                <option value="Online">@Model.LangService.Transilate("Online")</option>
+                                <option value="ByPilot">@Model.LangService.Transilate("Pay by Pilot")</option>
+                                <option value="Dept">@Model.LangService.Transilate("Department")</option>
+                            </select>
+                        </div>
+                        
                         <form method="post" asp-page-handler="SubmitOrder">
                             <input type="hidden" name="CustomerName" value="@Model.CustomerName" />
                             <input type="hidden" name="CustomerGuid" value="@Model.CurrentCustomer.Guid" />
                             <input type="hidden" name="CurrentUrlRes" value="@urlResParam" />
                             <input type="hidden" name="lang" value="@Model.CurrentLanguage" />
+                            <input type="hidden" id="selectedAddress" name="SelectedAddress" value="" />
+                            <input type="hidden" id="selectedPaymentType" name="SelectedPaymentType" value="" />
                             
-                            <button type="submit" class="btn btn-success w-100 btn-lg">
+                            <button type="submit" class="btn btn-success w-100 btn-lg" onclick="return validateOrder()">
                                 <i class="bi bi-check-circle"></i> @Model.LangService.Transilate("Submit Order")
                             </button>
                         </form>
@@ -266,5 +299,48 @@
         
         // Refresh cart every 2 seconds
         setInterval(loadCart, 2000);
+
+        function toggleAddressInput() {
+            const select = document.getElementById('addressSelect');
+            const input = document.getElementById('newAddressInput');
+            if (select.value === '__new__') {
+                input.style.display = 'block';
+                input.focus();
+            } else {
+                input.style.display = 'none';
+            }
+        }
+
+        function validateOrder() {
+            const addressSelect = document.getElementById('addressSelect');
+            const newAddressInput = document.getElementById('newAddressInput');
+            const paymentTypeSelect = document.getElementById('paymentTypeSelect');
+            const selectedAddress = document.getElementById('selectedAddress');
+            const selectedPaymentType = document.getElementById('selectedPaymentType');
+
+            let addressValue = '';
+            if (addressSelect.value === '__new__') {
+                if (!newAddressInput.value.trim()) {
+                    alert('@Model.LangService.Transilate("Please enter a new address")');
+                    return false;
+                }
+                addressValue = newAddressInput.value.trim();
+            } else if (!addressSelect.value) {
+                alert('@Model.LangService.Transilate("Please select an address")');
+                return false;
+            } else {
+                addressValue = addressSelect.value;
+            }
+
+            if (!paymentTypeSelect.value || paymentTypeSelect.value === 'None') {
+                alert('@Model.LangService.Transilate("Please select a payment type")');
+                return false;
+            }
+
+            selectedAddress.value = addressValue;
+            selectedPaymentType.value = paymentTypeSelect.value;
+
+            return true;
+        }
     </script>
 }
