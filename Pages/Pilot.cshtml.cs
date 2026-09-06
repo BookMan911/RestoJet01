@@ -60,5 +60,35 @@ namespace RestoJett.Web.Pages
                 Orders = ordersResult.Item2 ?? new List<JOrder>();
             }
         }
+
+        public IActionResult OnPostMarkDelivered(string orderGuid)
+        {
+            LangService.For("en");
+
+            var testAdmin = new JUser
+            {
+                Name = "admin",
+                Password = "admin123",
+                Guid = "admin-guid",
+                UserType = JUserType.Admin
+            };
+
+            var result = _restaurantService.UpdateOrderStatus(testAdmin, orderGuid, JOrderStatus.Delivered_Done);
+            if (result.Item1 != null)
+            {
+                Error = result.Item1;
+                return new JsonResult(new { success = false, error = result.Item1.Message });
+            }
+
+            // Update the local Orders list with the updated order
+            var updatedOrder = result.Item2;
+            var index = Orders.FindIndex(o => o.Guid == orderGuid);
+            if (index >= 0)
+            {
+                Orders[index] = updatedOrder;
+            }
+
+            return new JsonResult(new { success = true });
+        }
     }
 }

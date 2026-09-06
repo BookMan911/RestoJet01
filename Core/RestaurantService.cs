@@ -41,6 +41,8 @@ namespace RestoJett.Core
         Tuple<Exception, JOrder> UpdateOrder(JUser loggedUser, string orderGuid, JOrder order);
         Tuple<Exception, bool> RemoveOrder(JUser loggedUser, string orderGuid);
         Tuple<Exception, List<JOrder>> GetOrdersByPilot(string pilotGuid);
+        Tuple<Exception, List<JOrder>> GetOrdersForKitchen();
+        Tuple<Exception, JOrder> UpdateOrderStatus(JUser loggedUser, string orderGuid, JOrderStatus status);
 
         // Authentication
         Tuple<Exception, JUser> Authenticate(string name, string password);
@@ -776,6 +778,47 @@ namespace RestoJett.Core
                 var orders = _orders.Where(o => o.PilotGuid == pilotGuid).ToList();
                 return new Tuple<Exception, List<JOrder>>(null, orders);
             }
+        }
+
+        public Tuple<Exception, List<JOrder>> GetOrdersForKitchen()
+        {
+            lock (_lock)
+            {
+                // Return orders that are confirmed and have status Preparing or Preparing_Done
+                var orders = _orders.Where(o => o.Confirmed && 
+                    (o.OrderStatus == JOrderStatus.Preparing || o.OrderStatus == JOrderStatus.Preparing_Done)).ToList();
+                return new Tuple<Exception, List<JOrder>>(null, orders);
+            }
+        }
+
+        public Tuple<Exception, JOrder> UpdateOrderStatus(JUser loggedUser, string orderGuid, JOrderStatus status)
+        {
+            var validation = ValidateUser(loggedUser);
+            if (validation.Item1 != null)
+            {
+                return new Tuple<Exception, JOrder>(validation.Item1, null);
+            }
+
+            lock (_lock)
+            {
+                var existingOrder = _orders.FirstOrDefault(o => o.Guid == orderGuid);
+                if (existingOrder == null)
+                {
+                    var ex = new KeyNotFoundException($"Order with GUID {orderGuid} not found.");
+                    return new Tuple<Exception, JOrder>(ex, null);
+                }
+
+                existingOrder.OrderStatus = status;
+                
+                // Mark as completed when status is Delivered_Done
+                if (status == JOrderStatus.Delivered_Done)
+                {
+                    existingOrder.Confirmed = false; // Order is completed
+                }
+            }
+
+            LogAction(loggedUser, "Update", "Order", orderGuid, $"Updated order status to {status}");
+            return new Tuple<Exception, JOrder>(null, _orders.FirstOrDefault(o => o.Guid == orderGuid));
         }
 
         #endregion
