@@ -111,6 +111,7 @@ namespace RestoJett.Pages
             if (order != null)
             {
                 order.Confirmed = true;
+                order.OrderStatus = JOrderStatus.Preparing; // Set status to Preparing when admin accepts
                 var result = _restaurantService.UpdateOrder(testAdmin, orderGuid, order);
                 if (result.Item1 != null)
                 {
@@ -160,6 +161,37 @@ namespace RestoJett.Pages
                 {
                     Orders[index] = updatedOrder;
                 }
+            }
+
+            LoggedUser = testAdmin;
+            return new JsonResult(new { success = true });
+        }
+
+        public IActionResult OnPostMarkPreparingDone(string orderGuid)
+        {
+            LangService.For("en");
+
+            var testAdmin = new JUser
+            {
+                Name = "admin",
+                Password = "admin123",
+                Guid = "admin-guid",
+                UserType = JUserType.Admin
+            };
+
+            var result = _restaurantService.UpdateOrderStatus(testAdmin, orderGuid, JOrderStatus.Preparing_Done);
+            if (result.Item1 != null)
+            {
+                OrderError = result.Item1;
+                return new JsonResult(new { success = false, error = result.Item1.Message });
+            }
+
+            // Update the local Orders list with the updated order
+            var updatedOrder = result.Item2;
+            var index = Orders.FindIndex(o => o.Guid == orderGuid);
+            if (index >= 0)
+            {
+                Orders[index] = updatedOrder;
             }
 
             LoggedUser = testAdmin;

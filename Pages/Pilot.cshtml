@@ -46,6 +46,7 @@
                                 <th>@Model.LangService.Transilate("Delivery Status")</th>
                                 <th>@Model.LangService.Transilate("Items")</th>
                                 <th>@Model.LangService.Transilate("Total")</th>
+                                <th>@Model.LangService.Transilate("Actions")</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -60,8 +61,8 @@
                                             @(order.OrderStatus == RestoJett.Core.JOrderStatus.None ? "bg-secondary" : 
                                               order.OrderStatus == RestoJett.Core.JOrderStatus.Unpaid ? "bg-warning" : 
                                               order.OrderStatus == RestoJett.Core.JOrderStatus.Cancelled ? "bg-danger" : 
-                                              order.OrderStatus == RestoJett.Core.JOrderStatus.Paid ? "bg-success" : 
-                                              "bg-secondary")">
+                                              order.OrderStatus == RestoJett.Core.JOrderStatus.Delivered_Done ? "bg-success" : 
+                                              "bg-info")">
                                             @order.OrderStatus
                                         </span>
                                     </td>
@@ -104,6 +105,18 @@
                                             <span class="text-muted">$0.00</span>
                                         }
                                     </td>
+                                    <td>
+                                        @if (order.OrderStatus != RestoJett.Core.JOrderStatus.Delivered_Done && order.OrderStatus != RestoJett.Core.JOrderStatus.Cancelled)
+                                        {
+                                            <button class="btn btn-sm btn-success" onclick="markDelivered('@order.Guid')">
+                                                <i class="bi bi-check-circle"></i> @Model.LangService.Transilate("Delivery Done")
+                                            </button>
+                                        }
+                                        else if (order.OrderStatus == RestoJett.Core.JOrderStatus.Delivered_Done)
+                                        {
+                                            <span class="badge bg-success">@Model.LangService.Transilate("Completed")</span>
+                                        }
+                                    </td>
                                 </tr>
                             }
                         </tbody>
@@ -114,9 +127,37 @@
     </div>
 </div>
 
+<form id="antiForgeryCsrfForm" method="post" asp-antiforgery="true"></form>
+
 <style>
     .badge {
         font-size: 0.85em;
         padding: 0.5em 0.75em;
     }
 </style>
+
+<script>
+    function markDelivered(orderGuid) {
+        if (confirm('Are you sure you want to mark this order as delivered?')) {
+            const token = document.querySelector('#antiForgeryCsrfForm input[name="__RequestVerificationToken"]').value;
+            fetch(window.location.pathname + '?handler=MarkDelivered&orderGuid=' + encodeURIComponent(orderGuid), {
+                method: 'POST',
+                headers: {
+                    'RequestVerificationToken': token
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload();
+                } else {
+                    alert('Error: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while marking the order as delivered.');
+            });
+        }
+    }
+</script>
