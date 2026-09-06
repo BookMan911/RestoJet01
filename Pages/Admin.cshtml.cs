@@ -41,6 +41,7 @@ namespace RestoJett.Pages
 
         public AdminModel(IRestaurantService restaurantService, LanguageService langService, IWebHostEnvironment hostingEnvironment)
         {
+
             _restaurantService = restaurantService;
             LangService = langService;
             _hostingEnvironment = hostingEnvironment;
@@ -94,6 +95,8 @@ namespace RestoJett.Pages
 
         public IActionResult OnPostAcceptOrder(string orderGuid)
         {
+
+            Console.WriteLine("OnPostAcceptOrder Called");
             LangService.For("en");
 
             var testAdmin = new JUser
@@ -380,6 +383,7 @@ namespace RestoJett.Pages
 
             // Load customers
             var customersResult = _restaurantService.GetCustomers(user);
+            Console.WriteLine(customersResult.Item2.Count.ToString());
             if (customersResult.Item1 == null)
             {
                 Customers = customersResult.Item2;
@@ -430,7 +434,7 @@ namespace RestoJett.Pages
                                 f.EndsWith(".png", StringComparison.OrdinalIgnoreCase) ||
                                 f.EndsWith(".gif", StringComparison.OrdinalIgnoreCase) ||
                                 f.EndsWith(".webp", StringComparison.OrdinalIgnoreCase));
-                
+
                 MealImages = imageFiles.Select(f => "/images/" + Path.GetFileName(f)).ToList();
             }
             else
@@ -498,7 +502,7 @@ namespace RestoJett.Pages
                 if (imageFile != null && imageFile.Length > 0)
                 {
                     var imagesPath = Path.Combine(_hostingEnvironment.WebRootPath, "images");
-                    
+
                     if (!Directory.Exists(imagesPath))
                     {
                         Directory.CreateDirectory(imagesPath);
@@ -508,19 +512,19 @@ namespace RestoJett.Pages
                     {
                         imageFile.CopyTo(memoryStream);
                         var fileBytes = memoryStream.ToArray();
-                        
+
                         using (var md5 = MD5.Create())
                         {
                             var hashBytes = md5.ComputeHash(fileBytes);
                             var hashString = BitConverter.ToString(hashBytes).Replace("-", "").ToLowerInvariant();
-                            
+
                             var extension = Path.GetExtension(imageFile.FileName);
                             var fileName = hashString + extension;
-                            
+
                             var filePath = Path.Combine(imagesPath, fileName);
-                            
+
                             System.IO.File.WriteAllBytes(filePath, fileBytes);
-                            
+
                             ImageSuccess = "Image uploaded successfully!";
                         }
                     }
@@ -555,7 +559,7 @@ namespace RestoJett.Pages
                 {
                     var imagesPath = Path.Combine(_hostingEnvironment.WebRootPath, "images");
                     var filePath = Path.Combine(imagesPath, imageName);
-                    
+
                     if (System.IO.File.Exists(filePath))
                     {
                         System.IO.File.Delete(filePath);

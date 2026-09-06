@@ -701,6 +701,7 @@ namespace RestoJett.Core
 
         public Tuple<Exception, JOrder> UpdateOrder(JUser loggedUser, string orderGuid, JOrder order)
         {
+            Console.WriteLine("UpdateOrder Called");
             var validation = ValidateUser(loggedUser);
             if (validation.Item1 != null)
             {
@@ -731,6 +732,7 @@ namespace RestoJett.Core
                 {
                     existingOrder.Items[key] = order.Items[key];
                 }
+                Console.WriteLine("Order Updated Secussfully");
             }
 
             LogAction(loggedUser, "Update", "Order", orderGuid, $"Updated order: {orderGuid}");
