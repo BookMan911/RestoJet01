@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 
 namespace RestoJett.Core
 {
@@ -15,5 +16,7 @@ namespace RestoJett.Core
         public JPaymentType PaymentType { get; set; }
         public string AddressInfo { get; set; }
         public bool Confirmed { get; set; }
+        
+        public int ItemsCount => Items?.Count ?? 0;
     }
 }

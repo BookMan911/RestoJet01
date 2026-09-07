@@ -277,9 +277,11 @@
                             {
                                 var pilot = Model.Pilots.FirstOrDefault(p => p.Guid == order.PilotGuid);
                                 var pilotDisplayName = string.IsNullOrEmpty(order.PilotGuid) ? "-" : (pilot?.Name ?? order.PilotGuid);
+                                var customer = Model.Customers.FirstOrDefault(c => c.Guid == order.CustomerGuid);
+                                var customerName = customer != null ? customer.Name : order.CustomerGuid;
                                 <tr>
                                     <td>@order.Name</td>
-                                    <td>@order.CustomerGuid</td>
+                                    <td>@customerName</td>
                                     <td>
                                         @if (!string.IsNullOrEmpty(order.PilotGuid))
                                         {
@@ -353,9 +355,11 @@
                             }
                             @foreach (var order in kitchenOrders)
                             {
+                                var customer = Model.Customers.FirstOrDefault(c => c.Guid == order.CustomerGuid);
+                                var customerName = customer != null ? customer.Name : order.CustomerGuid;
                                 <tr>
                                     <td>@order.Name</td>
-                                    <td>@order.CustomerGuid</td>
+                                    <td>@customerName</td>
                                     <td>@order.Date</td>
                                     <td>
                                         <span class="badge bg-warning">
@@ -365,18 +369,41 @@
                                     <td>
                                         @if (order.Items != null && order.Items.Count > 0)
                                         {
-                                            <ul class="list-unstyled mb-0">
-                                                @foreach (var item in order.Items.Values)
-                                                {
-                                                    <li>@item.Count x @item.MealName</li>
-                                                }
-                                            </ul>
+                                            <span>@order.ItemsCount @Model.LangService.Transilate("items")</span>
                                         }
                                     </td>
                                     <td>
                                         <button class="btn btn-sm btn-success" onclick="markPreparingDone('@order.Guid')">
                                             @Model.LangService.Transilate("Done")
                                         </button>
+                                    </td>
+                                </tr>
+                                <!-- Meal Details Row -->
+                                <tr>
+                                    <td colspan="6" class="p-0">
+                                        <div class="card card-body bg-light mb-2">
+                                            <h6 class="mb-2">@Model.LangService.Transilate("Meal Details"):</h6>
+                                            <table class="table table-sm table-bordered mb-0">
+                                                <thead>
+                                                    <tr>
+                                                        <th>@Model.LangService.Transilate("Meal Name")</th>
+                                                        <th>@Model.LangService.Transilate("Count")</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @if (order.Items != null && order.Items.Count > 0)
+                                                    {
+                                                        @foreach (var item in order.Items.Values.OrderBy(i => i.MealName))
+                                                        {
+                                                            <tr>
+                                                                <td>@item.MealName</td>
+                                                                <td>@item.Count</td>
+                                                            </tr>
+                                                        }
+                                                    }
+                                                </tbody>
+                                            </table>
+                                        </div>
                                     </td>
                                 </tr>
                             }
@@ -806,19 +833,8 @@
                     })
                     .then(data => {
                         if (data.success) {
-                            // Hide buttons and show accepted badge without reload
-                            const actionButtonsId = 'action-buttons-' + guid.replace(/-/g, '');
-                            const statusBadgeId = 'status-badge-' + guid.replace(/-/g, '');
-                            const actionButtons = document.getElementById(actionButtonsId);
-                            const statusBadge = document.getElementById(statusBadgeId);
-                            
-                            if (actionButtons && statusBadge) {
-                                actionButtons.style.display = 'none';
-                                statusBadge.innerHTML = '<span class="badge bg-success">@Model.LangService.Transilate("Accepted")</span>';
-                                statusBadge.style.display = 'inline';
-                            } else {
-                                location.reload();
-                            }
+                            // Reload page to update both Orders and Kitchen tabs
+                            location.reload();
                         } else {
                             alert('@Model.LangService.Transilate("Failed to accept order"): ' + (data.error || ''));
                         }
@@ -846,19 +862,8 @@
                     })
                     .then(data => {
                         if (data.success) {
-                            // Hide buttons and show declined badge without reload
-                            const actionButtonsId = 'action-buttons-' + guid.replace(/-/g, '');
-                            const statusBadgeId = 'status-badge-' + guid.replace(/-/g, '');
-                            const actionButtons = document.getElementById(actionButtonsId);
-                            const statusBadge = document.getElementById(statusBadgeId);
-                            
-                            if (actionButtons && statusBadge) {
-                                actionButtons.style.display = 'none';
-                                statusBadge.innerHTML = '<span class="badge bg-danger">@Model.LangService.Transilate("Declined")</span>';
-                                statusBadge.style.display = 'inline';
-                            } else {
-                                location.reload();
-                            }
+                            // Reload page to update both Orders and Kitchen tabs
+                            location.reload();
                         } else {
                             alert('@Model.LangService.Transilate("Failed to decline order"): ' + (data.error || ''));
                         }

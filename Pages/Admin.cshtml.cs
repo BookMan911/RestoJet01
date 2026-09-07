@@ -95,7 +95,6 @@ namespace RestoJett.Pages
 
         public IActionResult OnPostAcceptOrder(string orderGuid)
         {
-
             Console.WriteLine("OnPostAcceptOrder Called");
             LangService.For("en");
 
@@ -107,7 +106,14 @@ namespace RestoJett.Pages
                 UserType = JUserType.Admin
             };
 
-            var order = Orders.FirstOrDefault(o => o.Guid == orderGuid);
+            // Get all orders from service to ensure we have the latest data
+            var allOrdersResult = _restaurantService.GetOrders(testAdmin);
+            if (allOrdersResult.Item1 != null)
+            {
+                return new JsonResult(new { success = false, error = allOrdersResult.Item1.Message });
+            }
+
+            var order = allOrdersResult.Item2.FirstOrDefault(o => o.Guid == orderGuid);
             if (order != null)
             {
                 order.Confirmed = true;
@@ -117,13 +123,6 @@ namespace RestoJett.Pages
                 {
                     OrderError = result.Item1;
                     return new JsonResult(new { success = false, error = result.Item1.Message });
-                }
-                // Update the local Orders list with the updated order
-                var updatedOrder = result.Item2;
-                var index = Orders.FindIndex(o => o.Guid == orderGuid);
-                if (index >= 0)
-                {
-                    Orders[index] = updatedOrder;
                 }
             }
 
@@ -143,7 +142,14 @@ namespace RestoJett.Pages
                 UserType = JUserType.Admin
             };
 
-            var order = Orders.FirstOrDefault(o => o.Guid == orderGuid);
+            // Get all orders from service to ensure we have the latest data
+            var allOrdersResult = _restaurantService.GetOrders(testAdmin);
+            if (allOrdersResult.Item1 != null)
+            {
+                return new JsonResult(new { success = false, error = allOrdersResult.Item1.Message });
+            }
+
+            var order = allOrdersResult.Item2.FirstOrDefault(o => o.Guid == orderGuid);
             if (order != null)
             {
                 order.Confirmed = false;
@@ -153,13 +159,6 @@ namespace RestoJett.Pages
                 {
                     OrderError = result.Item1;
                     return new JsonResult(new { success = false, error = result.Item1.Message });
-                }
-                // Update the local Orders list with the updated order
-                var updatedOrder = result.Item2;
-                var index = Orders.FindIndex(o => o.Guid == orderGuid);
-                if (index >= 0)
-                {
-                    Orders[index] = updatedOrder;
                 }
             }
 
@@ -179,19 +178,18 @@ namespace RestoJett.Pages
                 UserType = JUserType.Admin
             };
 
+            // Get all orders from service to ensure we have the latest data
+            var allOrdersResult = _restaurantService.GetOrders(testAdmin);
+            if (allOrdersResult.Item1 != null)
+            {
+                return new JsonResult(new { success = false, error = allOrdersResult.Item1.Message });
+            }
+
             var result = _restaurantService.UpdateOrderStatus(testAdmin, orderGuid, JOrderStatus.Preparing_Done);
             if (result.Item1 != null)
             {
                 OrderError = result.Item1;
                 return new JsonResult(new { success = false, error = result.Item1.Message });
-            }
-
-            // Update the local Orders list with the updated order
-            var updatedOrder = result.Item2;
-            var index = Orders.FindIndex(o => o.Guid == orderGuid);
-            if (index >= 0)
-            {
-                Orders[index] = updatedOrder;
             }
 
             LoggedUser = testAdmin;

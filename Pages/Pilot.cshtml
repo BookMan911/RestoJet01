@@ -79,7 +79,7 @@
                                         @if (order.Items != null && order.Items.Count > 0)
                                         {
                                             <ul class="list-unstyled mb-0">
-                                                @foreach (var item in order.Items.Values)
+                                                @foreach (var item in order.Items.Values.OrderBy(i => i.MealName))
                                                 {
                                                     <li>@item.Count x @item.MealName</li>
                                                 }

@@ -124,47 +124,37 @@ namespace RestoJett.Core
         #region Meal Operations
 
 
-        public Exception setImageHash(JUser loggedUser, string mealGuid, string imageHash){
-
-            
-            try{
-
-            
+        public Exception setImageHash(JUser loggedUser, string mealGuid, string imageHash)
+        {
+            try
+            {
                 var validation = ValidateUser(loggedUser, requireAdmin: true);
-                    if (validation.Item1 != null)
+                if (validation.Item1 != null)
+                {
+                    return validation.Item1;
+                }
+
+                lock (_lock)
+                {
+                    var existingMeal = _meals.FirstOrDefault(m => m.Guid == mealGuid);
+                    if (existingMeal == null)
                     {
-                        return validation.Item1;
+                        return new KeyNotFoundException($"Meal with GUID {mealGuid} not found.");
                     }
 
-                    lock (_lock)
-                    {
-                        var existingMeal = _meals.FirstOrDefault(m => m.Guid == mealGuid);
-                        if (existingMeal == null)
-                        {
-                            var ex = new KeyNotFoundException($"Meal with GUID {mealGuid} not found.");
-                            return ex;
-                        }
+                    existingMeal.ImageHash = imageHash;
+                    existingMeal.Version += 1.0f;
+                }
 
-                        existingMeal.ImageHash = imageHash;
-                        existingMeal.Version += 1.0f;
-
-                        // Update in menu if name changed
-                        if (MainMenu.Meals.Contains(existingMeal.Name))
-                        {
-                            MainMenu.Meals[existingMeal.Name] = existingMeal;
-                        }
-                    }
-
-                    LogAction(loggedUser, "Update", "Meal", mealGuid, $"Updated image hash for meal: {mealGuid}");
-                    return null; // No exception, operation successful
-
-
-            }catch(Exception ex){
+                LogAction(loggedUser, "Update", "Meal", mealGuid, $"Updated image hash for meal: {mealGuid}");
+                return null; // No exception, operation successful
+            }
+            catch(Exception ex)
+            {
                 return ex;
             }
-
-            
         }
+
         public Tuple<Exception, List<JMeal>> GetMeals(JUser loggedUser)
         {
             var validation = ValidateUser(loggedUser);
@@ -212,13 +202,20 @@ namespace RestoJett.Core
                 return new Tuple<Exception, JMeal>(validation.Item1, null);
             }
 
+            JMeal existingMeal = null;
             lock (_lock)
             {
-                var existingMeal = _meals.FirstOrDefault(m => m.Guid == mealGuid);
+                existingMeal = _meals.FirstOrDefault(m => m.Guid == mealGuid);
                 if (existingMeal == null)
                 {
                     var ex = new KeyNotFoundException($"Meal with GUID {mealGuid} not found.");
                     return new Tuple<Exception, JMeal>(ex, null);
+                }
+
+                // Remove old entry from menu if name is changing
+                if (existingMeal.Name != meal.Name && MainMenu.Meals.Contains(existingMeal.Name))
+                {
+                    MainMenu.Meals.Remove(existingMeal.Name);
                 }
 
                 existingMeal.Name = meal.Name;
@@ -228,16 +225,12 @@ namespace RestoJett.Core
                 existingMeal.ImageHash = meal.ImageHash;
                 existingMeal.Version += 1.0f;
 
-                // Update in menu if name changed
-                if (MainMenu.Meals.Contains(existingMeal.Name))
-                {
-                    MainMenu.Meals.Remove(existingMeal.Name);
-                }
+                // Update/add in menu with new name
                 MainMenu.Meals[existingMeal.Name] = existingMeal;
             }
 
             LogAction(loggedUser, "Update", "Meal", mealGuid, $"Updated meal: {meal.Name}");
-            return new Tuple<Exception, JMeal>(null, meal);
+            return new Tuple<Exception, JMeal>(null, existingMeal);
         }
 
         public Tuple<Exception, bool> RemoveMeal(JUser loggedUser, string mealGuid)
@@ -703,16 +696,16 @@ namespace RestoJett.Core
 
         public Tuple<Exception, JOrder> UpdateOrder(JUser loggedUser, string orderGuid, JOrder order)
         {
-            Console.WriteLine("UpdateOrder Called");
             var validation = ValidateUser(loggedUser);
             if (validation.Item1 != null)
             {
                 return new Tuple<Exception, JOrder>(validation.Item1, null);
             }
 
+            JOrder existingOrder = null;
             lock (_lock)
             {
-                var existingOrder = _orders.FirstOrDefault(o => o.Guid == orderGuid);
+                existingOrder = _orders.FirstOrDefault(o => o.Guid == orderGuid);
                 if (existingOrder == null)
                 {
                     var ex = new KeyNotFoundException($"Order with GUID {orderGuid} not found.");
@@ -728,17 +721,16 @@ namespace RestoJett.Core
                 existingOrder.PaymentType = order.PaymentType;
                 existingOrder.AddressInfo = order.AddressInfo;
                 
-                // Update items
+                // Update items - clear and rebuild
                 existingOrder.Items.Clear();
                 foreach (var key in order.Items.Keys)
                 {
                     existingOrder.Items[key] = order.Items[key];
                 }
-                Console.WriteLine("Order Updated Secussfully");
             }
 
             LogAction(loggedUser, "Update", "Order", orderGuid, $"Updated order: {orderGuid}");
-            return new Tuple<Exception, JOrder>(null, order);
+            return new Tuple<Exception, JOrder>(null, existingOrder);
         }
 
         public Tuple<Exception, bool> RemoveOrder(JUser loggedUser, string orderGuid)
