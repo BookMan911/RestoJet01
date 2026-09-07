@@ -300,8 +300,9 @@ namespace RestoJett.Pages
                 }
             }
 
-            // Admin-created orders are confirmed by default
+            // Admin-created orders are confirmed by default and set to Preparing status
             order.Confirmed = true;
+            order.OrderStatus = JOrderStatus.Preparing;
 
             var result = _restaurantService.AddOrder(testAdmin, order);
             if (result.Item1 != null)
