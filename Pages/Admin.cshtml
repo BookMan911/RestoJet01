@@ -369,7 +369,7 @@
                                     <td>
                                         @if (order.Items != null && order.Items.Count > 0)
                                         {
-                                            <span>@order.Items.Count @Model.LangService.Transilate("items")</span>
+                                            <span>@order.ItemsCount @Model.LangService.Transilate("items")</span>
                                         }
                                     </td>
                                     <td>
@@ -393,7 +393,7 @@
                                                 <tbody>
                                                     @if (order.Items != null && order.Items.Count > 0)
                                                     {
-                                                        @foreach (var item in order.Items.Values)
+                                                        @foreach (var item in order.Items.Values.OrderBy(i => i.MealName))
                                                         {
                                                             <tr>
                                                                 <td>@item.MealName</td>
