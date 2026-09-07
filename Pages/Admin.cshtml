@@ -349,7 +349,7 @@
                         <tbody>
                             @{
                                 var kitchenOrders = Model.Orders.Where(o => o.Confirmed && 
-                                    (o.OrderStatus == JOrderStatus.Preparing || o.OrderStatus == JOrderStatus.Preparing_Done)).ToList();
+                                    o.OrderStatus == JOrderStatus.Preparing).ToList();
                             }
                             @foreach (var order in kitchenOrders)
                             {
@@ -358,10 +358,7 @@
                                     <td>@order.CustomerGuid</td>
                                     <td>@order.Date</td>
                                     <td>
-                                        <span class="badge 
-                                            @(order.OrderStatus == JOrderStatus.Preparing ? "bg-warning" : 
-                                              order.OrderStatus == JOrderStatus.Preparing_Done ? "bg-info" : 
-                                              "bg-secondary")">
+                                        <span class="badge bg-warning">
                                             @order.OrderStatus
                                         </span>
                                     </td>
@@ -377,16 +374,9 @@
                                         }
                                     </td>
                                     <td>
-                                        @if (order.OrderStatus == JOrderStatus.Preparing)
-                                        {
-                                            <button class="btn btn-sm btn-success" onclick="markPreparingDone('@order.Guid')">
-                                                @Model.LangService.Transilate("Preparing Done")
-                                            </button>
-                                        }
-                                        else if (order.OrderStatus == JOrderStatus.Preparing_Done)
-                                        {
-                                            <span class="badge bg-info">@Model.LangService.Transilate("Ready for Delivery")</span>
-                                        }
+                                        <button class="btn btn-sm btn-success" onclick="markPreparingDone('@order.Guid')">
+                                            @Model.LangService.Transilate("Done")
+                                        </button>
                                     </td>
                                 </tr>
                             }
@@ -881,7 +871,7 @@
         }
         
         function markPreparingDone(guid) {
-            if(confirm('@Model.LangService.Transilate("Mark this order as Preparing Done?")')) {
+            if(confirm('@Model.LangService.Transilate("Mark this order as Done?")')) {
                 const token = document.querySelector('#antiForgeryCsrfForm input[name="__RequestVerificationToken"]').value;
                 fetch(`/Admin?handler=MarkPreparingDone&orderGuid=${encodeURIComponent(guid)}`, { 
                     method: 'POST',

@@ -57,7 +57,10 @@ namespace RestoJett.Web.Pages
             }
             else
             {
-                Orders = ordersResult.Item2 ?? new List<JOrder>();
+                // Filter to only show orders with Preparing or Preparing_Done status
+                Orders = (ordersResult.Item2 ?? new List<JOrder>())
+                    .Where(o => o.OrderStatus == JOrderStatus.Preparing || o.OrderStatus == JOrderStatus.Preparing_Done)
+                    .ToList();
             }
         }
 

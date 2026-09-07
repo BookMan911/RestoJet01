@@ -784,9 +784,9 @@ namespace RestoJett.Core
         {
             lock (_lock)
             {
-                // Return orders that are confirmed and have status Preparing or Preparing_Done
+                // Return orders that are confirmed and have status Preparing
                 var orders = _orders.Where(o => o.Confirmed && 
-                    (o.OrderStatus == JOrderStatus.Preparing || o.OrderStatus == JOrderStatus.Preparing_Done)).ToList();
+                    o.OrderStatus == JOrderStatus.Preparing).ToList();
                 return new Tuple<Exception, List<JOrder>>(null, orders);
             }
         }
