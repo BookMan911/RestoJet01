@@ -202,9 +202,10 @@ namespace RestoJett.Core
                 return new Tuple<Exception, JMeal>(validation.Item1, null);
             }
 
+            JMeal existingMeal = null;
             lock (_lock)
             {
-                var existingMeal = _meals.FirstOrDefault(m => m.Guid == mealGuid);
+                existingMeal = _meals.FirstOrDefault(m => m.Guid == mealGuid);
                 if (existingMeal == null)
                 {
                     var ex = new KeyNotFoundException($"Meal with GUID {mealGuid} not found.");
@@ -701,9 +702,10 @@ namespace RestoJett.Core
                 return new Tuple<Exception, JOrder>(validation.Item1, null);
             }
 
+            JOrder existingOrder = null;
             lock (_lock)
             {
-                var existingOrder = _orders.FirstOrDefault(o => o.Guid == orderGuid);
+                existingOrder = _orders.FirstOrDefault(o => o.Guid == orderGuid);
                 if (existingOrder == null)
                 {
                     var ex = new KeyNotFoundException($"Order with GUID {orderGuid} not found.");
