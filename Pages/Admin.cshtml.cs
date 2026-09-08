@@ -440,6 +440,25 @@ namespace RestoJett.Pages
             if (ordersResult.Item1 == null)
             {
                 Orders = ordersResult.Item2;
+                
+                // Ensure all order items have MealName populated
+                foreach (var order in Orders)
+                {
+                    if (order.Items != null)
+                    {
+                        foreach (var item in order.Items.Values)
+                        {
+                            if (string.IsNullOrEmpty(item.MealName))
+                            {
+                                var meal = Meals.FirstOrDefault(m => m.Guid == item.MealGuid);
+                                if (meal != null)
+                                {
+                                    item.MealName = meal.Name;
+                                }
+                            }
+                        }
+                    }
+                }
             }
             else
             {
