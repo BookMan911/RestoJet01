@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json;
 
 namespace RestoJett.Core
 {
@@ -7,6 +8,8 @@ namespace RestoJett.Core
     {
         public string Name { get; set; }
         public string Guid { get; set; }
+        
+        [JsonProperty("Items")]
         public Dictionary<string, JOrderItem> Items { get; set; } = new Dictionary<string, JOrderItem>();
         public string CustomerGuid { get; set; }
         public string PilotGuid { get; set; }
@@ -17,6 +20,7 @@ namespace RestoJett.Core
         public string AddressInfo { get; set; }
         public bool Confirmed { get; set; }
         
+        [JsonIgnore]
         public int ItemsCount => Items?.Count ?? 0;
     }
 }
