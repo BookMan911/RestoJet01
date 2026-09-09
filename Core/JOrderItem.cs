@@ -6,5 +6,9 @@ namespace RestoJett.Core
         public string MealName { get; set; }
         public int Count { get; set; }
         public decimal Price { get; set; }
+        
+        public JOrderItem()
+        {
+        }
     }
 }
