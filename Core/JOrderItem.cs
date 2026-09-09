@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace RestoJett.Core
 {
     public class JOrderItem

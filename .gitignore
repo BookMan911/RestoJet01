@@ -1,1 +1,1 @@
-Nothing should be ignored based on the provided file changes, as they only include source code files (.cs, .cshtml) without any build artifacts, dependencies, or temporary files.
+Nothing needs to be added to .gitignore since only a source code file (Core/JOrderItem.cs) was modified and there are no build artifacts, dependencies, or temporary files in the changes.
