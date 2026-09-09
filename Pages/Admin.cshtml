@@ -353,59 +353,76 @@
                                 var kitchenOrders = Model.Orders.Where(o => o.Confirmed && 
                                     o.OrderStatus == JOrderStatus.Preparing).ToList();
                             }
-                            @foreach (var order in kitchenOrders)
+                            @if (!kitchenOrders.Any())
                             {
-                                var customer = Model.Customers.FirstOrDefault(c => c.Guid == order.CustomerGuid);
-                                var customerName = customer != null ? customer.Name : order.CustomerGuid;
                                 <tr>
-                                    <td>@order.Name</td>
-                                    <td>@customerName</td>
-                                    <td>@order.Date</td>
-                                    <td>
-                                        <span class="badge bg-warning">
-                                            @order.OrderStatus
-                                        </span>
-                                    </td>
-                                    <td>
-                                        @if (order.Items != null && order.Items.Count > 0)
-                                        {
-                                            <span>@order.ItemsCount @Model.LangService.Transilate("items")</span>
-                                        }
-                                    </td>
-                                    <td>
-                                        <button class="btn btn-sm btn-success" onclick="markPreparingDone('@order.Guid')">
-                                            @Model.LangService.Transilate("Done")
-                                        </button>
+                                    <td colspan="6" class="text-center text-muted">
+                                        @Model.LangService.Transilate("No orders in kitchen")
                                     </td>
                                 </tr>
-                                <!-- Meal Details Row -->
-                                <tr>
-                                    <td colspan="6" class="p-0">
-                                        <div class="card card-body bg-light mb-2">
-                                            <h6 class="mb-2">@Model.LangService.Transilate("Meal Details"):</h6>
-                                            <table class="table table-sm table-bordered mb-0">
-                                                <thead>
-                                                    <tr>
-                                                        <th>@Model.LangService.Transilate("Meal Name")</th>
-                                                        <th>@Model.LangService.Transilate("Count")</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    @if (order.Items != null && order.Items.Count > 0)
-                                                    {
-                                                        @foreach (var item in order.Items.Values.OrderBy(i => i.MealName))
+                            }
+                            else
+                            {
+                                @foreach (var order in kitchenOrders)
+                                {
+                                    var customer = Model.Customers.FirstOrDefault(c => c.Guid == order.CustomerGuid);
+                                    var customerName = customer != null ? customer.Name : order.CustomerGuid;
+                                    <tr>
+                                        <td>@order.Name</td>
+                                        <td>@customerName</td>
+                                        <td>@order.Date</td>
+                                        <td>
+                                            <span class="badge bg-warning">
+                                                @order.OrderStatus
+                                            </span>
+                                        </td>
+                                        <td>
+                                            @if (order.Items != null && order.Items.Count > 0)
+                                            {
+                                                <span>@order.ItemsCount @Model.LangService.Transilate("items")</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            <button class="btn btn-sm btn-success" onclick="markPreparingDone('@order.Guid')">
+                                                @Model.LangService.Transilate("Done")
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <!-- Meal Details Row -->
+                                    <tr>
+                                        <td colspan="6" class="p-0">
+                                            <div class="card card-body bg-light mb-2">
+                                                <h6 class="mb-2">@Model.LangService.Transilate("Meal Details"):</h6>
+                                                <table class="table table-sm table-bordered mb-0">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>@Model.LangService.Transilate("Meal Name")</th>
+                                                            <th>@Model.LangService.Transilate("Count")</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        @if (order.Items != null && order.Items.Count > 0)
+                                                        {
+                                                            @foreach (var item in order.Items.Values.OrderBy(i => i.MealName))
+                                                            {
+                                                                <tr>
+                                                                    <td>@item.MealName</td>
+                                                                    <td>@item.Count</td>
+                                                                </tr>
+                                                            }
+                                                        }
+                                                        else
                                                         {
                                                             <tr>
-                                                                <td>@item.MealName</td>
-                                                                <td>@item.Count</td>
+                                                                <td colspan="2" class="text-muted">@Model.LangService.Transilate("No items")</td>
                                                             </tr>
                                                         }
-                                                    }
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </td>
-                                </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
                             }
                         </tbody>
                     </table>
